@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Invalid Token - ShadowIQ{% endblock %}
+
+{% block content %}
+<div class="error-container">
+    <div class="error-card">
+        <h1>🔐 Invalid Access Link</h1>
+        
+        <div class="error-message">
+            <h3>Unable to verify your access link</h3>
+            <p><strong>Reason:</strong> {{ error|default:"The link may have expired or is invalid." }}</p>
+        </div>
+
+        <div class="suggestions">
+            <h4>What you can do:</h4>
+            <ul>
+                <li>Request a new magic link from the login page</li>
+                <li>Make sure you're using the exact link that was provided</li>
+                <li>Check that the link hasn't expired (they expire after 24 hours)</li>
+                <li>Ensure you haven't already used this link (they are single-use)</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <a href="{% url 'core:request_magic_link' %}" class="btn btn-primary">
+                Get New Access Link
+            </a>
+            <a href="{% url 'core:home' %}" class="btn btn-secondary">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 70vh;
+    padding: 2rem;
+}
+
+.error-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 2.5rem;
+    max-width: 500px;
+    text-align: center;
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.error-message h3 {
+    color: #ef4444;
+    margin-top: 0;
+}
+
+.suggestions {
+    background: rgba(0, 217, 255, 0.1);
+    border: 1px solid var(--accent-primary);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: left;
+}
+
+.suggestions h4 {
+    color: var(--accent-primary);
+    margin-top: 0;
+}
+
+.suggestions ul {
+    margin: 0;
+    padding-left: 1.5rem;
+}
+
+.suggestions li {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

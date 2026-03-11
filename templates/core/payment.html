@@ -1,0 +1,659 @@
+{% extends "base.html" %}
+{% block title %}Payment - {{ project.project_id }} - ShadowIQ{% endblock %}
+{% block extra_css %}
+<style>
+/* Your existing CSS styles remain the same */
+.payment-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 2rem;
+}
+
+.payment-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.payment-header h1 {
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.payment-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+.info-box {
+    background-color: rgba(0,217,255,0.1);
+    border: 1px solid var(--accent-primary);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+}
+
+.project-summary {
+    background-color: var(--bg-tertiary);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.summary-row:last-child {
+    border-bottom: none;
+}
+
+.summary-row span:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.summary-row span:last-child {
+    color: var(--text-secondary);
+}
+
+.milestones-section {
+    margin-bottom: 2rem;
+}
+
+.milestone-item {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.milestone-info {
+    flex: 1;
+}
+
+.milestone-info h4 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.milestone-info p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.milestone-amount {
+    font-weight: 600;
+    color: var(--accent-primary);
+    font-size: 1.1rem;
+    margin-left: 1rem;
+}
+
+.milestone-checkbox {
+    margin-right: 1rem;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+
+.checkbox-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.payment-total {
+    background: var(--bg-primary);
+    border: 2px solid var(--accent-primary);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.payment-total h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.payment-total .amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-primary);
+}
+
+.payment-methods {
+    margin-top: 2rem;
+}
+
+.payment-method {
+    margin-bottom: 1.5rem;
+}
+
+.payment-method h3 {
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 1.1rem;
+}
+
+.paypal-btn {
+    background-color: #0070ba;
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.paypal-btn:hover {
+    background-color: #005ea6;
+}
+
+.paystack-btn {
+    background-color: #0b9d4a;
+    color: #fff;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.paystack-btn:hover {
+    background-color: #0a8c42;
+}
+
+.paystack-btn:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.loading.active {
+    display: block;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 2rem 0;
+    color: var(--text-secondary);
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.divider span {
+    padding: 0 1rem;
+    font-size: 0.9rem;
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    margin: 15% auto;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    position: relative;
+}
+
+.modal h3 {
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.modal p {
+    margin-bottom: 1.5rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #0b9d4a;
+    box-shadow: 0 0 0 3px rgba(11, 157, 74, 0.1);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-btn-cancel {
+    background: #f8f9fa;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.modal-btn-cancel:hover {
+    background: #e9ecef;
+}
+
+.modal-btn-submit {
+    background: #0b9d4a;
+    color: white;
+}
+
+.modal-btn-submit:hover {
+    background: #0a8c42;
+}
+
+.no-milestones {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+    <div class="payment-header">
+        <h1>Complete Payment</h1>
+        <p>Secure payment options for your ShadowIQ project</p>
+    </div>
+
+    <div class="info-box">
+        <strong>Note:</strong> 
+        {% if milestones %}
+            Payments are held in escrow and released when each milestone is completed and approved.
+        {% else %}
+            Please wait for the admin to create milestones before proceeding with payment.
+        {% endif %}
+    </div>
+
+    <div class="project-summary">
+        <div class="summary-row">
+            <span>Project ID:</span>
+            <span>{{ project.project_id }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Project:</span>
+            <span>{{ project.title }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Total Project Value:</span>
+            <span>${{ project.total_price|floatformat:2 }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Milestones:</span>
+            <span>{{ milestones|length }} total</span>
+        </div>
+    </div>
+
+    {% if milestones %}
+    <div class="milestones-section">
+        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Select Milestones to Pay</h3>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" id="selectAllMilestones" checked>
+            <label for="selectAllMilestones">Pay all unfunded milestones</label>
+        </div>
+
+        {% for milestone in milestones %}
+        <div class="milestone-item" data-milestone-id="{{ milestone.id }}">
+            <div class="milestone-checkbox">
+                <input type="checkbox" class="milestone-checkbox-input" value="{{ milestone.id }}" checked>
+            </div>
+            <div class="milestone-info">
+                <h4>{{ milestone.title }}</h4>
+                <p>{{ milestone.description }}</p>
+                <small>Due: {{ milestone.due_date|date:"M d, Y" }}</small>
+            </div>
+            <div class="milestone-amount">
+                ${{ milestone.amount|floatformat:2 }}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="payment-total">
+            <h3>Total Amount to Pay</h3>
+            <div class="amount" id="totalAmount">${{ total_amount|floatformat:2 }}</div>
+        </div>
+    </div>
+
+    <div class="payment-methods">
+        <!-- PayPal Payment Method -->
+        <div class="payment-method">
+            <h3>Pay with PayPal</h3>
+            <button id="paypalButton" class="paypal-btn">
+                Continue with PayPal
+            </button>
+            <div id="paypalLoading" class="loading">Redirecting to PayPal...</div>
+        </div>
+
+        <div class="divider">
+            <span>Or pay with</span>
+        </div>
+
+        <!-- Paystack Payment Method -->
+        <div class="payment-method">
+            <label for="currencySelect" style="font-weight: 600; margin-bottom: 8px; display: block;">
+                Choose Your Currency
+            </label>
+
+            <select id="currencySelect" class="form-select w-full" 
+                    style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; margin-bottom: 1rem;">
+                <option value="USD">USD – US Dollar</option>
+                <option value="KES">KES – Kenyan Shilling</option>
+                <option value="NGN">NGN – Nigerian Naira</option>
+                <option value="GHS">GHS – Ghana Cedi</option>
+                <option value="ZAR">ZAR – South African Rand</option>
+                <option value="GBP">GBP – British Pound</option>
+                <option value="EUR">EUR – Euro</option>
+            </select>
+
+            <h3>Pay with Paystack</h3>
+            <button id="paystackButton" class="paystack-btn">
+                Continue with Paystack
+            </button>
+            <div id="paystackLoading" class="loading">Preparing payment...</div>
+        </div>
+    </div>
+    {% else %}
+    <div class="no-milestones">
+        <p>No milestones available for payment yet.</p>
+        <p>The project admin will create milestones for this project soon.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Email Collection Modal for Paystack -->
+<div id="emailModal" class="modal">
+    <div class="modal-content">
+        <h3>Email Required for Payment</h3>
+        <p>Please provide your email address to proceed with Paystack payment. This will be used for payment confirmation and receipts.</p>
+        <input type="email" id="clientEmail" class="modal-input" placeholder="your@email.com" required>
+        <div class="modal-actions">
+            <button id="cancelEmail" class="modal-btn modal-btn-cancel">Cancel</button>
+            <button id="submitEmail" class="modal-btn modal-btn-submit">Proceed to Payment</button>
+        </div>
+    </div>
+</div>
+
+{% if milestones %}
+<script>
+console.log("🔄 Milestone Payment page JavaScript STARTED");
+
+let selectedMilestones = {{ milestones_ids|safe }};
+
+// Calculate total amount
+function calculateTotal() {
+    let total = 0;
+    document.querySelectorAll('.milestone-checkbox-input:checked').forEach(checkbox => {
+        const milestoneItem = checkbox.closest('.milestone-item');
+        const amountText = milestoneItem.querySelector('.milestone-amount').textContent;
+        const amount = parseFloat(amountText.replace('$', '').replace(',', ''));
+        total += amount;
+    });
+    document.getElementById('totalAmount').textContent = '$' + total.toFixed(2);
+    return total;
+}
+
+// Select All functionality
+document.getElementById('selectAllMilestones').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.milestone-checkbox-input');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+    calculateTotal();
+});
+
+// Individual checkbox functionality
+document.querySelectorAll('.milestone-checkbox-input').forEach(checkbox => {
+    checkbox.addEventListener('change', calculateTotal);
+});
+
+// PayPal Payment Handler
+document.getElementById('paypalButton').addEventListener('click', async function () {
+    console.log("💰 PayPal button clicked");
+    const button = this;
+    const loading = document.getElementById('paypalLoading');
+    
+    button.disabled = true;
+    loading.classList.add('active');
+
+    try {
+        const selectedMilestoneIds = Array.from(document.querySelectorAll('.milestone-checkbox-input:checked'))
+            .map(checkbox => checkbox.value);
+
+        const payload = {
+            milestone_ids: selectedMilestoneIds,
+            gateway: 'paypal'
+        };
+
+        const response = await fetch(`/project/{{ project.project_id }}/create-milestone-payment/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log("📡 PayPal response status:", response.status);
+        const data = await response.json();
+        console.log("📦 PayPal response data:", data);
+
+        if (data.success && data.approval_url) {
+            console.log("✅ PayPal success, redirecting...");
+            window.location.href = data.approval_url;
+        } else {
+            console.error("❌ PayPal failed:", data.error);
+            alert("Failed to initiate PayPal payment: " + (data.error || "Unknown error."));
+            button.disabled = false;
+            loading.classList.remove('active');
+        }
+    } catch (error) {
+        console.error('💥 PayPal network error:', error);
+        alert("Network error. Please try again.");
+        button.disabled = false;
+        loading.classList.remove('active');
+    }
+});
+
+// Paystack Payment Handler
+document.getElementById('paystackButton').addEventListener('click', function (event) {
+    console.log("🎯 Paystack button clicked");
+    event.preventDefault();
+    
+    const userHasEmail = {% if request.user.email %}true{% else %}false{% endif %};
+    const userCurrentEmail = "{{ request.user.email|default:'' }}";
+    
+    console.log("User email check:", {userHasEmail, userCurrentEmail});
+    
+    if (userHasEmail && userCurrentEmail) {
+        console.log("User has email, proceeding directly");
+        initiatePaystackPayment(userCurrentEmail);
+    } else {
+        console.log("No email found, showing modal");
+        document.getElementById('emailModal').style.display = 'block';
+        document.getElementById('clientEmail').focus();
+    }
+});
+
+// ==========================
+//  EMAIL MODAL HANDLERS
+// ==========================
+document.getElementById('cancelEmail').addEventListener('click', function () {
+    console.log("Cancel email clicked");
+    document.getElementById('emailModal').style.display = 'none';
+    document.getElementById('clientEmail').value = '';
+});
+
+document.getElementById('submitEmail').addEventListener('click', function () {
+    console.log("Submit email clicked");
+    const email = document.getElementById('clientEmail').value.trim();
+    console.log("Email entered:", email);
+    
+    if (validateEmail(email)) {
+        document.getElementById('emailModal').style.display = 'none';
+        initiatePaystackPayment(email);
+    } else {
+        alert('Please enter a valid email address.');
+        document.getElementById('clientEmail').focus();
+    }
+});
+
+// Close modal when clicking outside
+document.getElementById('emailModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        this.style.display = 'none';
+        document.getElementById('clientEmail').value = '';
+    }
+});
+
+// Enter key to submit email
+document.getElementById('clientEmail').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        document.getElementById('submitEmail').click();
+    }
+});
+
+function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+}
+
+// ==========================
+//  PAYSTACK PAYMENT FUNCTION
+// ==========================
+async function initiatePaystackPayment(userEmail) {
+    console.log("🚀 Starting Paystack payment with email:", userEmail);
+    
+    const button = document.getElementById('paystackButton');
+    const loading = document.getElementById('paystackLoading');
+    
+    button.disabled = true;
+    loading.textContent = "Connecting to Paystack...";
+    loading.classList.add('active');
+
+    try {
+        // Get selected currency
+        const selectedCurrency = document.getElementById('currencySelect').value;
+        const selectedMilestoneIds = Array.from(document.querySelectorAll('.milestone-checkbox-input:checked'))
+            .map(checkbox => checkbox.value);
+
+        const payload = {
+            milestone_ids: selectedMilestoneIds,
+            gateway: 'paystack',
+            user_email: userEmail,
+            currency: selectedCurrency
+        };
+
+        console.log("📤 Sending request with payload:", payload);
+
+        const response = await fetch(`/project/{{ project.project_id }}/create-milestone-payment/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+            },
+            body: JSON.stringify(payload)
+        });
+
+        console.log("📡 Response status:", response.status);
+        const data = await response.json();
+        console.log("📦 Response data:", data);
+
+        if (data.success && data.authorization_url) {
+            console.log("✅ Redirecting to Paystack...");
+            loading.textContent = "Redirecting to Paystack...";
+            window.location.href = data.authorization_url;
+        } else {
+            console.error("❌ Paystack failed:", data.error);
+            alert("Paystack: " + (data.error || "Payment failed"));
+            button.disabled = false;
+            loading.classList.remove('active');
+        }
+    } catch (error) {
+        console.error("💥 Network error:", error);
+        alert("Network error. Please check console and try again.");
+        button.disabled = false;
+        loading.classList.remove('active');
+    }
+}
+
+// Initialize total calculation
+calculateTotal();
+console.log("✅ All payment handlers initialized");
+</script>
+{% endif %}
+{% endblock %}

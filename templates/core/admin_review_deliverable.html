@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Review Deliverable - {{ project.project_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Review Deliverable - {{ project.project_id }}</h1>
+        
+        <div class="bg-card rounded-lg border border-border p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Project Information</h2>
+            <p class="mb-2"><strong>Title:</strong> {{ project.title }}</p>
+            <p class="mb-2"><strong>Analyst:</strong> {{ project.assigned_analyst.alias }}</p>
+            <p><strong>Status:</strong> {{ project.get_status_display }}</p>
+        </div>
+        
+        {% if deliverables %}
+        <div class="bg-card rounded-lg border border-border p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Deliverables</h2>
+            
+            <div class="space-y-4">
+                {% for deliverable in deliverables %}
+                <div class="border border-border rounded p-4">
+                    <p class="font-semibold">{{ deliverable.get_deliverable_type_display }}</p>
+                    <p class="text-sm text-muted-foreground">{{ deliverable.filename }}</p>
+                    <p class="text-sm mt-2">{{ deliverable.description }}</p>
+                    <p class="text-xs text-muted-foreground mt-2">Uploaded {{ deliverable.uploaded_at|date:"M d, Y H:i" }}</p>
+                    <a href="{{ deliverable.file.url }}" class="text-blue-600 hover:underline text-sm mt-2 inline-block">Download</a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div class="bg-card rounded-lg border border-border p-6">
+            <h2 class="text-xl font-bold mb-4">Admin Review</h2>
+            
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="flex items-center mb-3">
+                        <input type="radio" name="action" value="approve" class="mr-2" required>
+                        <span>Approve Deliverable</span>
+                    </label>
+                    <label class="flex items-center">
+                        <input type="radio" name="action" value="reject" class="mr-2" required>
+                        <span>Reject Deliverable</span>
+                    </label>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-semibold mb-2">Comments (optional)</label>
+                    <textarea name="reason" placeholder="Enter your feedback..." class="w-full border border-border rounded p-3 text-sm"></textarea>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                    Submit Review
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

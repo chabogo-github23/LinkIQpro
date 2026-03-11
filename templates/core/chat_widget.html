@@ -1,0 +1,827 @@
+<div class="chat-widget" id="chatWidget">
+    <div class="chat-header">
+        <h3>ShadowIQ Chat</h3>
+        <div class="chat-controls">
+            <select id="chatTarget" class="chat-select">
+                {% if request.user.is_admin %}
+                    <!-- Admin can chat with client or analyst -->
+                    <option value="">Select user to chat with...</option>
+                    <option value="{{ project.client.id }}">Client ({{ project.client.alias }})</option>
+                    {% if project.assigned_analyst %}
+                        <option value="{{ project.assigned_analyst.id }}">Analyst ({{ project.assigned_analyst.alias }})</option>
+                    {% endif %}
+                {% else %}
+                    <!-- Client/Analyst can only chat with admin -->
+                    <option value="">Select admin to chat with...</option>
+                    {% for admin in admins %}
+                        <option value="{{ admin.id }}">Admin ({{ admin.alias }})</option>
+                    {% empty %}
+                        <option value="">No admins available</option>
+                    {% endfor %}
+                {% endif %}
+            </select>
+            <button class="chat-close" id="chatClose">×</button>
+        </div>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="message system-message">
+            <div class="message-content">
+                💬 Select a user to start chatting
+            </div>
+        </div>
+    </div>
+    
+    <form class="chat-form" id="chatForm" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="project_id" value="{{ project.project_id }}">
+        <div class="chat-input-group">
+            <label for="fileInput" class="file-upload-btn" title="Attach file">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21.44 11.05l-9.19 9.19a5.5 5.5 0 0 1-7.78-7.78l9.19-9.19a3.5 3.5 0 0 1 4.95 4.95l-9.19 9.19a1.5 1.5 0 0 1-2.12-2.12l8.13-8.13"/>
+                </svg>
+            </label>
+            <input type="file" id="fileInput" name="file" style="display:none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.png,.jpg,.jpeg">
+            
+            <input 
+                type="text" 
+                id="chatInput" 
+                name="message" 
+                placeholder="Select a user to chat with..." 
+                autocomplete="off"
+                disabled
+            >
+            <button type="submit" class="chat-send-btn" disabled>
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </div>
+    </form>
+</div>
+
+<style>
+    .chat-widget {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+        max-width: 400px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-header {
+        background-color: var(--bg-tertiary);
+        border-bottom: 1px solid var(--border-color);
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-header h3 {
+        color: var(--accent-primary);
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .chat-controls {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .chat-select {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.375rem;
+        padding: 0.25rem 0.5rem;
+        color: var(--text-primary);
+        font-size: 0.75rem;
+        cursor: pointer;
+    }
+
+    .chat-select:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+    }
+
+    .chat-close {
+        background: none;
+        border: none;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.25rem;
+    }
+
+    .chat-close:hover {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .message {
+        display: flex;
+        flex-direction: column;
+        max-width: 85%;
+        animation: messageAppear 0.3s ease-out;
+    }
+
+    @keyframes messageAppear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Sent messages (current user) */
+    .message.sent {
+        align-self: flex-end;
+        align-items: flex-end;
+    }
+
+    .message.sent .message-content {
+        background: linear-gradient(135deg, var(--accent-primary), #4f46e5);
+        color: white;
+        border-radius: 1rem 1rem 0.25rem 1rem;
+    }
+
+    .message.sent .message-sender {
+        color: var(--accent-primary);
+        text-align: right;
+    }
+
+    .message.sent .message-time {
+        text-align: right;
+    }
+
+    /* Received messages (other users) */
+    .message.received {
+        align-self: flex-start;
+        align-items: flex-start;
+    }
+
+    .message.received .message-content {
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 1rem 1rem 1rem 0.25rem;
+    }
+
+    .message.received .message-sender {
+        color: var(--text-secondary);
+    }
+
+    /* System messages */
+    .message.system-message {
+        align-self: center;
+        align-items: center;
+        max-width: 90%;
+    }
+
+    .message.system-message .message-content {
+        background-color: var(--bg-tertiary);
+        color: var(--text-secondary);
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-style: italic;
+        text-align: center;
+    }
+
+    .message-sender {
+        font-size: 0.7rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        padding: 0 0.5rem;
+    }
+
+    .message.sent .message-sender {
+        color: var(--accent-primary);
+        text-align: right;
+    }
+
+    .message.received .message-sender {
+        color: var(--text-secondary);
+    }
+        
+
+
+    .message-content {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+        color: var(--text-secondary);
+        text-align: right;
+        opacity: 0.7;
+        margin-top: 4px;
+    }
+
+
+    .message-content a {
+        color: inherit;
+        text-decoration: underline;
+    }
+
+    /* File message styling */
+    .file-message {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.75rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        margin-top: 0.5rem;
+        transition: all 0.2s;
+    }
+
+    .file-message:hover {
+        border-color: var(--accent-primary);
+        background: var(--bg-tertiary);
+    }
+
+    .file-message svg {
+        flex-shrink: 0;
+        color: var(--accent-primary);
+    }
+
+    .file-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .file-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin-bottom: 0.25rem;
+    }
+
+    .file-size {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+    }
+
+    .file-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .file-actions a {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.75rem;
+        color: var(--accent-primary);
+        text-decoration: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.375rem;
+        background: var(--bg-secondary);
+        transition: all 0.2s;
+    }
+
+    .file-actions a:hover {
+        background: var(--accent-primary);
+        color: white;
+        text-decoration: none;
+    }
+
+    .file-actions a svg {
+        width: 14px;
+        height: 14px;
+        color: inherit;
+    }
+
+    .processing {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    /* Sent file messages */
+    .message.sent .file-message {
+        background: rgba(99, 102, 241, 0.1);
+        border-color: rgba(99, 102, 241, 0.2);
+    }
+
+    .message.sent .file-actions a {
+        background: rgba(99, 102, 241, 0.2);
+        color: var(--accent-primary);
+    }
+
+    .message.sent .file-actions a:hover {
+        background: var(--accent-primary);
+        color: white;
+    }
+    .chat-form {
+        border-top: 1px solid var(--border-color);
+        padding: 1rem;
+    }
+
+    .chat-input-group {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .chat-input-group input[type="text"] {
+        flex: 1;
+        padding: 0.75rem;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 2rem;
+        color: var(--text-primary);
+        font-family: inherit;
+        font-size: 0.875rem;
+        transition: border-color 0.2s;
+    }
+
+    .chat-input-group input:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+    }
+
+    .file-upload-btn {
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        color: var(--text-secondary);
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+    }
+
+    .file-upload-btn:hover {
+        color: var(--accent-primary);
+        background-color: var(--bg-primary);
+    }
+
+    .chat-send-btn {
+        padding: 0.75rem;
+        background-color: var(--accent-primary);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chat-send-btn:hover {
+        background-color: var(--accent-secondary);
+        transform: scale(1.05);
+    }
+
+    .chat-send-btn:disabled {
+        background-color: var(--border-color);
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* Scrollbar styling */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: var(--border-color);
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: var(--text-secondary);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        color: var(--text-secondary);
+        font-size: 0.75rem;
+        font-style: italic;
+    }
+
+    .typing-dots {
+        display: flex;
+        gap: 2px;
+    }
+
+    .typing-dot {
+        width: 4px;
+        height: 4px;
+        background-color: var(--text-secondary);
+        border-radius: 50%;
+        animation: typingBounce 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    @keyframes typingBounce {
+        0%, 80%, 100% { transform: scale(0.8); }
+        40% { transform: scale(1.2); }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const fileInput = document.getElementById('fileInput');
+    const chatClose = document.getElementById('chatClose');
+    const chatWidget = document.getElementById('chatWidget');
+    const chatTarget = document.getElementById('chatTarget');
+    const chatSendBtn = document.querySelector('.chat-send-btn');
+    const fileUploadBtn = document.querySelector('.file-upload-btn');
+
+    const projectId = chatForm.querySelector('input[name="project_id"]').value;
+    const csrfToken = chatForm.querySelector('[name="csrfmiddlewaretoken"]').value;
+    
+    // Make sure these values are properly converted to strings for comparison
+    const currentUserId = "{{ request.user.id }}";
+    const currentUserAlias = "{{ request.user.alias }}";
+
+    let currentReceiverId = chatTarget ? chatTarget.value : null;
+    let isLoadingMessages = false;
+    let lastMessageId = null;
+
+    /** Enable/disable chat input based on receiver selection */
+    function toggleChatInput(enabled) {
+        chatInput.disabled = !enabled;
+        chatSendBtn.disabled = !enabled;
+        if (enabled) {
+            chatInput.placeholder = "Type your message...";
+        } else {
+            chatInput.placeholder = "Select a user to chat with...";
+        }
+    }
+
+    /** 🟢 Load messages for the selected recipient - FIXED */
+    async function loadMessages() {
+        if (!currentReceiverId || isLoadingMessages) return;
+        
+        isLoadingMessages = true;
+        
+        try {
+            const response = await fetch(`/project/${projectId}/chat/?receiver_id=${currentReceiverId}`);
+            const data = await response.json();
+            
+            console.log('Chat response:', data); // Debug log
+            
+            if (!data.success) {
+                showSystemMessage('Error loading messages');
+                return;
+            }
+            
+            // Clear only if we have messages
+            if (data.messages && data.messages.length > 0) {
+                chatMessages.innerHTML = '';
+                data.messages.forEach(msg => {
+                    // Convert IDs to strings for comparison
+                    const senderIdStr = msg.sender_id ? msg.sender_id.toString() : null;
+                    const isSent = senderIdStr === currentUserId.toString();
+                    
+                    addMessageToChat(
+                        msg.sender || 'Unknown',
+                        msg.content || '',
+                        msg.created_at,
+                        isSent ? 'sent' : 'received',
+                        msg.message_type || 'text',
+                        msg.file_url || null,
+                        msg.filename || null
+                    );
+                    
+                    // Track the latest message ID
+                    if (msg.id && (!lastMessageId || msg.id > lastMessageId)) {
+                        lastMessageId = msg.id;
+                    }
+                });
+            } else {
+                showSystemMessage('💬 No messages yet. Start the conversation!');
+            }
+            
+            scrollToBottom();
+        } catch (error) {
+            console.error('Error loading messages:', error);
+            showSystemMessage('⚠️ Error loading messages');
+        } finally {
+            isLoadingMessages = false;
+        }
+    }
+
+    /** 🟢 Add message to chat UI - IMPROVED */
+    function addMessageToChat(sender, content, timestamp, type = 'received', messageType = 'text', fileUrl = null, filename = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}`;
+        
+        const time = new Date(timestamp).toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true 
+        });
+        
+        let messageContent = '';
+        
+        console.log('Adding message:', { messageType, filename, fileUrl, content }); // Debug
+        
+        if (messageType === 'file' && filename) {
+            if (fileUrl) {
+                // File has URL - create download links
+                messageContent = `
+                    ${content ? `<div style="margin-bottom: 0.5rem;">${content}</div>` : ''}
+                    <div class="file-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="file-info">
+                            <div class="file-name">${filename}</div>
+                            <div class="file-actions">
+                                <a href="${fileUrl}" download="${filename}" class="download-btn" target="_blank">
+                                    Download
+                                </a>
+                                <a href="${fileUrl}" target="_blank" class="view-btn">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // No file URL - show processing
+                messageContent = `
+                    ${content ? `<div style="margin-bottom: 0.5rem;">${content}</div>` : ''}
+                    <div class="file-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="file-info">
+                            <div class="file-name">${filename}</div>
+                            <div class="file-status">Processing...</div>
+                        </div>
+                    </div>
+                `;
+            }
+        } else if (messageType === 'mixed' && filename) {
+            // Mixed message (text + file)
+            if (fileUrl) {
+                messageContent = `
+                    <div style="margin-bottom: 0.5rem;">${content}</div>
+                    <div class="file-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="file-info">
+                            <div class="file-name">${filename}</div>
+                            <div class="file-actions">
+                                <a href="${fileUrl}" download="${filename}" class="download-btn" target="_blank">
+                                    Download
+                                </a>
+                                <a href="${fileUrl}" target="_blank" class="view-btn">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageContent = `
+                    <div style="margin-bottom: 0.5rem;">${content}</div>
+                    <div class="file-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        <div class="file-info">
+                            <div class="file-name">${filename}</div>
+                            <div class="file-status">Processing...</div>
+                        </div>
+                    </div>
+                `;
+            }
+        } else {
+            // Regular text message
+            messageContent = content || '';
+        }
+
+        messageDiv.innerHTML = `
+            <div class="message-content">${messageContent}</div>
+            <div class="message-time">${time}</div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        scrollToBottom();
+    }
+
+    /** Show system message */
+    function showSystemMessage(text) {
+        chatMessages.innerHTML = `
+            <div class="message system-message">
+                <div class="message-content">${text}</div>
+            </div>`;
+    }
+
+    /** 🟢 Scroll chat to bottom */
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 100);
+    }
+
+    /** 🟢 Send text or file message - FIXED */
+    async function sendMessage(file = null) {
+        if (!currentReceiverId) {
+            alert('Please select a user to chat with');
+            return;
+        }
+
+        const message = chatInput.value.trim();
+        if (!message && !file) return;
+
+        const formData = new FormData();
+        formData.append('receiver_id', currentReceiverId);
+        formData.append('project_id', projectId);
+        
+        if (file) {
+            formData.append('file', file);
+            if (message) {
+                formData.append('message', message);
+            }
+        } else {
+            formData.append('message', message);
+        }
+
+        // Show optimistic message
+        if (file) {
+            const messageType = message ? 'mixed' : 'file';
+            addMessageToChat(
+                currentUserAlias,
+                message || '',
+                new Date().toISOString(),
+                'sent',
+                messageType,
+                null,
+                file.name
+            );
+        } else {
+            addMessageToChat(
+                currentUserAlias,
+                message,
+                new Date().toISOString(),
+                'sent',
+                'text'
+            );
+        }
+        
+        // Clear input
+        if (!file) chatInput.value = '';
+        scrollToBottom();
+
+        try {
+            const response = await fetch(`/project/${projectId}/chat/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log('Send response:', data); // Debug
+            
+            if (data.success) {
+                // Reload messages to get the actual message from server
+                await loadMessages();
+            } else {
+                console.error('Send failed:', data.error);
+                // Show error message
+                addMessageToChat(
+                    'System',
+                    'Failed to send message: ' + (data.error || 'Unknown error'),
+                    new Date().toISOString(),
+                    'system',
+                    'text'
+                );
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            addMessageToChat(
+                'System',
+                'Network error while sending message',
+                new Date().toISOString(),
+                'system',
+                'text'
+            );
+        }
+    }
+
+    /** 🟢 Event listeners - FIXED */
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (!currentReceiverId) {
+            alert('Please select a user to chat with');
+            return;
+        }
+        
+        if (chatInput.value.trim()) {
+            sendMessage();
+        }
+        return false;
+    });
+
+    if (fileUploadBtn) {
+        fileUploadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            fileInput.click();
+        });
+    }
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            sendMessage(this.files[0]);
+            this.value = '';
+        }
+    });
+
+    if (chatTarget) {
+        chatTarget.addEventListener('change', function() {
+            currentReceiverId = this.value;
+            toggleChatInput(!!currentReceiverId);
+            if (currentReceiverId) {
+                loadMessages();
+            } else {
+                showSystemMessage('💬 Select a user to start chatting');
+            }
+        });
+    }
+
+    if (chatClose) {
+        chatClose.addEventListener('click', () => {
+            chatWidget.style.display = 'none';
+        });
+    }
+
+    // Enable form submission on Enter key
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+
+    /** Initial setup */
+    toggleChatInput(!!currentReceiverId);
+    if (currentReceiverId) {
+        loadMessages();
+    }
+});
+</script>

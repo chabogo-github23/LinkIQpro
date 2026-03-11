@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Check Your Email - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .confirmation-container {
+        max-width: 500px;
+        margin: 4rem auto;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .confirmation-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .confirmation-container h1 {
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+    }
+
+    .confirmation-container p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.6;
+    }
+
+    .email-highlight {
+        background-color: var(--bg-tertiary);
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        margin: 1rem 0;
+        font-weight: 600;
+        color: var(--accent-primary);
+    }
+
+    .resend-link {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .resend-link a {
+        color: var(--accent-primary);
+        text-decoration: none;
+    }
+
+    .resend-link a:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="confirmation-container">
+    <div class="confirmation-icon">✉️</div>
+    <h1>Check Your Email</h1>
+    <p>We've sent a magic link to:</p>
+    <div class="email-highlight">{{ email }}</div>
+    <p>Click the link in the email to access your ShadowIQ account. The link expires in 24 hours.</p>
+    <p style="font-size: 0.875rem; margin-top: 2rem;">
+        Didn't receive the email? Check your spam folder or <a href="{% url 'core:login' %}" style="color: var(--accent-primary);">try again</a>.
+    </p>
+</div>
+{% endblock %}

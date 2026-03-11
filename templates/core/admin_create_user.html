@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Create New User - Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header h1 {
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .back-link {
+        color: var(--text-secondary);
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .back-link:hover {
+        color: var(--accent-primary);
+    }
+
+    .form-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        max-width: 600px;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 2px rgba(0, 217, 255, 0.1);
+    }
+
+    .form-group small {
+        display: block;
+        margin-top: 0.25rem;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+    }
+
+    .alert {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .alert-danger {
+        background: rgba(255, 107, 107, 0.2);
+        color: #ff6b6b;
+        border: 1px solid rgba(255, 107, 107, 0.3);
+    }
+
+    .alert-danger ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn-cancel {
+        background: var(--bg-primary);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .btn-cancel:hover {
+        border-color: var(--text-secondary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <a href="{% url 'core:admin_user_management' %}" class="back-link">
+        &larr; Back to User Management
+    </a>
+
+    <div class="page-header">
+        <h1>Create New User</h1>
+        <p style="color: var(--text-secondary);">Add a new user to the system</p>
+    </div>
+
+    <div class="form-card">
+        {% if errors %}
+        <div class="alert alert-danger">
+            <ul>
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="alias">Alias / Pseudonym *</label>
+                <input type="text" id="alias" name="alias" required
+                       placeholder="Enter unique alias"
+                       value="{{ alias|default:'' }}"
+                       minlength="3">
+                <small>At least 3 characters. This will be the user's identity.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required
+                       placeholder="user@email.com"
+                       value="{{ email|default:'' }}">
+                <small>Will be securely hashed for privacy.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role *</label>
+                <select id="role" name="role" required>
+                    <option value="client" {% if role == 'client' %}selected{% endif %}>Client</option>
+                    <option value="analyst" {% if role == 'analyst' %}selected{% endif %}>Analyst</option>
+                    <option value="admin" {% if role == 'admin' %}selected{% endif %}>Admin</option>
+                </select>
+                <small>Select the user's role in the system.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password *</label>
+                <input type="password" id="password" name="password" required
+                       placeholder="Enter secure password"
+                       minlength="6">
+                <small>At least 6 characters.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password *</label>
+                <input type="password" id="confirm_password" name="confirm_password" required
+                       placeholder="Repeat password"
+                       minlength="6">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Create User</button>
+                <a href="{% url 'core:admin_user_management' %}" class="btn btn-cancel">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

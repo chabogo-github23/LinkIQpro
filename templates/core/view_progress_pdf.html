@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+{% block title %}Progress Update - {{ progress.project.project_id }}{% endblock %}
+
+{% block extra_css %}
+<style>
+.pdf-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    overflow-y: auto;
+    height: 90vh;
+    background: radial-gradient(circle at bottom left, #0a0a0a 60%, #121212 100%);
+}
+
+/* Header */
+.pdf-header {
+    color: var(--accent-primary);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* PDF Page */
+.pdf-page {
+    position: relative;
+    margin-bottom: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.5);
+    background: #fff;
+    pointer-events: none;
+    user-select: none;
+    transform: scale(0.9);
+    transform-origin: top center;
+}
+
+/* Watermark Overlay */
+.watermark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 0, 0, 0.05) 0px,
+        rgba(255, 0, 0, 0.05) 1px,
+        transparent 1px,
+        transparent 60px
+    );
+    z-index: 2;
+}
+
+.watermark-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 3rem;
+    color: rgba(255, 0, 0, 0.15);
+    font-weight: 700;
+    pointer-events: none;
+    user-select: none;
+    z-index: 3;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+}
+
+/* Disable copy/screenshot */
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+.noscreenshot {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+}
+
+/* Bubble animation */
+.bubble {
+    position: fixed;
+    bottom: -60px;
+    border-radius: 50%;
+    opacity: 0.75;
+    pointer-events: auto;
+    z-index: 1;
+    animation: floatBubble 14s ease-in-out infinite;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.bubble:hover {
+    opacity: 0;
+    transform: scale(0.7);
+}
+
+/* Curved floating path */
+@keyframes floatBubble {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translate(40px, -30vh) scale(1.1);
+    }
+    50% {
+        transform: translate(-30px, -60vh) scale(1.15);
+    }
+    75% {
+        transform: translate(50px, -90vh) scale(1.2);
+    }
+    100% {
+        transform: translate(-20px, -130vh) scale(1.25);
+        opacity: 0;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pdf-container noscreenshot">
+    <div class="pdf-header">Progress Update - {{ progress.project.project_id }}</div>
+    <div id="pdf-pages"></div>
+</div>
+
+<!-- PDF.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<script>
+// Prevent right-click and screenshots
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+    if (e.key === 'PrintScreen' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+        e.preventDefault();
+        alert('Screenshot and inspection are disabled on this page.');
+    }
+});
+
+// Load PDF
+const url = "{{ progress.file.url }}";
+const container = document.getElementById('pdf-pages');
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js";
+
+pdfjsLib.getDocument(url).promise.then(pdf => {
+    const total = pdf.numPages;
+    for (let i = 1; i <= total; i++) {
+        pdf.getPage(i).then(page => {
+            const viewport = page.getViewport({ scale: 0.9 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.classList.add('pdf-page');
+
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = { canvasContext: context, viewport: viewport };
+            page.render(renderContext);
+
+            const wm = document.createElement('div');
+            wm.classList.add('watermark');
+
+            const text = document.createElement('div');
+            text.classList.add('watermark-text');
+            text.innerText = "ShadowIQ Confidential";
+
+            const wrapper = document.createElement('div');
+            wrapper.style.position = "relative";
+            wrapper.appendChild(canvas);
+            wrapper.appendChild(wm);
+            wrapper.appendChild(text);
+
+            container.appendChild(wrapper);
+        });
+    }
+}).catch(err => {
+    console.error("Error rendering PDF:", err);
+    container.innerHTML = "<p style='color: red;'>Unable to display PDF progress file.</p>";
+});
+
+// 🎈 Enhanced Bubble Generator
+const colors = ['#ff4d4d', '#4dd0e1', '#ffcc00', '#9575cd', '#81c784', '#ff80ab', '#64b5f6', '#f06292'];
+
+function createBubble() {
+    const bubble = document.createElement('div');
+    const size = Math.random() * 80 + 30; // Bigger range
+    bubble.classList.add('bubble');
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+    bubble.style.left = `${Math.random() * 100}%`;
+    bubble.style.background = colors[Math.floor(Math.random() * colors.length)];
+    bubble.style.animationDuration = `${Math.random() * 10 + 8}s`;
+    bubble.style.filter = `blur(${Math.random() * 2}px)`;
+    document.body.appendChild(bubble);
+
+    setTimeout(() => bubble.remove(), 16000);
+}
+
+// Generate more bubbles, faster
+setInterval(createBubble, 350); // more frequent
+for (let i = 0; i < 15; i++) createBubble(); // initial burst
+</script>
+{% endblock %}

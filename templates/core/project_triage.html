@@ -1,0 +1,1000 @@
+{% extends "base.html" %}
+
+{% block title %}Project Triage - {{ project.project_id }} - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .triage-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+        margin: 2rem 0;
+    }
+
+    .triage-main {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .triage-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .section {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+    }
+
+    .section h2 {
+        color: var(--accent-primary);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .section h3 {
+        color: var(--text-primary);
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+    }
+
+    .milestone-item {
+        background: var(--bg-primary);
+        border-left: 4px solid var(--border-color);
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .milestone-item:hover {
+        border-left-color: var(--accent-primary);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .milestone-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .milestone-title {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        flex: 1;
+    }
+
+    .milestone-title h4 {
+        margin: 0;
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    .milestone-desc {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .milestone-price {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.25rem;
+    }
+
+    .milestone-price strong {
+        font-size: 1.1rem;
+        color: var(--accent-primary);
+    }
+
+    .milestone-due {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .milestone-status-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr auto;
+        gap: 1rem;
+        align-items: center;
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-badge.pending {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+    }
+
+    .status-badge.in_progress {
+        background-color: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+    }
+
+    .status-badge.completed {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+
+    .status-badge.approved {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .payment-badge {
+        display: inline-block;
+        padding: 0.4rem 0.8rem;
+        border-radius: 0.375rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .payment-badge.unfunded {
+        background-color: rgba(107, 114, 128, 0.2);
+        color: #6b7280;
+    }
+
+    .payment-badge.processing {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+
+    .payment-badge.funded {
+        background-color: rgba(14, 165, 233, 0.2);
+        color: #0ea5e9;
+    }
+
+    .payment-badge.released {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .milestone-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        border: none;
+        border-radius: 0.4rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+        background-color: var(--accent-primary);
+        color: var(--bg-primary);
+    }
+
+    .btn-primary:hover {
+        opacity: 0.9;
+    }
+
+    .btn-success {
+        background-color: #10b981;
+        color: white;
+    }
+
+    .btn-success:hover {
+        opacity: 0.9;
+    }
+
+    .payment-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+        background: var(--bg-secondary);
+        border-radius: 0.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .summary-item {
+        text-align: center;
+    }
+
+    .summary-label {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.25rem;
+    }
+
+    .summary-value {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 1.1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.875rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        padding: 0.75rem;
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        background-color: var(--bg-primary);
+        color: var(--text-primary);
+        font-size: 0.9rem;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+    }
+
+    .action-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .inline-form {
+        display: inline;
+    }
+
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1.5rem;
+    }
+
+    .project-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+
+    .project-id {
+        color: var(--accent-primary);
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-submitted { background-color: rgba(245,158,11,0.2); color: #f59e0b; }
+    .status-accepted { background-color: rgba(59,130,246,0.2); color: #3b82f6; }
+    .status-in_progress { background-color: rgba(139,92,246,0.2); color: #8b5cf6; }
+    .status-qa { background-color: rgba(34,197,94,0.2); color: #22c55e; }
+    .status-completed { background-color: rgba(16,185,129,0.2); color: #10b981; }
+    .status-rejected { background-color: rgba(239,68,68,0.2); color: #ef4444; }
+    .status-disputed { background-color: rgba(168,85,247,0.2); color: #a855f7; }
+
+    .meta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+    }
+
+    .meta-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .meta-label {
+        font-weight: 600;
+        color: var(--text-secondary);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .description {
+        color: var(--text-secondary);
+        line-height: 1.6;
+        padding: 1rem;
+        background-color: var(--bg-primary);
+        border-radius: 0.5rem;
+        border-left: 3px solid var(--accent-primary);
+    }
+
+    .milestone-timeline {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+        margin-top: 0.5rem;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .attachment-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .attachment-icon {
+        font-size: 2rem;
+        color: var(--accent-primary);
+    }
+
+    .attachment-info {
+        flex: 1;
+    }
+
+    .attachment-name {
+        color: var(--text-primary);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    .attachment-meta {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+    }
+
+    .attachment-download {
+        padding: 0.5rem 1rem;
+        background-color: var(--accent-primary);
+        color: var(--bg-primary);
+        border-radius: 0.375rem;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.875rem;
+        transition: background-color 0.2s;
+    }
+
+    .attachment-download:hover {
+        background-color: var(--accent-secondary);
+    }
+
+    @media (max-width: 1024px) {
+        .triage-container {
+            grid-template-columns: 1fr;
+        }
+
+        .milestone-status-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .payment-summary-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .milestone-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .milestone-price {
+            align-items: flex-start;
+        }
+
+        .milestone-status-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .payment-summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<div class="messages">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+<a href="{% url 'core:admin_dashboard' %}" class="back-link">
+    ← Back to Admin Dashboard
+</a>
+<div class="triage-container">
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Project Overview -->
+        <div class="section">
+            <div class="project-header">
+                <div>
+                    <div class="project-id">{{ project.project_id }}</div>
+                    <div class="project-title">{{ project.title }}</div>
+                </div>
+                <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+            </div>
+
+            <div class="meta-grid">
+                <div class="meta-item">
+                    <span class="meta-label">Client:</span>
+                    <span class="meta-value">{{ project.client.alias }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Status:</span>
+                    <span class="meta-value">{{ project.get_status_display }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Stage:</span>
+                    <span class="meta-value">{{ project.get_stage_display }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Type:</span>
+                    <span class="meta-value">{{ project.get_support_type_display }}</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Research Area:</span>
+                    <span class="meta-value">{{ project.research_area }}</span>
+                </div>
+                {% if project.sample_size %}
+                <div class="meta-item">
+                    <span class="meta-label">Sample Size:</span>
+                    <span class="meta-value">{{ project.sample_size }}</span>
+                </div>
+                {% endif %}
+                <!-- Display deadline range instead of date -->
+                {% if project.deadline_range %}
+                <div class="meta-item">
+                    <span class="meta-label">Expected Timeline:</span>
+                    <span class="meta-value">{{ project.get_deadline_range_display }}</span>
+                </div>
+                {% elif project.deadline %}
+                <div class="meta-item">
+                    <span class="meta-label">Deadline:</span>
+                    <span class="meta-value">{{ project.deadline|date:"M d, Y" }}</span>
+                </div>
+                {% endif %}
+                <!-- Display budget range -->
+                {% if project.budget_range %}
+                <div class="meta-item">
+                    <span class="meta-label">Budget Range:</span>
+                    <span class="meta-value">{{ project.get_budget_range_display }}</span>
+                </div>
+                {% endif %}
+                {% if project.agreed_price %}
+                <div class="meta-item">
+                    <span class="meta-label">Agreed Price:</span>
+                    <span class="meta-value">${{ project.agreed_price }}</span>
+                </div>
+                {% endif %}
+                <div class="meta-item">
+                    <span class="meta-label">Submitted:</span>
+                    <span class="meta-value">{{ project.created_at|date:"M d, Y H:i" }}</span>
+                </div>
+                {% if project.assigned_analyst %}
+                <div class="meta-item">
+                    <span class="meta-label">Assigned Analyst:</span>
+                    <span class="meta-value">{{ project.assigned_analyst.alias }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <h3 style="margin-top: 1.5rem;">Description</h3>
+            <div class="description">{{ project.description|linebreaks }}</div>
+            
+            <!-- Display attachment if exists -->
+            {% if project.attachment %}
+            <div class="attachment-card">
+                <span class="attachment-icon">📎</span>
+                <div class="attachment-info">
+                    <div class="attachment-name">{{ project.attachment_filename|default:"Attached Document" }}</div>
+                    <div class="attachment-meta">Client uploaded supporting document</div>
+                </div>
+                <a href="{{ project.attachment.url }}" class="attachment-download" target="_blank" download>
+                    Download
+                </a>
+            </div>
+            {% endif %}
+
+            {% if project.preferred_methods %}
+            <h3 style="margin-top: 1.5rem;">Preferred Methods</h3>
+            <div class="description">{{ project.preferred_methods|linebreaks }}</div>
+            {% endif %}
+        </div>
+
+        <!-- Milestones Section -->
+        <div class="section">
+            <h2>🎯 Milestone Management</h2>
+
+            <!-- Create Milestone Form -->
+            {% if project.status in 'accepted,in_progress' %}
+            <div style="margin-bottom: 2rem; padding: 1.5rem; background: var(--bg-primary); border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                <h3 style="margin-top: 0;">Create New Milestone</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0.5rem 0 1rem 0;">
+                    <strong>Note:</strong> Milestone amounts should sum to the total project price of <strong style="color: var(--accent-primary);">${{ project.total_price|floatformat:2 }}</strong>
+                </p>
+                
+                <form method="post" action="{% url 'core:create_milestone' project.project_id %}" class="action-form">
+                    {% csrf_token %}
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="milestone_title">Title</label>
+                            <input type="text" name="title" id="milestone_title" required placeholder="e.g., Data Analysis Phase 1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="milestone_amount">Amount ($)</label>
+                            <input type="number" name="amount" id="milestone_amount" step="0.01" min="0.01" required placeholder="0.00">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="milestone_description">Description</label>
+                        <textarea name="description" id="milestone_description" required placeholder="Detailed description of what this milestone delivers" style="min-height: 80px;"></textarea>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="milestone_due_date">Due Date</label>
+                            <input type="date" name="due_date" id="milestone_due_date" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="milestone_instructions">Delivery Instructions (Optional)</label>
+                            <textarea name="delivery_instructions" id="milestone_instructions" placeholder="Specific instructions for the analyst"></textarea>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary" style="align-self: flex-start;">+ Create Milestone</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <!-- Existing Milestones List -->
+            <h3 style="margin-bottom: 1rem;">Project Milestones</h3>
+            
+            {% if milestones %}
+                <div class="milestones-list">
+                    {% for milestone in milestones %}
+                    <div class="milestone-item">
+                        <!-- Milestone Header with Title and Price -->
+                        <div class="milestone-header">
+                            <div class="milestone-title">
+                                <h4>{{ milestone.title }}</h4>
+                                <p class="milestone-desc">{{ milestone.description }}</p>
+                            </div>
+                            <div class="milestone-price">
+                                <strong>${{ milestone.amount|floatformat:2 }}</strong>
+                                <span class="milestone-due">Due: {{ milestone.due_date|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Status Grid -->
+                        <div class="milestone-status-grid">
+                            <!-- Work Status -->
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-secondary); font-size: 0.75rem;">Work Status</div>
+                                <form method="post" class="inline-form" style="display: inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="update_milestone_status">
+                                    <input type="hidden" name="milestone_id" value="{{ milestone.id }}">
+                                    <select name="status" onchange="this.form.submit()" style="padding: 0.35rem; font-size: 0.8rem; border: 1px solid var(--border-color); border-radius: 0.375rem; background: var(--bg-secondary);">
+                                        {% for value, label in milestone_status_choices %}
+                                            <option value="{{ value }}" {% if milestone.status == value %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    {% comment %}
+                                        <button type="submit" class="btn btn-primary mt-2">Update</button>
+                                    {% endcomment %}
+                                </form>
+                            </div>
+                            <!-- Payment Status -->
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-secondary); font-size: 0.75rem;">Payment Status</div>
+                                <span class="payment-badge {% if milestone.payment_status == 'funded' %}funded{% elif milestone.payment_status == 'released' %}released{% elif milestone.payment_status == 'processing' %}processing{% else %}unfunded{% endif %}">
+                                    {{ milestone.get_payment_status_display }}
+                                </span>
+                            </div>
+
+                            <!-- Payment Gateway -->
+                            <div>
+                                <div style="font-weight: 600; margin-bottom: 0.25rem; color: var(--text-secondary); font-size: 0.75rem;">Gateway</div>
+                                <span style="font-size: 0.85rem; color: var(--text-secondary);">
+                                    {{ milestone.gateway_used|default:"—"|title }}
+                                </span>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="milestone-actions">
+                                {% if milestone.is_releasable %}
+                                <form method="post" class="inline-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="release_milestone_payment">
+                                    <input type="hidden" name="milestone_id" value="{{ milestone.id }}">
+                                    <button type="submit" class="btn-sm btn-success" 
+                                            onclick="return confirm('Release ${{ milestone.amount|floatformat:2 }} for {{ milestone.title }}?')">
+                                        Release
+                                    </button>
+                                </form>
+                                {% endif %}
+
+                                {% if milestone.status == 'completed' and milestone.payment_status == 'funded' %}
+                                <form method="post" class="inline-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="approve_milestone">
+                                    <input type="hidden" name="milestone_id" value="{{ milestone.id }}">
+                                    <button type="submit" class="btn-sm btn-primary">
+                                        Approve
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div class="milestone-timeline">
+                            {% if milestone.funded_at %}
+                                <span>✓ Funded: {{ milestone.funded_at|date:"M d, Y H:i" }}</span>
+                            {% endif %}
+                            {% if milestone.released_at %}
+                                <span style="margin-left: 1rem;">✓ Released: {{ milestone.released_at|date:"M d, Y H:i" }}</span>
+                            {% endif %}
+                            {% if not milestone.funded_at %}
+                                <span>⏳ Awaiting Payment</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Project Payment Summary -->
+                <div class="payment-summary-grid">
+                    <div class="summary-item">
+                        <div class="summary-label">Total Value</div>
+                        <div class="summary-value">${{ project.total_price|floatformat:2 }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Paid Amount</div>
+                        <div class="summary-value" style="color: var(--success-color);">${{ project.paid_amount|floatformat:2 }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Released Amount</div>
+                        <div class="summary-value" style="color: var(--accent-primary);">${{ project.released_amount|floatformat:2 }}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Progress</div>
+                        <div class="summary-value">{{ project.progress_percentage }}%</div>
+                    </div>
+                </div>
+            {% else %}
+                <div style="text-align: center; padding: 2rem; color: var(--text-secondary); background: var(--bg-primary); border-radius: 0.5rem;">
+                    <p>No milestones created yet.</p>
+                    {% if request.user.is_admin %}
+                        <p>Use the form above to create the first milestone.</p>
+                    {% else %}
+                        <p>The admin will create milestones soon.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Client Deliverables -->
+        <div class="section">
+            <h2>📦 Client Deliverables</h2>
+
+            {% if deliverables %}
+                <div style="overflow-x: auto;">
+                    <table class="table table-striped" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid var(--border-color);">
+                                <th style="text-align: left; padding: 0.75rem; color: var(--text-secondary);">Type</th>
+                                <th style="text-align: left; padding: 0.75rem; color: var(--text-secondary);">Filename</th>
+                                <th style="text-align: left; padding: 0.75rem; color: var(--text-secondary);">Uploaded By</th>
+                                <th style="text-align: left; padding: 0.75rem; color: var(--text-secondary);">Date</th>
+                                <th style="text-align: center; padding: 0.75rem; color: var(--text-secondary);">Download</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for deliverable in deliverables %}
+                                <tr style="border-bottom: 1px solid var(--border-color);">
+                                    <td style="padding: 0.75rem;">{{ deliverable.get_deliverable_type_display }}</td>
+                                    <td style="padding: 0.75rem;">{{ deliverable.filename }}</td>
+                                    <td style="padding: 0.75rem;">{{ deliverable.uploaded_by.alias }}</td>
+                                    <td style="padding: 0.75rem;">{{ deliverable.uploaded_at|date:"Y-m-d" }}</td>
+                                    <td style="text-align: center; padding: 0.75rem;">
+                                        <a href="{{ deliverable.file.url }}" class="btn-sm btn-primary" download>
+                                            Download
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p style="color: var(--text-secondary);">No deliverables have been submitted yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Communication -->
+        <div class="section">
+            <h2>💬 Communication</h2>
+            {% include "core/chat_widget.html" %}
+        </div>
+
+    </div>
+
+    <!-- Sidebar -->
+    <div class="triage-sidebar">
+        <!-- Status Management -->
+        <div class="section">
+            <h2>Manage Project</h2>
+            <form method="post" class="action-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="status">Update Status</label>
+                    <select name="status" id="status">
+                        {% for value, label in status_choices %}
+                            <option value="{{ value }}" {% if project.status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input type="hidden" name="action" value="update_status">
+                <button type="submit" class="btn btn-primary">Update Status</button>
+            </form>
+        </div>
+
+        <!-- Assign Analyst -->
+        <div class="section">
+            <h2>Assign Analyst</h2>
+            <form method="post" class="action-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="analyst_id">Select Analyst</label>
+                    <select name="analyst_id" id="analyst_id">
+                        <option value="">-- Select --</option>
+                        {% for analyst in analysts %}
+                            <option value="{{ analyst.id }}" {% if project.assigned_analyst.id == analyst.id %}selected{% endif %}>{{ analyst.alias }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <input type="hidden" name="action" value="assign">
+                <button type="submit" class="btn btn-primary">Assign</button>
+            </form>
+        </div>
+
+        <!-- Set Total Project Price -->
+        <div class="section">
+            <h2>💰 Set Project Price</h2>
+            <form method="post" class="action-form">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="total_price">Total Project Price ($)</label>
+                    <input type="number" name="total_price" id="total_price" step="0.01" value="{{ project.total_price|default:'' }}" placeholder="0.00" required>
+                    <small style="color: var(--text-secondary); margin-top: 0.25rem;">
+                        This is the total price for the entire project. Create milestones that sum to this amount.
+                    </small>
+                </div>
+                <input type="hidden" name="action" value="set_total_price">
+                <button type="submit" class="btn btn-primary">Set Price</button>
+            </form>
+        </div>
+
+        <!-- Quick Actions -->
+        {% if project.status == 'submitted' %}
+            <div class="section">
+                <h2>Quick Actions</h2>
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <form method="post" style="flex: 1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="accept">
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Accept Project</button>
+                    </form>
+                    <form method="post" style="flex: 1;">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="btn btn-secondary" style="width: 100%;">Reject Project</button>
+                    </form>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Activity Log -->
+        {% if audit_logs %}
+        <div class="section">
+            <h2>Activity Log</h2>
+            <div style="font-size: 0.875rem; max-height: 300px; overflow-y: auto;">
+                {% for log in audit_logs %}
+                    <div style="padding: 0.5rem 0; border-bottom: 1px solid var(--border-color); color: var(--text-secondary);">
+                        <strong>{{ log.get_action_display }}</strong>
+                        <div style="font-size: 0.75rem;">{{ log.created_at|date:"M d, Y H:i" }}</div>
+                    </div>
+                {% empty %}
+                    <p style="color: var(--text-secondary);">No activity yet</p>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        <!-- Add this section after the Activity Log section -->
+        <!-- Add this section after the Activity Log section -->
+        <div class="section">
+            <h2>📊 Progress Reports</h2>
+            
+            <!-- Upload Progress Form -->
+            <form method="post" action="{% url 'core:admin_upload_progress' project_id=project.project_id %}" 
+                enctype="multipart/form-data" 
+                style="margin-bottom: 1rem;">
+                {% csrf_token %}
+                <div class="form-group" style="margin-bottom: 0.75rem;">
+                    <label for="progress_file" style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.25rem; display: block;">
+                        Upload Progress PDF
+                    </label>
+                    <input type="file" 
+                        name="progress_file" 
+                        id="progress_file" 
+                        accept=".pdf" 
+                        required
+                        style="width: 100%; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0.375rem; background: var(--bg-primary); color: var(--text-primary); font-size: 0.875rem;">
+                    <small style="display: block; font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                        Only PDF files allowed
+                    </small>
+                </div>
+                <button type="submit" 
+                        class="btn btn-primary" 
+                        style="width: 100%; padding: 0.5rem; font-size: 0.875rem;">
+                    📤 Upload Progress Report
+                </button>
+            </form>
+            
+            <!-- Recent Progress Reports -->
+            <div style="max-height: 300px; overflow-y: auto;">
+                {% if project.progress_reports.all %}
+                    {% for progress in project.progress_reports.all|slice:":5" %}
+                    <div style="padding: 0.75rem; margin-bottom: 0.5rem; background: var(--bg-primary); border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                        <div style="display: flex; justify-content: space-between; align-items: start;">
+                            <div>
+                                <div style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">
+                                    <i class="fas fa-file-pdf" style="color: #e74c3c; margin-right: 0.5rem;"></i>
+                                    {% if progress.filename %}
+                                        {{ progress.filename|truncatechars:30 }}
+                                    {% else %}
+                                        Report #{{ forloop.revcounter }}
+                                    {% endif %}
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                    {{ progress.uploaded_at|date:"M d, Y H:i" }}
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: 0.25rem;">
+                                <a href="{{ progress.file.url }}" 
+                                target="_blank"
+                                class="btn btn-sm btn-outline-primary"
+                                style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                    View
+                                </a>
+                                <a href="{{ progress.file.url }}" 
+                                download
+                                class="btn btn-sm btn-outline-secondary"
+                                style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                    ↓
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                            Size: {{ progress.file.size|filesizeformat }}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    
+                    <!-- View All Link (if more than 5) -->
+                    {% if project.progress_reports.count > 5 %}
+                    <div style="text-align: center; margin-top: 0.5rem;">
+                        <a href="#" 
+                        onclick="alert('All {{ project.progress_reports.count }} reports are shown below. Scroll to see more.'); return false;"
+                        style="font-size: 0.8rem; color: var(--accent-primary); text-decoration: none;">
+                            View all {{ project.progress_reports.count }} reports
+                        </a>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div style="text-align: center; padding: 1rem; color: var(--text-secondary);">
+                        <i class="fas fa-file-pdf" style="font-size: 1.5rem; margin-bottom: 0.5rem; display: block; color: var(--border-color);"></i>
+                        <p style="font-size: 0.875rem; margin-bottom: 0.5rem;">No progress reports yet</p>
+                        <p style="font-size: 0.75rem;">Upload a PDF progress report above</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quick Stats -->
+            {% if project.progress_reports.all %}
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
+                <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+                    Progress Summary
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">
+                            {{ project.progress_reports.count }}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">
+                            Total
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">
+                            {{ project.progress_reports.last.uploaded_at|date:"M d" }}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">
+                            Last
+                        </div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-weight: 600; color: var(--text-primary); font-size: 0.875rem;">
+                            {% with total=0 %}
+                                {% for pr in project.progress_reports.all %}
+                                    {% with total=total|add:pr.file.size %}
+                                    {% endwith %}
+                                {% endfor %}
+                                {{ project.progress_reports.first.file.size|filesizeformat }}
+                            {% endwith %}
+                        </div>
+                        <div style="font-size: 0.7rem; color: var(--text-secondary);">
+                            Recent
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

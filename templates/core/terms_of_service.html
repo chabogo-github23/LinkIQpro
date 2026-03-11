@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - ShadowIQ</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #030a11ff;
+            --border-color: #e5e7eb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .last-updated {
+            background-color: #02060eff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .last-updated strong {
+            color: var(--primary-color);
+        }
+        
+        .welcome {
+            background-color: #eff6ff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--secondary-color);
+        }
+        
+        .section {
+            margin-bottom: 2.5rem;
+            counter-increment: section;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section h2::before {
+            content: counter(section) ".";
+            font-weight: bold;
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .section ul {
+            list-style-position: inside;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .section li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+        
+        .definitions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .definition-item {
+            background: var(--bg-light);
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .definition-term {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .definition-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-light);
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: var(--bg-light);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .definitions-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Terms of Service</h1>
+            <p>ShadowIQ - Managed Project Delivery Platform</p>
+        </div>
+        
+        <div class="content">
+            <a href="#" onclick="window.history.back(); return false;" class="back-button">
+                ← Back to Platform
+            </a>
+            
+            <div class="last-updated">
+                <p><strong>Last Updated:</strong> [10 th DEC 2025]</p>
+            </div>
+            
+            <div class="welcome">
+                <p><strong>Welcome to ShadowIQ</strong>, a managed project-delivery and escrow platform connecting Clients with qualified Analysts through verified Admin oversight. By creating an account, accessing, or using ShadowIQ, you agree to be bound by the following Terms of Service ("Terms").</p>
+            </div>
+            
+            <div class="section">
+                <h2>Definitions</h2>
+                <div class="definitions-grid">
+                    <div class="definition-item">
+                        <div class="definition-term">Client</div>
+                        <div class="definition-desc">A registered user who submits projects, tracks progress, and makes payments through PayPal or Paystack.</div>
+                    </div>
+                    <div class="definition-item">
+                        <div class="definition-term">Admin</div>
+                        <div class="definition-desc">A platform-appointed operator who manages projects, assigns Analysts, oversees milestones, and acts as the mediator between Client and Analyst.</div>
+                    </div>
+                    <div class="definition-item">
+                        <div class="definition-term">Analyst</div>
+                        <div class="definition-desc">A vetted and platform-approved professional responsible for executing assigned projects.</div>
+                    </div>
+                    <div class="definition-item">
+                        <div class="definition-term">Super-Admin</div>
+                        <div class="definition-desc">The top-level system controller who creates Admin and Analyst accounts, enforces compliance, and ensures platform integrity.</div>
+                    </div>
+                    <div class="definition-item">
+                        <div class="definition-term">Escrow</div>
+                        <div class="definition-desc">A temporary holding mechanism where Client payments are securely stored until project or milestone completion.</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h2>Eligibility</h2>
+                <ul>
+                    <li>Only Clients may self-register on ShadowIQ.</li>
+                    <li>Admin and Analyst accounts are created exclusively by the Super-Admin to prevent fraudulent profiles and ensure expertise verification.</li>
+                    <li>Users must be at least 18 years old and legally able to enter into binding agreements.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Platform Overview</h2>
+                
+                <h3>3.1 Client Responsibilities</h3>
+                <ul>
+                    <li>Submit accurate project details and requirements.</li>
+                    <li>Make payments through supported gateways (PayPal or Paystack).</li>
+                    <li>Approve project completions and milestones in a timely manner.</li>
+                    <li>Communicate respectfully through official platform channels only.</li>
+                </ul>
+                
+                <h3>3.2 Admin Responsibilities</h3>
+                <ul>
+                    <li>Assign each project to a qualified Analyst.</li>
+                    <li>Oversee communication between Client and Analyst.</li>
+                    <li>Create milestones where necessary.</li>
+                    <li>Validate Analyst progress updates and mediate disputes.</li>
+                </ul>
+                
+                <h3>3.3 Analyst Responsibilities</h3>
+                <ul>
+                    <li>Deliver high-quality work according to specifications and deadlines.</li>
+                    <li>Provide progress updates to Admin.</li>
+                    <li>Maintain confidentiality and adhere to content guidelines.</li>
+                    <li>Accept only projects assigned directly by the Admin.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Escrow and Payments</h2>
+                <ul>
+                    <li>All Client payments are processed through PayPal or Paystack and placed in escrow.</li>
+                    <li>Funds remain in escrow until:
+                        <ul>
+                            <li>the project is completed and approved by the Client, or</li>
+                            <li>applicable milestones are completed and verified by the Admin.</li>
+                        </ul>
+                    </li>
+                    <li>After approval, payments are released:
+                        <ul>
+                            <li>Analyst receives their agreed payout.</li>
+                            <li>Admin may receive service or administrative commissions (if applicable).</li>
+                        </ul>
+                    </li>
+                    <li>Refunds are issued only:
+                        <ul>
+                            <li>if the Client cancels before work begins,</li>
+                            <li>if the Admin determines the Analyst failed to deliver,</li>
+                            <li>or according to ShadowIQ's internal refund policy.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Project Workflow</h2>
+                <ol>
+                    <li>Client submits a project via the dashboard.</li>
+                    <li>Admin reviews the project and assigns it to the most competent Analyst.</li>
+                    <li>If needed, Admin creates project milestones.</li>
+                    <li>Analyst submits progress updates to the Admin.</li>
+                    <li>Client monitors progress via the platform.</li>
+                    <li>Completed work is submitted for Client review.</li>
+                    <li>Upon approval, escrow funds are released.</li>
+                </ol>
+            </div>
+            
+            <div class="section">
+                <h2>Communication & Conduct</h2>
+                <ul>
+                    <li>All communication must occur within the ShadowIQ platform.</li>
+                    <li>Harassment, abusive behavior, or attempts to bypass the platform (e.g., direct payments) are strictly prohibited.</li>
+                    <li>ShadowIQ may suspend or terminate accounts that violate conduct guidelines.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Account Security</h2>
+                <ul>
+                    <li>Clients are responsible for safeguarding their login credentials.</li>
+                    <li>Passwords and emails are stored using secure hashing, and cannot be viewed by Admins, Analysts, or unauthorized parties.</li>
+                    <li>ShadowIQ is not liable for losses caused by compromised accounts.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Intellectual Property</h2>
+                <ul>
+                    <li>Unless otherwise stated, Clients own the work delivered by Analysts upon full payment release.</li>
+                    <li>Analysts grant Clients a non-exclusive, royalty-free license to use submitted deliverables after escrow release.</li>
+                    <li>ShadowIQ retains rights to anonymized platform data for analytics and service improvements.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Dispute Resolution</h2>
+                <ul>
+                    <li>Admin acts as the first-level mediator between Client and Analyst.</li>
+                    <li>If disputes cannot be resolved internally, ShadowIQ reserves the right to:
+                        <ul>
+                            <li>issue refunds,</li>
+                            <li>reassign work,</li>
+                            <li>or escalate to the Super-Admin for final resolution.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Termination</h2>
+                <ul>
+                    <li>ShadowIQ may suspend or terminate accounts that:
+                        <ul>
+                            <li>engage in fraudulent activity,</li>
+                            <li>violate terms,</li>
+                            <li>attempt to bypass escrow,</li>
+                            <li>or compromise platform integrity.</li>
+                        </ul>
+                    </li>
+                    <li>Users may request account termination at any time.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Limitation of Liability</h2>
+                <ul>
+                    <li>ShadowIQ is not responsible for:
+                        <ul>
+                            <li>losses caused by third-party payment providers,</li>
+                            <li>delays caused by internet or system outages,</li>
+                            <li>or the quality of Analyst work beyond reasonable platform oversight.</li>
+                        </ul>
+                    </li>
+                    <li>To the fullest extent permitted by law, ShadowIQ's liability is limited to the amount the Client paid on the platform.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>Changes to Terms</h2>
+                <p>ShadowIQ may update these Terms at any time. Continued platform use constitutes acceptance of the latest version.</p>
+            </div>
+        </div>
+        
+        <div class="footer-links">
+            <a href="#" onclick="window.history.back(); return false;">Back to Platform</a>
+        </div>
+    </div>
+</body>
+</html>

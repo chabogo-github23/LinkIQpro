@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .payment-container {
+        max-width: 600px;
+        margin: 3rem auto;
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 2rem;
+        text-align: center;
+        animation: fadeIn 0.6s ease;
+    }
+
+    h1 {
+        color: #16a34a;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+    }
+
+    .info-box {
+        background-color: rgba(22, 163, 74, 0.12);
+        border: 1px solid #16a34a;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        font-size: 0.9rem;
+        margin-bottom: 1.5rem;
+    }
+
+    a.btn {
+        background-color: #16a34a;
+        color: white;
+        padding: 0.7rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background-color 0.2s ease;
+    }
+
+    a.btn:hover {
+        background-color: #15803d;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="payment-container">
+
+    <h1>Payment Successful 🎉</h1>
+
+    <div class="info-box">
+        {% if project.payment_status == "held" %}
+            <p>Your payment for <strong>Project {{ project.project_id }}</strong> has been successfully authorized and held in escrow via <strong>PayPal</strong>.</p>
+        {% else %}
+            <p>Your payment for <strong>Project {{ project.project_id }}</strong> has been completed successfully via <strong>Paystack</strong>.</p>
+        {% endif %}
+    </div>
+
+    {% if project.payment_status == "held" %}
+        <p>The funds will remain in escrow until the work is completed and approved.</p>
+    {% else %}
+        <p>Your payment is fully processed and linked to your project. You may proceed with the next project steps.</p>
+    {% endif %}
+
+    <a href="{% url 'core:project_detail' project.project_id %}" class="btn btn-success mt-3">
+        Back to Project
+    </a>
+</div>
+{% endblock %}

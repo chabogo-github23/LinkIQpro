@@ -1,0 +1,1426 @@
+INFO 2025-12-03 18:45:58,338 autoreload 11988 10732 Watching for file changes with StatReloader
+INFO 2025-12-03 18:48:27,068 autoreload 3180 3304 Watching for file changes with StatReloader
+WARNING 2025-12-03 18:48:44,996 log 3180 9848 Not Found: /favicon.ico
+ERROR 2025-12-03 18:49:32,640 log 3180 5684 Internal Server Error: /auth/register/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: core_pseudonymoususer
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 48, in register
+    result = service.register(alias, email, password)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\services.py", line 47, in register
+    if self.user_repo.alias_exists(alias):
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\repositories.py", line 49, in alias_exists
+    return PseudonymousUser.objects.filter(alias=alias).exists()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\query.py", line 1296, in exists
+    return self.query.has_results(using=self.db)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\sql\query.py", line 674, in has_results
+    return compiler.has_results()
+           ~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1591, in has_results
+    return bool(self.execute_sql(SINGLE))
+                ~~~~~~~~~~~~~~~~^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\sql\compiler.py", line 1623, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\backends\sqlite3\base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.OperationalError: no such table: core_pseudonymoususer
+INFO 2025-12-03 18:55:25,557 autoreload 2704 9728 Watching for file changes with StatReloader
+ERROR 2025-12-03 18:56:36,062 log 2704 1360 Internal Server Error: /logout/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 151, in logout_view
+    return redirect('home')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 51, in redirect
+    resolve_url(to, *args, **kwargs),
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 184, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+INFO 2025-12-03 19:09:21,609 autoreload 9384 11756 Watching for file changes with StatReloader
+ERROR 2025-12-03 19:09:35,562 log 9384 6792 Internal Server Error: /logout/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 151, in logout_view
+    return redirect('home')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 51, in redirect
+    resolve_url(to, *args, **kwargs),
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 184, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+ERROR 2025-12-03 19:09:53,121 log 9384 11940 Internal Server Error: /logout/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 151, in logout_view
+    return redirect('home')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 51, in redirect
+    resolve_url(to, *args, **kwargs),
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 184, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+INFO 2025-12-03 19:10:27,512 autoreload 9384 11756 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-03 19:10:33,025 autoreload 10616 7956 Watching for file changes with StatReloader
+ERROR 2025-12-03 19:10:40,678 log 10616 5128 Internal Server Error: /logout/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 151, in logout_view
+    return redirect('login')
+           ^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 51, in redirect
+    resolve_url(to, *args, **kwargs),
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 184, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'lo' not found. 'lo' is not a valid view function or pattern name.
+INFO 2025-12-03 19:12:36,740 autoreload 10616 7956 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-03 19:12:41,565 autoreload 9740 12156 Watching for file changes with StatReloader
+INFO 2025-12-03 19:12:45,713 autoreload 9740 12156 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-03 19:12:50,122 autoreload 10160 2704 Watching for file changes with StatReloader
+WARNING 2025-12-03 19:12:58,242 log 10160 3044 Not Found: /logout/users/home
+INFO 2025-12-03 19:16:04,203 autoreload 10160 2704 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-03 19:16:07,957 autoreload 8628 10340 Watching for file changes with StatReloader
+WARNING 2025-12-03 19:16:56,092 log 8628 7560 Not Found: /home
+INFO 2025-12-03 19:24:02,794 autoreload 7896 11608 Watching for file changes with StatReloader
+INFO 2025-12-03 19:28:28,664 autoreload 10800 10460 Watching for file changes with StatReloader
+ERROR 2025-12-03 19:28:48,114 log 10800 9916 Internal Server Error: /logout/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 151, in logout_view
+    return redirect('home')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 51, in redirect
+    resolve_url(to, *args, **kwargs),
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 184, in resolve_url
+    return reverse(to, args=args, kwargs=kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+INFO 2025-12-05 10:04:06,851 autoreload 10472 5080 Watching for file changes with StatReloader
+WARNING 2025-12-05 10:04:37,756 log 10472 5400 Not Found: /favicon.ico
+INFO 2025-12-05 10:28:26,656 autoreload 10472 5080 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-05 10:28:37,860 autoreload 4628 468 Watching for file changes with StatReloader
+WARNING 2025-12-05 10:31:11,165 log 4628 11404 Bad Request: /project/SIQ-5N9GRS/create-milestone-payment/
+INFO 2025-12-08 11:37:37,690 autoreload 9068 6788 Watching for file changes with StatReloader
+INFO 2025-12-08 11:39:29,291 autoreload 9068 6788 C:\Users\PC\Desktop\shadowIQr\apps\payments\views.py changed, reloading.
+INFO 2025-12-08 11:39:37,101 autoreload 6276 1028 Watching for file changes with StatReloader
+WARNING 2025-12-08 11:41:26,069 log 6276 348 Not Found: /favicon.ico
+INFO 2025-12-08 11:59:36,347 autoreload 5004 4612 Watching for file changes with StatReloader
+INFO 2025-12-08 12:22:40,535 autoreload 5004 4612 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:22:58,843 autoreload 4920 5756 Watching for file changes with StatReloader
+INFO 2025-12-08 12:23:41,417 autoreload 4920 5756 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:23:43,268 autoreload 9888 7544 Watching for file changes with StatReloader
+INFO 2025-12-08 12:23:46,802 autoreload 9888 7544 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:23:48,762 autoreload 1908 4704 Watching for file changes with StatReloader
+INFO 2025-12-08 12:23:52,198 autoreload 1908 4704 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:23:54,360 autoreload 4400 6736 Watching for file changes with StatReloader
+INFO 2025-12-08 12:24:07,129 autoreload 4400 6736 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:24:09,171 autoreload 6316 3616 Watching for file changes with StatReloader
+INFO 2025-12-08 12:24:14,880 autoreload 6316 3616 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:24:16,693 autoreload 4148 1736 Watching for file changes with StatReloader
+INFO 2025-12-08 12:24:23,366 autoreload 4148 1736 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:24:25,494 autoreload 7660 6412 Watching for file changes with StatReloader
+INFO 2025-12-08 12:24:28,233 autoreload 7660 6412 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 12:24:29,860 autoreload 8448 468 Watching for file changes with StatReloader
+INFO 2025-12-08 13:02:33,003 autoreload 5644 6372 Watching for file changes with StatReloader
+INFO 2025-12-08 13:11:48,668 autoreload 2760 1148 Watching for file changes with StatReloader
+INFO 2025-12-08 13:23:37,795 autoreload 2760 1148 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-08 13:23:40,702 autoreload 1932 9048 Watching for file changes with StatReloader
+INFO 2025-12-08 13:24:22,520 autoreload 9620 1168 Watching for file changes with StatReloader
+INFO 2025-12-08 13:32:06,672 autoreload 9620 1168 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 13:32:16,868 autoreload 10152 5756 Watching for file changes with StatReloader
+INFO 2025-12-08 13:33:09,980 autoreload 10152 5756 C:\Users\PC\Desktop\shadowIQr\apps\payments\views.py changed, reloading.
+INFO 2025-12-08 13:33:20,663 autoreload 1280 9516 Watching for file changes with StatReloader
+INFO 2025-12-08 13:34:22,870 autoreload 1280 9516 C:\Users\PC\Desktop\shadowIQr\apps\payments\views.py changed, reloading.
+INFO 2025-12-08 13:34:32,497 autoreload 9564 5732 Watching for file changes with StatReloader
+INFO 2025-12-08 13:51:41,843 autoreload 9564 5732 C:\Users\PC\Desktop\shadowIQr\apps\payments\gateways\paystack.py changed, reloading.
+INFO 2025-12-08 13:52:22,940 autoreload 9084 4464 Watching for file changes with StatReloader
+INFO 2025-12-08 14:00:42,883 autoreload 236 6708 Watching for file changes with StatReloader
+INFO 2025-12-08 14:01:52,668 services 236 956 Initiating Paystack payment: project=SIQ-5N9GRS, amount=$10.00 USD, target_currency=KES, milestones=1
+INFO 2025-12-08 14:01:57,152 utils 236 956 Currency conversion: $10.0 USD -> 1293.80 KES (rate: 129.38, smallest unit: 129380)
+INFO 2025-12-08 14:01:57,153 paystack 236 956 Paystack payment: $10.0 USD -> 1293.80 KES (smallest unit: 129380)
+INFO 2025-12-08 14:01:57,154 paystack 236 956 Paystack payload: email=scalny2211@ueab.ac.ke, amount=129380, currency=KES
+INFO 2025-12-08 14:02:01,478 services 236 956 Paystack payment initiated: ref=azckcs0xr8, converted=1293.8 KES
+INFO 2025-12-08 14:06:39,001 autoreload 6656 8564 Watching for file changes with StatReloader
+INFO 2025-12-08 14:45:10,326 autoreload 6656 8564 C:\Users\PC\Desktop\shadowIQr\apps\projects\models.py changed, reloading.
+INFO 2025-12-08 14:56:23,272 autoreload 5792 8844 Watching for file changes with StatReloader
+ERROR 2025-12-08 16:23:06,387 log 5792 2892 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+ERROR 2025-12-08 16:23:10,860 log 5792 2892 Internal Server Error: /auth/register/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 67, in register
+    return render(request, 'auth/register.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'home' not found. 'home' is not a valid view function or pattern name.
+ERROR 2025-12-08 16:27:07,972 log 5792 7132 Internal Server Error: /auth/register/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 67, in register
+    return render(request, 'auth/register.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'about' not found. 'about' is not a valid view function or pattern name.
+WARNING 2025-12-08 17:17:47,067 log 5792 9884 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-08 17:21:48,395 log 5792 10252 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-08 17:21:54,214 log 5792 10252 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-09 00:25:24,646 autoreload 8864 852 Watching for file changes with StatReloader
+WARNING 2025-12-09 00:26:54,840 log 8864 4056 Not Found: /favicon.ico
+ERROR 2025-12-09 00:27:11,930 log 8864 9468 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'about' not found. 'about' is not a valid view function or pattern name.
+INFO 2025-12-09 00:55:40,113 autoreload 9612 9788 Watching for file changes with StatReloader
+WARNING 2025-12-09 00:56:46,433 log 9612 9140 Not Found: /favicon.ico
+INFO 2025-12-09 01:35:01,217 autoreload 8548 3976 Watching for file changes with StatReloader
+WARNING 2025-12-09 01:37:17,856 log 8548 736 Not Found: /favicon.ico
+WARNING 2025-12-09 02:01:51,130 log 8548 6264 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-09 02:19:08,984 log 8548 3492 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-09 02:32:10,493 log 8548 2144 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-09 02:32:15,307 log 8548 964 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-09 02:35:13,049 autoreload 5284 7940 Watching for file changes with StatReloader
+INFO 2025-12-09 19:09:40,906 autoreload 5552 948 Watching for file changes with StatReloader
+WARNING 2025-12-09 19:10:14,851 log 5552 7404 Not Found: /favicon.ico
+WARNING 2025-12-09 19:15:10,593 log 5552 7136 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-09 19:15:12,345 log 5552 6708 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2025-12-09 19:16:38,188 log 5552 244 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-09 20:15:48,537 autoreload 9932 11060 Watching for file changes with StatReloader
+INFO 2025-12-09 20:44:26,695 autoreload 9932 11060 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 20:44:41,913 autoreload 1544 10960 Watching for file changes with StatReloader
+INFO 2025-12-09 20:45:57,237 autoreload 1544 10960 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 20:46:09,610 autoreload 3888 2052 Watching for file changes with StatReloader
+INFO 2025-12-09 20:48:13,375 autoreload 3888 2052 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 20:48:27,634 autoreload 11232 2796 Watching for file changes with StatReloader
+ERROR 2025-12-09 20:49:49,841 log 11232 7452 Internal Server Error: /dashboard/admin/project/SIQ-NEB4O5/progress/upload/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 52, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 466, in admin_upload_progress
+    return render(request, "core/admin_upload_progress.html", context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 19, in get_template
+    raise TemplateDoesNotExist(template_name, chain=chain)
+django.template.exceptions.TemplateDoesNotExist: core/admin_upload_progress.html
+ERROR 2025-12-09 20:57:56,283 log 11232 10388 Internal Server Error: /dashboard/admin/project/SIQ-NEB4O5/progress/upload/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 52, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 448, in admin_upload_progress
+    progress = ProjectProgress.objects.create(
+        project=project,
+    ...<3 lines>...
+        uploaded_by=request.user
+    )
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: ProjectProgress() got unexpected keyword arguments: 'description', 'version', 'uploaded_by'
+INFO 2025-12-09 21:00:45,580 autoreload 11232 2796 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:01:03,182 autoreload 7048 4904 Watching for file changes with StatReloader
+ERROR 2025-12-09 21:02:20,645 log 7048 5524 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'view_progress_pdf' with arguments '('SIQ-NEB4O5', 1)' not found. 1 pattern(s) tried: ['progress/(?P<progress_id>[0-9]+)/view/\\Z']
+INFO 2025-12-09 21:08:24,460 autoreload 7048 4904 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:08:44,392 autoreload 6404 3680 Watching for file changes with StatReloader
+INFO 2025-12-09 21:09:20,102 autoreload 6404 3680 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:09:25,127 autoreload 9620 5360 Watching for file changes with StatReloader
+INFO 2025-12-09 21:09:30,783 autoreload 9620 5360 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:09:48,710 autoreload 1348 8684 Watching for file changes with StatReloader
+ERROR 2025-12-09 21:10:26,313 log 1348 8132 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'view_progress_pdf' with arguments '('SIQ-NEB4O5', 1)' not found. 1 pattern(s) tried: ['progress/(?P<progress_id>[0-9]+)/view/\\Z']
+INFO 2025-12-09 21:24:16,031 autoreload 1348 8684 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-09 21:24:28,969 autoreload 5400 8348 Watching for file changes with StatReloader
+INFO 2025-12-09 21:24:35,377 autoreload 5400 8348 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-09 21:24:36,805 autoreload 6116 5612 Watching for file changes with StatReloader
+INFO 2025-12-09 21:24:39,778 autoreload 6116 5612 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-09 21:24:42,073 autoreload 10396 5768 Watching for file changes with StatReloader
+INFO 2025-12-09 21:25:31,228 autoreload 10396 5768 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:25:33,603 autoreload 9980 7992 Watching for file changes with StatReloader
+ERROR 2025-12-09 21:26:02,498 log 9980 11240 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'view_progress_pdf' with arguments '(1,)' not found. 1 pattern(s) tried: ['project/(?P<project_id>[^/]+)/progress/(?P<progress_id>[0-9]+)/view/\\Z']
+INFO 2025-12-09 21:31:23,890 autoreload 9980 7992 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:31:30,097 autoreload 3676 6456 Watching for file changes with StatReloader
+WARNING 2025-12-09 21:32:28,313 log 3676 8816 Not Found: /project/SIQ-NEB4O5/None
+ERROR 2025-12-09 21:32:34,142 log 3676 10400 Internal Server Error: /project/SIQ-NEB4O5/progress/1/view/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+TypeError: view_progress_pdf() got an unexpected keyword argument 'project_id'. Did you mean 'progress_id'?
+ERROR 2025-12-09 21:33:07,781 log 3676 4848 Internal Server Error: /project/SIQ-NEB4O5/progress/1/view/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+TypeError: view_progress_pdf() got an unexpected keyword argument 'project_id'. Did you mean 'progress_id'?
+INFO 2025-12-09 21:37:15,759 autoreload 3676 6456 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:37:23,917 autoreload 10756 3996 Watching for file changes with StatReloader
+INFO 2025-12-09 21:37:57,154 autoreload 10756 3996 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-09 21:38:01,014 autoreload 10432 10184 Watching for file changes with StatReloader
+WARNING 2025-12-09 21:38:42,083 log 10432 10436 Not Found: /project/SIQ-NEB4O5/None
+ERROR 2025-12-09 21:38:46,628 log 10432 8104 Internal Server Error: /project/SIQ-NEB4O5/progress/1/view/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+TypeError: view_progress_pdf() got an unexpected keyword argument 'project_id'. Did you mean 'progress_id'?
+INFO 2025-12-09 21:39:32,417 autoreload 10432 10184 C:\Users\PC\Desktop\shadowIQr\apps\projects\views.py changed, reloading.
+INFO 2025-12-09 21:39:41,060 autoreload 6404 4008 Watching for file changes with StatReloader
+INFO 2025-12-09 21:40:05,260 autoreload 6404 4008 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-09 21:40:09,195 autoreload 4684 8008 Watching for file changes with StatReloader
+ERROR 2025-12-09 21:41:15,908 log 4684 10400 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 327, in render
+    return nodelist.render(context)
+           ~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 243, in render
+    nodelist.append(node.render_annotated(context))
+                    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'view_progress_pdf' with arguments '('SIQ-NEB4O5', 1)' not found. 1 pattern(s) tried: ['progress/(?P<progress_id>[0-9]+)/view/\\Z']
+WARNING 2025-12-09 21:43:15,902 log 4684 4640 Not Found: /project/SIQ-NEB4O5/None
+WARNING 2025-12-09 21:44:18,190 log 4684 10440 Not Found: /progress/1/view/ %}
+WARNING 2025-12-09 21:45:02,604 log 4684 2124 Not Found: /project/SIQ-NEB4O5/None
+ERROR 2025-12-09 21:45:28,316 log 4684 8840 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 510, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endfor'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 512, in parse
+    self.invalid_block_tag(token, command, parse_until)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 567, in invalid_block_tag
+    raise self.error(
+    ...<8 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 891: 'endfor', expected 'endblock'. Did you forget to register or load this tag?
+ERROR 2025-12-09 21:45:58,095 log 4684 2224 Internal Server Error: /project/SIQ-NEB4O5/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 510, in parse
+    compile_func = self.tags[command]
+                   ~~~~~~~~~^^^^^^^^^
+KeyError: 'endfor'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 38, in wrapper
+    return view_func(request, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\projects\views.py", line 51, in project_detail
+    return render(request, 'core/project_detail.html', {
+        'project': project,
+    ...<7 lines>...
+        'processing_count': processing_count,
+    })
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 61, in render_to_string
+    template = get_template(template_name, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 15, in get_template
+    return engine.get_template(template_name)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 79, in get_template
+    return Template(self.engine.get_template(template_name), self)
+                    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\engine.py", line 177, in get_template
+    template, origin = self.find_template(template_name)
+                       ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\engine.py", line 159, in find_template
+    template = loader.get_template(name, skip=skip)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loaders\cached.py", line 57, in get_template
+    template = super().get_template(template_name, skip)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loaders\base.py", line 28, in get_template
+    return Template(
+        contents,
+    ...<2 lines>...
+        self.engine,
+    )
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 154, in __init__
+    self.nodelist = self.compile_nodelist()
+                    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 196, in compile_nodelist
+    nodelist = parser.parse()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 299, in do_extends
+    nodelist = parser.parse()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 518, in parse
+    raise self.error(token, e)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 516, in parse
+    compiled_result = compile_func(self, token)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 234, in do_block
+    nodelist = parser.parse(("endblock",))
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 512, in parse
+    self.invalid_block_tag(token, command, parse_until)
+    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 567, in invalid_block_tag
+    raise self.error(
+    ...<8 lines>...
+    )
+django.template.exceptions.TemplateSyntaxError: Invalid block tag on line 892: 'endfor', expected 'endblock'. Did you forget to register or load this tag?
+WARNING 2025-12-09 21:46:42,492 log 4684 10872 Not Found: /project/SIQ-NEB4O5/None
+WARNING 2025-12-09 21:47:20,070 log 4684 4276 Not Found: /project/SIQ-NEB4O5/None
+WARNING 2025-12-09 21:47:52,393 log 4684 6292 Forbidden: /project/SIQ-NEB4O5/chat/
+INFO 2025-12-09 22:31:24,766 autoreload 4684 8008 C:\Users\PC\Desktop\shadowIQr\apps\messaging\views.py changed, reloading.
+INFO 2025-12-09 22:31:46,123 autoreload 10368 3916 Watching for file changes with StatReloader
+WARNING 2025-12-09 22:34:19,587 log 10368 8296 Not Found: /project/SIQ-NEB4O5/None
+WARNING 2025-12-09 22:39:30,742 log 10368 4516 Not Found: /project/SIQ-NEB4O5/None
+INFO 2025-12-10 11:37:20,241 autoreload 7908 7160 Watching for file changes with StatReloader
+WARNING 2025-12-10 11:37:51,280 log 7908 6552 Not Found: /favicon.ico
+WARNING 2025-12-10 11:38:16,048 log 7908 9396 Not Found: /project/SIQ-NEB4O5/None
+WARNING 2025-12-10 11:48:33,866 log 7908 4432 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-10 12:02:07,199 autoreload 7908 7160 C:\Users\PC\Desktop\shadowIQr\apps\messaging\views.py changed, reloading.
+INFO 2025-12-10 12:02:14,805 autoreload 7516 3472 Watching for file changes with StatReloader
+INFO 2025-12-10 12:02:50,733 autoreload 7516 3472 C:\Users\PC\Desktop\shadowIQr\apps\messaging\views.py changed, reloading.
+INFO 2025-12-10 12:02:53,445 autoreload 8788 816 Watching for file changes with StatReloader
+WARNING 2025-12-10 12:12:25,879 log 8788 10296 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-10 12:18:26,479 autoreload 8788 816 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:18:31,556 autoreload 3480 10088 Watching for file changes with StatReloader
+INFO 2025-12-10 12:19:07,808 autoreload 3480 10088 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:19:09,437 autoreload 8700 5968 Watching for file changes with StatReloader
+INFO 2025-12-10 12:19:44,835 autoreload 8700 5968 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:19:47,087 autoreload 8724 9420 Watching for file changes with StatReloader
+INFO 2025-12-10 12:21:32,190 autoreload 8724 9420 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:21:33,861 autoreload 7360 5252 Watching for file changes with StatReloader
+INFO 2025-12-10 12:21:44,330 autoreload 7360 5252 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:21:46,287 autoreload 6944 10864 Watching for file changes with StatReloader
+INFO 2025-12-10 12:21:58,272 autoreload 6944 10864 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:21:59,942 autoreload 8996 5236 Watching for file changes with StatReloader
+INFO 2025-12-10 12:22:19,449 autoreload 8996 5236 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:22:21,280 autoreload 4636 8752 Watching for file changes with StatReloader
+INFO 2025-12-10 12:22:35,606 autoreload 4636 8752 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:22:37,286 autoreload 4140 5356 Watching for file changes with StatReloader
+INFO 2025-12-10 12:22:40,676 autoreload 4140 5356 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:22:42,377 autoreload 5100 10332 Watching for file changes with StatReloader
+INFO 2025-12-10 12:23:36,999 autoreload 5100 10332 C:\Users\PC\Desktop\shadowIQr\apps\messaging\services.py changed, reloading.
+INFO 2025-12-10 12:23:39,330 autoreload 10228 9080 Watching for file changes with StatReloader
+WARNING 2025-12-10 12:55:46,060 log 10228 11256 Not Found: /privacy_policy.html
+WARNING 2025-12-10 12:58:06,064 log 10228 11160 Not Found: /terms_of_service.html
+INFO 2025-12-10 13:00:00,438 autoreload 10228 9080 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:00:09,489 autoreload 6800 8856 Watching for file changes with StatReloader
+INFO 2025-12-10 13:00:41,488 autoreload 6800 8856 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:00:43,997 autoreload 7092 7416 Watching for file changes with StatReloader
+INFO 2025-12-10 13:00:48,283 autoreload 7092 7416 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:00:49,705 autoreload 2648 10548 Watching for file changes with StatReloader
+WARNING 2025-12-10 13:00:59,228 log 2648 10952 Not Found: /privacy_policy.html
+WARNING 2025-12-10 13:01:06,999 log 2648 8180 Not Found: /terms_of_service.html
+INFO 2025-12-10 13:01:44,416 autoreload 2648 10548 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:01:46,779 autoreload 9200 5372 Watching for file changes with StatReloader
+INFO 2025-12-10 13:01:49,140 autoreload 9200 5372 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:01:51,106 autoreload 492 4056 Watching for file changes with StatReloader
+INFO 2025-12-10 13:01:59,266 autoreload 492 4056 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:02:01,796 autoreload 7396 6232 Watching for file changes with StatReloader
+INFO 2025-12-10 13:02:11,052 autoreload 7396 6232 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:02:13,798 autoreload 4204 10096 Watching for file changes with StatReloader
+INFO 2025-12-10 13:03:03,214 autoreload 4204 10096 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:03:05,674 autoreload 660 8560 Watching for file changes with StatReloader
+INFO 2025-12-10 13:03:30,650 autoreload 660 8560 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:03:32,516 autoreload 5924 5908 Watching for file changes with StatReloader
+INFO 2025-12-10 13:04:02,426 autoreload 7216 10132 Watching for file changes with StatReloader
+WARNING 2025-12-10 13:04:10,371 log 7216 10212 Not Found: /privacy_policy.html
+INFO 2025-12-10 13:07:35,920 autoreload 7216 10132 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:07:38,171 autoreload 5988 7440 Watching for file changes with StatReloader
+INFO 2025-12-10 13:08:13,768 autoreload 5988 7440 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:08:15,423 autoreload 9720 6024 Watching for file changes with StatReloader
+INFO 2025-12-10 13:10:50,047 autoreload 9720 6024 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:10:52,211 autoreload 11104 10716 Watching for file changes with StatReloader
+WARNING 2025-12-10 13:11:11,705 log 11104 4592 Not Found: /privacy_policy.html
+INFO 2025-12-10 13:12:51,570 autoreload 11104 10716 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:12:55,375 autoreload 3912 8780 Watching for file changes with StatReloader
+INFO 2025-12-10 13:12:57,875 autoreload 3912 8780 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:12:59,599 autoreload 2124 6384 Watching for file changes with StatReloader
+INFO 2025-12-10 13:13:03,021 autoreload 2124 6384 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:13:06,246 autoreload 5988 9596 Watching for file changes with StatReloader
+INFO 2025-12-10 13:13:10,601 autoreload 5988 9596 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:13:13,769 autoreload 8216 1012 Watching for file changes with StatReloader
+WARNING 2025-12-10 13:13:50,046 log 8216 6684 Not Found: /privacy_policy.html
+INFO 2025-12-10 13:17:44,619 autoreload 8216 1012 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:17:46,746 autoreload 3468 10376 Watching for file changes with StatReloader
+INFO 2025-12-10 13:17:57,933 autoreload 3468 10376 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:18:00,077 autoreload 7656 3856 Watching for file changes with StatReloader
+INFO 2025-12-10 13:18:04,484 autoreload 7656 3856 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:18:06,253 autoreload 8996 4628 Watching for file changes with StatReloader
+INFO 2025-12-10 13:18:10,623 autoreload 8996 4628 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:18:12,457 autoreload 6628 9408 Watching for file changes with StatReloader
+INFO 2025-12-10 13:18:15,101 autoreload 6628 9408 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:18:16,935 autoreload 6596 6900 Watching for file changes with StatReloader
+INFO 2025-12-10 13:18:24,531 autoreload 6596 6900 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:18:26,106 autoreload 10856 11212 Watching for file changes with StatReloader
+ERROR 2025-12-10 13:19:30,396 log 10856 9072 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'privacy_policy' not found. 'privacy_policy' is not a valid view function or pattern name.
+INFO 2025-12-10 13:21:21,293 autoreload 10856 11212 C:\Users\PC\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2025-12-10 13:21:24,017 autoreload 1064 11128 Watching for file changes with StatReloader
+INFO 2025-12-10 13:21:27,376 autoreload 1064 11128 C:\Users\PC\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2025-12-10 13:21:28,932 autoreload 11176 5260 Watching for file changes with StatReloader
+INFO 2025-12-10 13:21:33,257 autoreload 11176 5260 C:\Users\PC\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2025-12-10 13:21:36,403 autoreload 10668 3976 Watching for file changes with StatReloader
+ERROR 2025-12-10 13:22:33,490 log 10668 7572 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'privacy_policy' not found. 'privacy_policy' is not a valid view function or pattern name.
+ERROR 2025-12-10 13:22:47,153 log 10668 7072 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'privacy_policy' not found. 'privacy_policy' is not a valid view function or pattern name.
+ERROR 2025-12-10 13:23:05,532 log 10668 6640 Internal Server Error: /
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\views.py", line 29, in home
+    return render(request, 'core/landing.html')
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'privacy_policy' not found. 'privacy_policy' is not a valid view function or pattern name.
+INFO 2025-12-10 13:25:51,485 autoreload 10668 3976 C:\Users\PC\Desktop\shadowIQr\core\views.py changed, reloading.
+INFO 2025-12-10 13:25:53,999 autoreload 8724 9408 Watching for file changes with StatReloader
+INFO 2025-12-10 13:26:11,211 autoreload 8724 9408 C:\Users\PC\Desktop\shadowIQr\apps\users\views.py changed, reloading.
+INFO 2025-12-10 13:26:14,075 autoreload 6908 9992 Watching for file changes with StatReloader
+INFO 2025-12-10 13:29:10,691 autoreload 6908 9992 C:\Users\PC\Desktop\shadowIQr\core\urls.py changed, reloading.
+INFO 2025-12-10 13:29:14,538 autoreload 7012 8892 Watching for file changes with StatReloader
+INFO 2025-12-10 13:30:11,160 autoreload 7012 8892 C:\Users\PC\Desktop\shadowIQr\shadowiq\urls.py changed, reloading.
+INFO 2025-12-10 13:30:14,456 autoreload 5216 8740 Watching for file changes with StatReloader
+INFO 2025-12-10 13:30:17,338 autoreload 5216 8740 C:\Users\PC\Desktop\shadowIQr\shadowiq\urls.py changed, reloading.
+INFO 2025-12-10 13:30:18,828 autoreload 8752 6584 Watching for file changes with StatReloader
+INFO 2025-12-10 13:30:21,205 autoreload 8752 6584 C:\Users\PC\Desktop\shadowIQr\shadowiq\urls.py changed, reloading.
+INFO 2025-12-10 13:30:22,508 autoreload 7212 5472 Watching for file changes with StatReloader
+INFO 2025-12-10 13:30:26,337 autoreload 7212 5472 C:\Users\PC\Desktop\shadowIQr\shadowiq\urls.py changed, reloading.
+INFO 2025-12-10 13:30:28,381 autoreload 1736 7444 Watching for file changes with StatReloader
+INFO 2025-12-10 13:30:31,781 autoreload 1736 7444 C:\Users\PC\Desktop\shadowIQr\shadowiq\urls.py changed, reloading.
+INFO 2025-12-10 13:30:33,631 autoreload 10036 8668 Watching for file changes with StatReloader
+WARNING 2025-12-10 13:31:36,881 log 10036 5040 Not Found: /users/privacy-policy/terms_of_service.html
+WARNING 2025-12-10 14:12:53,148 log 10036 1512 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-10 14:19:01,757 autoreload 4284 10668 Watching for file changes with StatReloader
+INFO 2025-12-11 09:27:12,586 autoreload 8836 3256 Watching for file changes with StatReloader
+INFO 2025-12-11 09:27:57,066 autoreload 8836 3256 C:\Users\PC\Desktop\shadowIQr\shadowiq\wsgi.py changed, reloading.
+INFO 2025-12-11 09:28:09,469 autoreload 896 2092 Watching for file changes with StatReloader
+WARNING 2025-12-11 09:31:33,511 log 896 8836 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2025-12-11 09:49:50,195 autoreload 6500 7144 Watching for file changes with StatReloader
+ERROR 2025-12-11 10:00:48,385 log 6500 9568 Invalid HTTP_HOST header: '192.168.43.155:8000'. You may need to add '192.168.43.155' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.43.155:8000'. You may need to add '192.168.43.155' to ALLOWED_HOSTS.
+ERROR 2025-12-11 10:00:49,736 log 6500 6868 Invalid HTTP_HOST header: '192.168.43.155:8000'. You may need to add '192.168.43.155' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\utils\deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\middleware\common.py", line 48, in process_request
+    host = request.get_host()
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\http\request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: '192.168.43.155:8000'. You may need to add '192.168.43.155' to ALLOWED_HOSTS.
+INFO 2025-12-11 10:02:03,969 autoreload 6500 7144 C:\Users\PC\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2025-12-11 10:02:29,395 autoreload 4656 5036 Watching for file changes with StatReloader
+WARNING 2025-12-11 10:11:39,786 log 4656 6448 Not Found: /favicon.ico
+WARNING 2025-12-11 10:28:48,265 log 4656 10488 Not Found: /project/SIQ-WAQUDN/None
+WARNING 2025-12-11 10:39:12,014 log 4656 8656 Not Found: /project/SIQ-WAQUDN/None
+INFO 2025-12-11 10:40:11,517 services 4656 6656 Initiating Paystack payment: project=SIQ-WAQUDN, amount=$100.00 USD, target_currency=KES, milestones=1
+INFO 2025-12-11 10:40:14,702 utils 4656 6656 Currency conversion: $100.0 USD -> 12920.00 KES (rate: 129.2, smallest unit: 1292000)
+INFO 2025-12-11 10:40:14,703 paystack 4656 6656 Paystack payment: $100.0 USD -> 12920.00 KES (smallest unit: 1292000)
+INFO 2025-12-11 10:40:14,703 paystack 4656 6656 Paystack payload: email=calebchabogo@gmail.com, amount=1292000, currency=KES
+INFO 2025-12-11 10:40:17,452 services 4656 6656 Paystack payment initiated: ref=jqzlaakua2, converted=12919.999999999998 KES
+WARNING 2025-12-11 10:40:54,292 log 4656 6656 Not Found: /project/SIQ-WAQUDN/None
+ERROR 2025-12-11 10:52:17,460 log 4656 10440 Internal Server Error: /dashboard/admin/project/SIQ-WAQUDN/
+Traceback (most recent call last):
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\exception.py", line 55, in inner
+    response = get_response(request)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\core\handlers\base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\apps\users\decorators.py", line 50, in wrapper
+    return render(request, 'core/access_denied.html', status=403)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\shortcuts.py", line 25, in render
+    content = loader.render_to_string(template_name, context, request, using=using)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader.py", line 62, in render_to_string
+    return template.render(context, request)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\backends\django.py", line 107, in render
+    return self.template.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 171, in render
+    return self._render(context)
+           ~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 159, in render
+    return compiled_parent._render(context)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 163, in _render
+    return self.nodelist.render(context)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\loader_tags.py", line 65, in render
+    result = block.nodelist.render(context)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 1016, in render
+    return SafeString("".join([node.render_annotated(context) for node in self]))
+                               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\base.py", line 977, in render_annotated
+    return self.render(context)
+           ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\template\defaulttags.py", line 480, in render
+    url = reverse(view_name, args=args, kwargs=kwargs, current_app=current_app)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\base.py", line 98, in reverse
+    resolved_url = resolver._reverse_with_prefix(view, prefix, *args, **kwargs)
+  File "C:\Users\PC\desktop\shadowIQr\venv\Lib\site-packages\django\urls\resolvers.py", line 831, in _reverse_with_prefix
+    raise NoReverseMatch(msg)
+django.urls.exceptions.NoReverseMatch: Reverse for 'dashboard' not found. 'dashboard' is not a valid view function or pattern name.
+WARNING 2025-12-11 10:52:18,450 log 4656 10440 Not Found: /favicon.ico
+WARNING 2025-12-11 10:52:32,875 log 4656 328 Not Found: /project/SIQ-WAQUDN/None
+WARNING 2025-12-11 13:34:43,761 log 4656 6396 Not Found: /project/SIQ-WAQUDN/None
+WARNING 2025-12-11 15:32:55,062 log 4656 9300 Not Found: /project/SIQ-WAQUDN/None
+WARNING 2025-12-11 15:33:05,667 log 4656 9300 Not Found: /favicon.ico
+WARNING 2025-12-11 15:36:31,491 log 4656 12024 Not Found: /project/SIQ-WAQUDN/None
+INFO 2025-12-12 01:17:35,671 autoreload 8228 9924 Watching for file changes with StatReloader
+WARNING 2025-12-12 01:18:12,149 log 8228 9252 Not Found: /project/SIQ-WAQUDN/None
+WARNING 2025-12-12 01:18:24,922 log 8228 9252 Bad Request: /project/SIQ-WAQUDN/create-milestone-payment/
+INFO 2026-01-25 19:39:37,860 autoreload 2700 6012 Watching for file changes with StatReloader
+WARNING 2026-01-25 19:40:11,799 log 2700 3436 Not Found: /favicon.ico
+WARNING 2026-01-25 19:40:41,965 log 2700 8452 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-25 19:41:13,878 log 2700 5548 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-25 19:41:54,989 log 2700 10464 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2026-01-25 20:35:58,906 services 2700 2708 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+ERROR 2026-01-25 20:36:11,750 utils 2700 2708 Failed to fetch exchange rates: HTTPSConnectionPool(host='api.exchangerate-api.com', port=443): Max retries exceeded with url: /v4/latest/USD (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000002607885A120>: Failed to resolve 'api.exchangerate-api.com' ([Errno 11001] getaddrinfo failed)"))
+ERROR 2026-01-25 20:36:11,751 paystack 2700 2708 Currency conversion failed: Failed to fetch exchange rates. Please try again.
+WARNING 2026-01-25 20:36:11,752 log 2700 2708 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-01-25 20:36:42,881 services 2700 5536 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+ERROR 2026-01-25 20:36:42,884 utils 2700 5536 Failed to fetch exchange rates: HTTPSConnectionPool(host='api.exchangerate-api.com', port=443): Max retries exceeded with url: /v4/latest/USD (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x0000026078BE42D0>: Failed to resolve 'api.exchangerate-api.com' ([Errno 11001] getaddrinfo failed)"))
+ERROR 2026-01-25 20:36:42,885 paystack 2700 5536 Currency conversion failed: Failed to fetch exchange rates. Please try again.
+WARNING 2026-01-25 20:36:42,886 log 2700 5536 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-01-25 20:40:55,234 services 2700 3500 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+INFO 2026-01-25 20:40:58,230 utils 2700 3500 Currency conversion: $0.01 USD -> 1.29 KES (rate: 129, smallest unit: 129)
+INFO 2026-01-25 20:40:58,231 paystack 2700 3500 Paystack payment: $0.01 USD -> 1.29 KES (smallest unit: 129)
+INFO 2026-01-25 20:40:58,232 paystack 2700 3500 Paystack payload: email=calebchabogo3@gmail.com, amount=129, currency=KES
+INFO 2026-01-25 20:41:00,376 services 2700 3500 Paystack payment initiated: ref=jom54secfg, converted=1.29 KES
+INFO 2026-01-25 21:16:54,801 autoreload 2700 6012 C:\Users\caleb\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-01-25 21:20:44,443 autoreload 2132 6360 Watching for file changes with StatReloader
+INFO 2026-01-25 21:21:38,618 services 2132 11084 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+INFO 2026-01-25 21:21:40,528 utils 2132 11084 Currency conversion: $0.01 USD -> 1.29 KES (rate: 129, smallest unit: 129)
+INFO 2026-01-25 21:21:40,529 paystack 2132 11084 Paystack payment: $0.01 USD -> 1.29 KES (smallest unit: 129)
+INFO 2026-01-25 21:21:40,530 paystack 2132 11084 Paystack payload: email=calebchabogo3@gmail.com, amount=129, currency=KES
+INFO 2026-01-25 21:21:42,759 services 2132 11084 Paystack payment initiated: ref=iol82srosi, converted=1.29 KES
+INFO 2026-01-25 21:34:01,899 services 2132 1740 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+INFO 2026-01-25 21:34:06,858 utils 2132 1740 Currency conversion: $0.01 USD -> 1.29 KES (rate: 129, smallest unit: 129)
+INFO 2026-01-25 21:34:06,859 paystack 2132 1740 Paystack payment: $0.01 USD -> 1.29 KES (smallest unit: 129)
+INFO 2026-01-25 21:34:06,859 paystack 2132 1740 Paystack payload: email=calebchabogo3@gmail.com, amount=129, currency=KES
+INFO 2026-01-25 21:34:10,136 services 2132 1740 Paystack payment initiated: ref=hridoxrssf, converted=1.29 KES
+INFO 2026-01-26 10:59:27,263 autoreload 13328 13448 Watching for file changes with StatReloader
+WARNING 2026-01-26 11:00:26,089 log 13328 15020 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-26 11:00:43,018 log 13328 864 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-26 11:01:15,774 log 13328 11400 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-01-26 11:01:26,038 log 13328 11400 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2026-01-26 11:22:20,037 autoreload 13328 13448 C:\Users\caleb\Desktop\shadowIQr\apps\messaging\models.py changed, reloading.
+INFO 2026-01-26 11:22:29,944 autoreload 10188 4668 Watching for file changes with StatReloader
+INFO 2026-01-26 15:13:37,757 autoreload 1260 4972 Watching for file changes with StatReloader
+INFO 2026-01-26 17:15:56,614 autoreload 1260 4972 C:\Users\caleb\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-01-26 17:26:14,160 autoreload 10068 3276 Watching for file changes with StatReloader
+WARNING 2026-01-26 17:30:33,169 log 10068 10360 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+WARNING 2026-01-26 17:30:46,962 log 10068 10288 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-01-26 17:31:09,276 autoreload 10068 3276 C:\Users\caleb\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-01-26 17:31:11,461 autoreload 4748 10764 Watching for file changes with StatReloader
+INFO 2026-01-26 17:31:15,764 autoreload 4748 10764 C:\Users\caleb\Desktop\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-01-26 17:31:17,493 autoreload 2444 12108 Watching for file changes with StatReloader
+WARNING 2026-01-26 17:31:40,614 log 2444 5896 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-01-26 17:32:49,136 services 2444 9444 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+INFO 2026-01-26 17:32:50,550 utils 2444 9444 Currency conversion: $0.01 USD -> 1.29 KES (rate: 128.97, smallest unit: 129)
+INFO 2026-01-26 17:32:50,551 paystack 2444 9444 Paystack payment: $0.01 USD -> 1.29 KES (smallest unit: 129)
+INFO 2026-01-26 17:32:50,552 paystack 2444 9444 Paystack payload: email=calebchabogo3@gmail.com, amount=129, currency=KES
+INFO 2026-01-26 17:32:52,998 services 2444 9444 Paystack payment initiated: ref=vzr6mzcn6r, converted=1.2897 KES
+INFO 2026-01-28 11:03:28,790 autoreload 3104 2224 Watching for file changes with StatReloader
+WARNING 2026-01-28 12:11:54,650 log 3104 1576 Not Found: /favicon.ico
+INFO 2026-03-11 15:36:08,387 autoreload 2852 6024 Watching for file changes with StatReloader

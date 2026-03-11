@@ -1,0 +1,903 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+.project-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.project-main, .project-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.section {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.section-header h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+}
+
+.section-icon {
+    font-size: 1.25rem;
+}
+
+.project-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 2rem;
+}
+
+.project-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.project-title h1 {
+    font-size: 1.75rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.project-id {
+    background-color: var(--bg-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-family: monospace;
+    color: var(--accent-primary);
+    font-size: 0.875rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.status-submitted { background: rgba(0, 217, 255, 0.2); color: var(--accent-primary); }
+.status-accepted { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+.status-in_progress { background: rgba(255, 193, 7, 0.2); color: #FFC107; }
+.status-qa { background: rgba(156, 39, 176, 0.2); color: #9C27B0; }
+.status-completed { background: rgba(76, 175, 80, 0.2); color: #4CAF50; }
+.status-rejected { background: rgba(244, 67, 54, 0.2); color: #F44336; }
+.status-disputed { background: rgba(255, 87, 34, 0.2); color: #FF5722; }
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.meta-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+}
+
+.meta-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.description {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    padding: 1rem;
+    background-color: var(--bg-primary);
+    border-radius: 0.5rem;
+    border-left: 3px solid var(--accent-primary);
+}
+
+/* Attachment display styling */
+.attachment-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    margin-top: 1rem;
+}
+
+.attachment-icon {
+    font-size: 2rem;
+    color: var(--accent-primary);
+}
+
+.attachment-info {
+    flex: 1;
+}
+
+.attachment-name {
+    color: var(--text-primary);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.attachment-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.attachment-download {
+    padding: 0.5rem 1rem;
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border-radius: 0.375rem;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: background-color 0.2s;
+}
+
+.attachment-download:hover {
+    background-color: var(--accent-secondary);
+}
+
+/* Payment & Milestones Section */
+.payment-section {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.payment-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.payment-status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.payment-status-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--bg-primary);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.status-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.status-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.status-value.success {
+    color: #10b981;
+}
+
+.status-value.warning {
+    color: #f59e0b;
+}
+
+.status-value.info {
+    color: var(--accent-primary);
+}
+
+.milestone-item {
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.milestone-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.milestone-title {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.milestone-amount {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.milestone-info {
+    flex: 1;
+}
+
+.milestone-info h5 {
+    margin: 0 0 0.25rem 0;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.milestone-info p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.milestone-due {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+}
+
+.milestone-price {
+    text-align: right;
+}
+
+.milestone-price strong {
+    display: block;
+    font-size: 1.1rem;
+    color: var(--accent-primary);
+    margin-bottom: 0.25rem;
+}
+
+.milestone-price .payment-status {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.milestone-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.milestone-status {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.status-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.3rem 0.6rem;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-tag.pending {
+    background-color: rgba(107, 114, 128, 0.2);
+    color: #6b7280;
+}
+
+.status-tag.in_progress {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #f59e0b;
+}
+
+.status-tag.completed {
+    background-color: rgba(34, 197, 94, 0.2);
+    color: #22c55e;
+}
+
+.status-tag.approved {
+    background-color: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+}
+
+.payment-actions {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    background-color: var(--bg-primary);
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.pay-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.pay-btn:hover {
+    background-color: var(--accent-secondary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.payment-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+}
+
+.payment-message.success {
+    background-color: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.payment-message.info {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.payment-progress-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+/* Progress Updates */
+.progress-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.progress-item {
+    background-color: var(--bg-primary);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s;
+}
+
+.progress-item:hover {
+    transform: translateY(-2px);
+}
+
+.progress-thumb {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.upload-date {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0.75rem 0;
+}
+
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    background-color: var(--accent-primary);
+    color: var(--bg-primary);
+    border-radius: 0.4rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.view-btn:hover {
+    background-color: var(--accent-secondary);
+}
+
+/* Project Info Sidebar */
+.info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background-color: var(--bg-primary);
+    border-radius: 0.5rem;
+    border-left: 3px solid var(--accent-primary);
+}
+
+.info-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.info-value {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Chat Section */
+.chat-section {
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 1.25rem;
+    background-color: var(--accent-primary);
+    color: white;
+    margin: 0;
+}
+
+.chat-header h2 {
+    margin: 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Empty States */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-secondary);
+}
+
+.empty-state-icon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .project-container { 
+        grid-template-columns: 1fr; 
+    }
+    .meta-grid { 
+        grid-template-columns: 1fr; 
+    }
+    .payment-status-grid {
+        grid-template-columns: 1fr;
+    }
+    .progress-gallery {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .section {
+        padding: 1rem;
+    }
+    .project-header {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: start;
+    }
+    .milestone-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .milestone-price {
+        text-align: left;
+    }
+    .milestone-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    .progress-gallery {
+        grid-template-columns: 1fr;
+    }
+}
+
+body {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+.project-detail-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: var(--accent-primary);
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="project-detail-page">
+    <a href="{% url 'core:client_dashboard' %}" class="back-link">
+        ← Back to Dashboard
+    </a>
+
+    <!-- Project Header -->
+    <div class="project-header">
+        <div class="project-title">
+            <h1>{{ project.title }}</h1>
+            <span class="project-id">{{ project.project_id }}</span>
+        </div>
+        <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+    </div>
+
+    <div class="project-container">
+        <!-- Main Column -->
+        <div class="project-main">
+            <!-- Project Details -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📋</span>
+                    <h3>Project Information</h3>
+                </div>
+                <div class="meta-grid">
+                    <div class="meta-item">
+                        <span class="meta-label">Stage</span>
+                        <span class="meta-value">{{ project.get_stage_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Support Type</span>
+                        <span class="meta-value">{{ project.get_support_type_display }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">Research Area</span>
+                        <span class="meta-value">{{ project.research_area }}</span>
+                    </div>
+                    {% if project.sample_size %}
+                    <div class="meta-item">
+                        <span class="meta-label">Sample Size</span>
+                        <span class="meta-value">{{ project.sample_size }}</span>
+                    </div>
+                    {% endif %}
+                    <!-- Display deadline range instead of date -->
+                    {% if project.deadline_range %}
+                    <div class="meta-item">
+                        <span class="meta-label">Expected Timeline</span>
+                        <span class="meta-value">{{ project.get_deadline_range_display }}</span>
+                    </div>
+                    {% elif project.deadline %}
+                    <div class="meta-item">
+                        <span class="meta-label">Deadline</span>
+                        <span class="meta-value">{{ project.deadline|date:"M d, Y" }}</span>
+                    </div>
+                    {% endif %}
+                    <!-- Display budget range -->
+                    {% if project.budget_range %}
+                    <div class="meta-item">
+                        <span class="meta-label">Budget Range</span>
+                        <span class="meta-value">{{ project.get_budget_range_display }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="meta-item">
+                        <span class="meta-label">Submitted</span>
+                        <span class="meta-value">{{ project.created_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📝</span>
+                    <h3>Description</h3>
+                </div>
+                <div class="description">{{ project.description|linebreaks }}</div>
+                
+                <!-- Display attachment if exists -->
+                {% if project.attachment %}
+                <div class="attachment-card">
+                    <span class="attachment-icon">📎</span>
+                    <div class="attachment-info">
+                        <div class="attachment-name">{{ project.attachment_filename|default:"Attached Document" }}</div>
+                        <div class="attachment-meta">Supporting document uploaded with project</div>
+                    </div>
+                    <a href="{{ project.attachment.url }}" class="attachment-download" target="_blank" download>
+                        Download
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            {% if project.preferred_methods %}
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">🔬</span>
+                    <h3>Preferred Methods</h3>
+                </div>
+                <div class="description">{{ project.preferred_methods|linebreaks }}</div>
+            </div>
+            {% endif %}
+
+            <!-- Payment & Milestones Status -->
+            <div class="payment-section">
+                <div class="payment-header">
+                    <h2 class="payment-title">
+                        <span>💰</span>
+                        Payment & Milestones Status
+                    </h2>
+                </div>
+
+                <!-- Project Payment Summary -->
+                <div class="payment-status-grid">
+                    <div class="payment-status-item">
+                        <div class="status-label">Total Project Price</div>
+                        <div class="status-value">${{ project.total_price|floatformat:2 }}</div>
+                    </div>
+                    <div class="payment-status-item">
+                        <div class="status-label">Amount Paid</div>
+                        <div class="status-value success">${{ project.paid_amount|floatformat:2 }}</div>
+                    </div>
+                    <div class="payment-status-item">
+                        <div class="status-label">Overall Progress</div>
+                        <div class="status-value info">{{ project.progress_percentage }}%</div>
+                    </div>
+                </div>
+
+                <!-- Milestones Progress -->
+                <div style="margin-bottom: 1.5rem;">
+                    <h4 style="margin-bottom: 1rem; color: var(--text-primary); font-size: 1rem;">📌 Milestones Breakdown</h4>
+                    
+                    {% if project.milestones.all %}
+                        <div class="milestones-list">
+                            {% for milestone in project.milestones.all %}
+                            <div class="milestone-item {% if milestone.payment_status == 'funded' %}funded{% elif milestone.payment_status == 'released' %}released{% elif milestone.payment_status == 'processing' %}processing{% else %}unfunded{% endif %}">
+                                <!-- Milestone Header -->
+                                <div class="milestone-header">
+                                    <div class="milestone-info">
+                                        <h5>{{ milestone.title }}</h5>
+                                        <p>{{ milestone.description }}</p>
+                                        <div class="milestone-due">
+                                            Due: {{ milestone.due_date|date:"M d, Y" }}
+                                            {% if milestone.is_overdue %}
+                                                <span style="color: #ef4444; font-weight: 600;">• Overdue</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="milestone-price">
+                                        <strong>${{ milestone.amount|floatformat:2 }}</strong>
+                                        <div class="payment-status">{{ milestone.get_payment_status_display }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Status Footer -->
+                                <div class="milestone-footer">
+                                    <div class="milestone-status">
+                                        <span style="color: var(--text-secondary); font-weight: 600;">Work:</span>
+                                        <span class="status-tag {% if milestone.status == 'approved' %}approved{% elif milestone.status == 'completed' %}completed{% elif milestone.status == 'in_progress' %}in_progress{% else %}pending{% endif %}">
+                                            {{ milestone.get_status_display }}
+                                        </span>
+                                    </div>
+
+                                    <div class="milestone-status">
+                                        {% if milestone.payment_status == 'released' %}
+                                            <span style="color: #10b981; font-weight: 600;">✅ Payment Released</span>
+                                        {% elif milestone.payment_status == 'funded' %}
+                                            <span style="color: #0ea5e9; font-weight: 600;">🔒 Payment In Escrow</span>
+                                        {% elif milestone.payment_status == 'processing' %}
+                                            <span style="color: #3b82f6; font-weight: 600;">⏳ Processing Payment</span>
+                                        {% else %}
+                                            <span style="color: #6b7280; font-weight: 600;">⏳ Awaiting Payment</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div style="text-align: center; padding: 2rem; color: var(--text-secondary); background: var(--bg-primary); border-radius: 0.5rem;">
+                            <p>No milestones have been created for this project yet.</p>
+                            <p style="margin: 0; font-size: 0.9rem;">The admin will set up milestones soon.</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Payment Action Section -->
+                <div class="payment-actions">
+                    {% if project.milestones.exists and has_unfunded_milestones or has_processing_milestones %}
+                        <a href="{% url 'core:milestone_payment' project.project_id %}" class="pay-btn">
+                            <span>💳</span>
+                            Pay for Milestones
+                        </a>
+                        <div class="payment-progress-text">
+                            <strong>{{ funded_count }}/{{ total_count }}</strong> milestones funded • 
+                            <strong>{{ released_count }}/{{ total_count }}</strong> released • 
+                            <strong>{{ processing_count }}</strong> processing
+                        </div>
+
+                    {% elif not project.milestones.exists %}
+                        <div class="payment-message info">
+                            <span>⏳</span>
+                            <span>Awaiting milestone setup from admin</span>
+                        </div>
+
+                    {% elif not has_unfunded_milestones and not has_processing_milestones %}
+                        <div class="payment-message success">
+                            <span>✅</span>
+                            <span>All milestones are fully funded</span>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+
+            <!-- Project Progress Updates -->
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">📊</span>
+                    <h2>Project Progress Updates</h2>
+                </div>
+                
+                {% if progress_updates %}
+                <div class="progress-gallery">
+                    {% for progress in progress_updates %}
+                    <div class="progress-item">
+                        <img src="{{ progress.thumbnail_url }}" alt="Progress thumbnail" class="progress-thumb">
+                        <div class="upload-date">{{ progress.uploaded_at|date:"M d, Y H:i" }}</div>
+                        <a href="{% url 'core:view_progress_pdf' progress.id %}" class="view-btn">
+                            <span>👁️</span>
+                            View Progress
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No progress updates available yet.</p>
+                    <small>Check back later for project updates from your analyst.</small>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="project-sidebar">
+            <!-- Payment Status -->
+            <div class="payment-section">
+                <div class="section-header">
+                    <span class="section-icon">💰</span>
+                    <h3>Milestones & Payments</h3>
+                </div>
+                
+                {% if project.milestones.exists %}
+                    {% for milestone in project.milestones.all %}
+                    <div class="milestone-item">
+                        <div class="milestone-header">
+                            <span class="milestone-title">{{ milestone.title }}</span>
+                            <span class="milestone-amount">${{ milestone.amount }}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                            <span>{{ milestone.get_status_display }}</span>
+                            <span>{{ milestone.get_payment_status_display }}</span>
+                        </div>
+                        {% if milestone.payment_status == 'unfunded' and project.status == 'accepted' %}
+                        <a href="{% url 'core:milestone_payment' project.project_id milestone.id %}" class="btn btn-primary btn-sm" style="margin-top: 0.75rem; width: 100%; text-align: center;">
+                            Pay Now
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: var(--text-secondary); text-align: center; padding: 1rem;">
+                        No milestones created yet. Milestones will be set up after project acceptance.
+                    </p>
+                {% endif %}
+            </div>
+
+            <!-- Assigned Analyst -->
+            {% if project.assigned_analyst %}
+            <div class="section">
+                <div class="section-header">
+                    <span class="section-icon">👤</span>
+                    <h3>Assigned Analyst</h3>
+                </div>
+                <p style="color: var(--text-primary);">{{ project.assigned_analyst.alias }}</p>
+            </div>
+            {% endif %}
+
+            <!-- Chat Widget -->
+            <div class="section chat-section">
+                <div class="chat-header">
+                    <h2>
+                        <span>💬</span>
+                        ShadowIQ Chat
+                    </h2>
+                </div>
+                {% include "core/chat_widget.html" %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
+{% endblock %}

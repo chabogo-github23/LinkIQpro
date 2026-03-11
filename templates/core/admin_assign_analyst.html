@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Analyst - {{ project.project_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6">Assign Analyst to {{ project.project_id }}</h1>
+        
+        <div class="bg-card rounded-lg border border-border p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Project Details</h2>
+            <p class="mb-2"><strong>Title:</strong> {{ project.title }}</p>
+            <p class="mb-2"><strong>Client:</strong> {{ project.client.alias }}</p>
+            <p><strong>Support Type:</strong> {{ project.get_support_type_display }}</p>
+        </div>
+        
+        <div class="bg-card rounded-lg border border-border p-6">
+            <h2 class="text-xl font-bold mb-4">Available Analysts</h2>
+            
+            {% if analysts %}
+            <form method="post" class="space-y-4">
+                {% csrf_token %}
+                
+                <div class="space-y-3">
+                    {% for analyst in analysts %}
+                    <label class="flex items-center p-4 border border-border rounded hover:bg-muted cursor-pointer">
+                        <input type="radio" name="analyst_id" value="{{ analyst.id }}" class="mr-3" required>
+                        <div>
+                            <p class="font-semibold">{{ analyst.alias }}</p>
+                            <p class="text-sm text-muted-foreground">Joined {{ analyst.created_at|date:"M d, Y" }}</p>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                    Assign Analyst
+                </button>
+            </form>
+            {% else %}
+            <p class="text-muted-foreground">No analysts available</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

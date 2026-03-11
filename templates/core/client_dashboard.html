@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        margin: 2rem 0;
+    }
+
+    .dashboard-header h1 {
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .dashboard-header p {
+        color: var(--text-secondary);
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .stat-card {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-card.active {
+        border-color: var(--accent-primary);
+    }
+
+    .stat-card .number {
+        font-size: 2rem;
+        font-weight: bold;
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-card .label {
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stat-card.total-projects {
+        border-top: 4px solid #3b82f6;
+    }
+
+    .stat-card.pending-review {
+        border-top: 4px solid #f59e0b;
+    }
+
+    .stat-card.in-progress {
+        border-top: 4px solid #8b5cf6;
+    }
+
+    .stat-card.completed {
+        border-top: 4px solid #10b981;
+    }
+
+    .projects-section {
+        margin: 2rem 0;
+    }
+
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+        color: var(--accent-primary);
+        margin: 0;
+    }
+
+    .project-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        border: 1px solid var(--border-color);
+        background-color: var(--bg-secondary);
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
+
+    .filter-btn.active {
+        background-color: var(--accent-primary);
+        color: white;
+        border-color: var(--accent-primary);
+    }
+
+    .project-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .project-item {
+        background-color: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        transition: all 0.3s;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .project-item.hidden {
+        display: none;
+    }
+
+    .project-item:hover {
+        border-color: var(--accent-primary);
+        transform: translateX(4px);
+    }
+
+    .project-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 1rem;
+    }
+
+    .project-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .project-id {
+        color: var(--accent-primary);
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-submitted {
+        background-color: rgba(245, 158, 11, 0.2);
+        color: #f59e0b;
+    }
+
+    .status-accepted {
+        background-color: rgba(59, 130, 246, 0.2);
+        color: #3b82f6;
+    }
+
+    .status-in_progress {
+        background-color: rgba(139, 92, 246, 0.2);
+        color: #8b5cf6;
+    }
+
+    .status-qa {
+        background-color: rgba(34, 197, 94, 0.2);
+        color: #22c55e;
+    }
+
+    .status-completed {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #10b981;
+    }
+
+    .status-rejected {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+    }
+
+    .project-meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+        font-size: 0.875rem;
+    }
+
+    .meta-item {
+        color: var(--text-secondary);
+    }
+
+    .meta-label {
+        color: var(--text-secondary);
+        font-weight: 600;
+    }
+
+    .project-description {
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .project-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .project-actions .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+    }
+
+    .empty-state h3 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .no-projects-message {
+        text-align: center;
+        padding: 2rem;
+        color: var(--text-secondary);
+        display: none;
+    }
+
+    .no-projects-message.show {
+        display: block;
+    }
+
+    @media (max-width: 768px) {
+        .section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .project-filters {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .project-header {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .project-meta {
+            grid-template-columns: 1fr;
+        }
+
+        .project-actions {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Welcome, {{ request.user_obj.alias }}</h1>
+    <p>Manage your research projects and track their progress</p>
+</div>
+
+<!-- Statistics Grid -->
+<div class="stats-grid">
+    <div class="stat-card total-projects" data-filter="all">
+        <div class="number">{{ total_projects }}</div>
+        <div class="label">Total Projects</div>
+    </div>
+    <div class="stat-card pending-review" data-filter="pending">
+        <div class="number">{{ pending_projects }}</div>
+        <div class="label">Pending Review</div>
+    </div>
+    <div class="stat-card in-progress" data-filter="in_progress">
+        <div class="number">{{ in_progress }}</div>
+        <div class="label">In Progress</div>
+    </div>
+    <div class="stat-card completed" data-filter="completed">
+        <div class="number">{{ completed }}</div>
+        <div class="label">Completed</div>
+    </div>
+</div>
+
+<!-- Projects Section -->
+<div class="projects-section">
+
+    <!-- No projects message for empty states -->
+    <div class="no-projects-message" id="noProjectsMessage">
+        <h3>No projects found</h3>
+        <p>There are no projects matching the selected filter.</p>
+    </div>
+
+    {% if projects %}
+        <div class="project-list">
+            {% for project in projects %}
+                <div class="project-item" data-status="{{ project.status }}">
+                    <div class="project-header">
+                        <div>
+                            <div class="project-id">{{ project.project_id }}</div>
+                            <div class="project-title">{{ project.title }}</div>
+                        </div>
+                        <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+                    </div>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Type:</span> {{ project.get_support_type_display }}
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Area:</span> {{ project.research_area }}
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Submitted:</span> {{ project.created_at|date:"M d, Y" }}
+                        </div>
+                        {% if project.deadline %}
+                            <div class="meta-item">
+                                <span class="meta-label">Deadline:</span> {{ project.deadline|date:"M d, Y" }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="project-description">
+                        {{ project.description|truncatewords:30 }}
+                    </div>
+                    <div class="project-actions">
+                        <a href="{% url 'core:project_detail' project.project_id %}" class="btn btn-primary">View Details</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No projects yet</h3>
+            <p>Submit your first project to get started</p>
+            <a href="{% url 'core:submit_project' %}" class="btn btn-primary" style="margin-top: 1rem;">Submit a Project</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Action Buttons -->
+<div class="hero-buttons">
+    <a href="{% url 'core:submit_project' %}" class="btn btn-primary">Submit Project</a>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const statCards = document.querySelectorAll('.stat-card[data-filter]');
+    const projectItems = document.querySelectorAll('.project-item');
+    const noProjectsMessage = document.getElementById('noProjectsMessage');
+    
+    // Function to filter projects
+    function filterProjects(filter) {
+        let visibleCount = 0;
+        
+        // Hide all projects first
+        projectItems.forEach(item => {
+            item.classList.add('hidden');
+        });
+        
+        // Show filtered projects
+        if (filter === 'all') {
+            projectItems.forEach(item => {
+                item.classList.remove('hidden');
+                visibleCount++;
+            });
+        } else {
+            projectItems.forEach(item => {
+                if (item.dataset.status === filter) {
+                    item.classList.remove('hidden');
+                    visibleCount++;
+                }
+            });
+        }
+        
+        // Show/hide no projects message
+        if (visibleCount === 0 && projectItems.length > 0) {
+            noProjectsMessage.classList.add('show');
+        } else {
+            noProjectsMessage.classList.remove('show');
+        }
+        
+        // Update stat card active states
+        statCards.forEach(card => {
+            if (card.dataset.filter === filter) {
+                card.classList.add('active');
+            } else {
+                card.classList.remove('active');
+            }
+        });
+    }
+    
+    // Add click event to filter buttons
+    filterButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Filter projects
+            const filter = this.dataset.filter;
+            filterProjects(filter);
+        });
+    });
+    
+    // Add click event to stat cards
+    statCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const filter = this.dataset.filter;
+            
+            // Update active filter button
+            filterButtons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === filter) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Filter projects
+            filterProjects(filter);
+        });
+    });
+});
+</script>
+{% endblock %}

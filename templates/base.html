@@ -1,0 +1,412 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <!-- In your base.html head section -->
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ShadowIQ - Intelligence in the Shadows{% endblock %}</title>
+    {% load static %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f0f;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #0099cc;
+            --border-color: #333333;
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid black;
+            padding: 0.4rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        /* Logo container - align to left */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-image {
+            height: 45px;
+            width: auto;
+            border-radius: 4px;
+        }
+
+        /* SI logo text */
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            color: #007bff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 32px;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-weight: 500;
+            font-size: 15px;
+            padding: 8px 0;
+            position: relative;
+            transition: color 0.2s ease;
+            text-transform: none;
+        }
+
+        nav ul li a:hover {
+            color: #007bff; /* Accent color on hover */
+        }
+        nav ul li a::after {
+            display: none;
+        }
+
+        nav ul li:last-child a {
+            background-color: #111;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid #111;
+        }
+
+        nav ul li:last-child a:hover {
+            background-color: white;
+            color: #007bff;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* For Register button (when not logged in) */
+        nav ul li:nth-last-child(2) a {
+            background-color: transparent;
+            color: primary;
+            padding: 8px 0;
+            border-radius: 0;
+            font-weight: 500;
+            box-shadow: none; 
+        }
+
+        nav ul li:nth-last-child(2) a:hover {
+            background-color: transparent;
+            color: #007bff;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* For authenticated user logout button */
+        nav ul li a[href*="logout"] {
+            background-color: #dc3545; /* Red for logout */
+            border-color: #dc3545;
+        }
+
+        nav ul li a[href*="logout"]:hover {
+            background-color: #c82333;
+            border-color: #c82333;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .header-container {
+                padding: 0 1rem;
+            }
+            
+            nav {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px 0;
+            }
+            
+            .logo-container {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            nav ul {
+                gap: 20px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            nav ul li a {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            nav ul {
+                gap: 15px;
+            }
+            
+            nav ul li a {
+                font-size: 13px;
+            }
+            
+            nav ul li:last-child a {
+                padding: 6px 16px;
+                font-size: 13px;
+            }
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+        }
+
+        main {
+            min-height: calc(100vh - 200px);
+        }
+
+        footer {
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 217, 255, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        input[type="checkbox"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .error {
+            color: var(--error);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .success {
+            color: var(--success);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        .alert-success {
+            background-color: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-info {
+            background-color: rgba(0, 217, 255, 0.1);
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+        }
+
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            nav {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+            
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <nav>
+                <div class="logo-container">
+                    <img src="{% static 'images/shadowiq_logo.jpeg' %}" alt="ShadowIQ Logo" class="logo-image">
+                    <a href="{% url 'core:home' %}" class="logo">
+                        SI
+                    </a>
+                </div>
+                <ul>
+                    <li><a href="{% url 'core:home' %}">Home</a></li>
+                    {% comment %}
+                    <li><a href="{% url 'about' %}">About</a></li>
+                    <li><a href="{% url 'services' %}">Services</a></li>
+                    {% endcomment %}
+                    
+                    {% if request.user.is_authenticated %}  
+                        <li><a href="{% url 'core:logout' %}">Logout</a></li>
+                    {% else %}
+                        <li><a href="{% url 'core:register' %}">Register</a></li>
+                        <li><a href="{% url 'core:request_magic_link' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 ShadowIQ. Intelligence in the shadows. All rights reserved.</p>
+        <p style="margin-top: 1rem; font-size: 0.875rem;">
+            <a href="{% url 'privacy_policy' %}" style="color: var(--text-secondary); text-decoration: none;">Privacy Policy</a> |
+            <a href="{% url 'terms_of_service' %}" style="color: var(--text-secondary); text-decoration: none;">Terms of Service</a> |
+        </p>
+    </footer>
+</body>
+</html>

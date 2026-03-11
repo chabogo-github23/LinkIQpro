@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - ShadowIQ</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #3b82f6;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --bg-light: #03090fff;
+            --border-color: #e5e7eb;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: var(--bg-light);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .last-updated {
+            background-color: #040913ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .last-updated strong {
+            color: var(--primary-color);
+        }
+        
+        .section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .section h3 {
+            color: var(--text-primary);
+            font-size: 1.2rem;
+            margin: 1.5rem 0 0.5rem 0;
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .section ul {
+            list-style-position: inside;
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        .section li {
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background-color: var(--bg-light);
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+        }
+        
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        
+        .back-button:hover {
+            background-color: var(--bg-light);
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1.5rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Privacy Policy</h1>
+            <p>ShadowIQ - Managed Project Delivery Platform</p>
+        </div>
+        
+        <div class="content">
+            <a href="#" onclick="window.history.back(); return false;" class="back-button">
+                ← Back to Platform
+            </a>
+            
+            <div class="last-updated">
+                <p><strong>Last Updated:</strong> [10th DEC 2025]</p>
+            </div>
+            
+            <div class="section">
+                <p>ShadowIQ values your privacy and ensures that all personal information is stored securely, used responsibly, and never shared without consent.</p>
+            </div>
+            
+            <div class="section">
+                <h2>1. Information We Collect</h2>
+                
+                <h3>1.1 Client Information</h3>
+                <ul>
+                    <li>Alias or username</li>
+                    <li>Email (stored as hashed, not readable by Admins or Analysts)</li>
+                    <li>Password (hashed)</li>
+                    <li>Project submissions</li>
+                    <li>Payment transaction data (from PayPal or Paystack)</li>
+                </ul>
+                
+                <h3>1.2 Analyst & Admin Information</h3>
+                <ul>
+                    <li>Only created by Super-Admin</li>
+                    <li>Includes name, contact information, and performance records</li>
+                    <li>Used strictly for workflow and platform operations</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>2. How Your Information Is Used</h2>
+                <p>We use collected data to:</p>
+                <ul>
+                    <li>create and manage accounts,</li>
+                    <li>facilitate project assignments,</li>
+                    <li>process payments and escrows,</li>
+                    <li>communicate project updates,</li>
+                    <li>ensure platform security,</li>
+                    <li>improve system performance and user experience.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>3. Data Storage & Security</h2>
+                <p>ShadowIQ implements industry-standard safeguards:</p>
+                <ul>
+                    <li>Emails and passwords are hashed and cannot be viewed by Admin or Analyst accounts.</li>
+                    <li>Sensitive data is encrypted in transit (HTTPS) and at rest.</li>
+                    <li>Access controls ensure only authorized staff and systems can process user data.</li>
+                    <li>Logs, audit trails, and pseudonymous identifiers help maintain security and accountability.</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>4. Data Sharing</h2>
+                <p>ShadowIQ does not sell, rent, or share personal information with third parties.</p>
+                <p>We may share limited data only with:</p>
+                <ul>
+                    <li>Payment processors (PayPal, Paystack) for transactions,</li>
+                    <li>Legal authorities if required by law.</li>
+                </ul>
+                <p>No other sharing occurs.</p>
+            </div>
+            
+            <div class="section">
+                <h2>5. Account Creation Rules</h2>
+                <ul>
+                    <li>Clients self-register using email.</li>
+                    <li>Admin and Analyst accounts are created ONLY by the Super-Admin to:</li>
+                    <ul>
+                        <li>prevent fake accounts,</li>
+                        <li>ensure Analysts are competent,</li>
+                        <li>protect Clients from fraud,</li>
+                        <li>maintain platform integrity.</li>
+                    </ul>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h2>6. Data Retention</h2>
+                <p>We retain data only as long as necessary for:</p>
+                <ul>
+                    <li>account functionality,</li>
+                    <li>legal compliance,</li>
+                    <li>dispute resolution,</li>
+                    <li>system logging.</li>
+                </ul>
+                <p>Clients may request account deletion at any time.</p>
+            </div>
+            
+            <div class="section">
+                <h2>7. Your Rights</h2>
+                <p>Clients, Admins, and Analysts may:</p>
+                <ul>
+                    <li>request a copy of their stored data,</li>
+                    <li>request correction of inaccurate information,</li>
+                    <li>request deletion (unless prohibited by law),</li>
+                    <li>withdraw consent where applicable.</li>
+                </ul>
+                <p>To submit a request, contact [Insert Contact Email].</p>
+            </div>
+            
+            <div class="section">
+                <h2>8. Cookies & Tracking</h2>
+                <p>ShadowIQ uses cookies for:</p>
+                <ul>
+                    <li>session management,</li>
+                    <li>security,</li>
+                    <li>analytics,</li>
+                    <li>user experience enhancements.</li>
+                </ul>
+                <p>Users may disable cookies, but certain features may not function properly.</p>
+            </div>
+            
+            <div class="section">
+                <h2>9. Third-Party Integrations</h2>
+                <p>ShadowIQ integrates with:</p>
+                <ul>
+                    <li>PayPal</li>
+                    <li>Paystack</li>
+                </ul>
+                <p>These providers handle payment data externally and have their own privacy policies.</p>
+                <p>ShadowIQ does not store your full payment details.</p>
+            </div>
+            
+            <div class="section">
+                <h2>10. Policy Updates</h2>
+                <p>ShadowIQ may update this Privacy Policy occasionally. Continued use of the platform constitutes acceptance of the updated policy.</p>
+            </div>
+        </div>
+        
+        <div class="footer-links">
+            <a href="#" onclick="window.history.back(); return false;">Back to Platform</a>
+        </div>
+    </div>
+</body>
+</html>

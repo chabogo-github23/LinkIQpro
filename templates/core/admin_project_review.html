@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Review Project - {{ project.project_id }}{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Project Details -->
+        <div class="lg:col-span-2">
+            <div class="bg-card rounded-lg border border-border p-6 mb-6">
+                <h1 class="text-3xl font-bold mb-4">{{ project.project_id }}: {{ project.title }}</h1>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-sm text-muted-foreground">Client</p>
+                        <p class="font-semibold">{{ project.client.alias }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Status</p>
+                        <p class="font-semibold">{{ project.get_status_display }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Stage</p>
+                        <p class="font-semibold">{{ project.get_stage_display }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Support Type</p>
+                        <p class="font-semibold">{{ project.get_support_type_display }}</p>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <h3 class="font-semibold mb-2">Description</h3>
+                    <p class="text-foreground">{{ project.description }}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-muted-foreground">Research Area</p>
+                        <p>{{ project.research_area }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Deadline</p>
+                        <p>{{ project.deadline|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Negotiation Status -->
+            {% if negotiation %}
+            <div class="bg-card rounded-lg border border-border p-6 mb-6">
+                <h2 class="text-xl font-bold mb-4">Negotiation Status</h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-sm text-muted-foreground">Proposed Price</p>
+                        <p class="font-semibold">${{ negotiation.proposed_price }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Agreed Price</p>
+                        <p class="font-semibold">{{ negotiation.agreed_price|default:"Pending" }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-muted-foreground">Status</p>
+                        <p class="font-semibold">{{ negotiation.get_status_display }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Chat Messages -->
+            <div class="bg-card rounded-lg border border-border p-6">
+                <h2 class="text-xl font-bold mb-4">Conversation</h2>
+                
+                <div class="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                    {% for message in messages %}
+                    <div class="flex gap-3">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-semibold">
+                                {{ message.sender.alias|first|upper }}
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold">{{ message.sender.alias }}</p>
+                            <p class="text-foreground">{{ message.content }}</p>
+                            <p class="text-xs text-muted-foreground mt-1">{{ message.created_at|date:"M d, Y H:i" }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Admin Actions -->
+        <div class="lg:col-span-1">
+            <div class="bg-card rounded-lg border border-border p-6 sticky top-4">
+                <h2 class="text-xl font-bold mb-4">Admin Actions</h2>
+                
+                {% if project.status == 'submitted' %}
+                <form method="post" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="accept">
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
+                        Accept Project
+                    </button>
+                </form>
+                
+                <form method="post" class="space-y-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="reject">
+                    <textarea name="reason" placeholder="Rejection reason..." class="w-full border border-border rounded p-2 text-sm"></textarea>
+                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded">
+                        Reject Project
+                    </button>
+                </form>
+                {% endif %}
+                
+                {% if project.status == 'accepted' %}
+                <a href="{% url 'core:admin_assign_analyst' project.project_id %}" class="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded text-center">
+                    Assign to Analyst
+                </a>
+                {% endif %}
+                
+                {% if project.status == 'qa' %}
+                <a href="{% url 'core:admin_review_deliverable' project.project_id %}" class="block w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded text-center mb-3">
+                    Review Deliverable
+                </a>
+                {% endif %}
+                
+                {% if project.status == 'completed' %}
+                <form method="post" action="{% url 'core:admin_deliver_to_client' project.project_id %}" class="space-y-3">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded">
+                        Deliver to Client
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Your Magic Link - ShadowIQ{% endblock %}
+
+{% block extra_css %}
+<style>
+    .magic-link-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 70vh;
+        padding: 2rem;
+    }
+
+    .magic-link-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 600px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .magic-link-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .magic-link-card h2 {
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .magic-link-card p {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+    }
+
+    .magic-link-display {
+        background: var(--bg-primary);
+        border: 2px solid var(--accent-primary);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        word-break: break-all;
+        position: relative;
+    }
+
+    .magic-link-display a {
+        color: var(--accent-primary);
+        text-decoration: none;
+        font-family: monospace;
+        font-size: 0.9rem;
+        transition: color 0.3s;
+    }
+
+    .magic-link-display a:hover {
+        color: var(--accent-secondary);
+        text-decoration: underline;
+    }
+
+    .security-note {
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.1), rgba(0, 153, 204, 0.1));
+        border: 1px solid var(--accent-primary);
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        margin: 2rem 0;
+        text-align: left;
+    }
+
+    .security-note h3 {
+        color: var(--accent-primary);
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .security-note ul {
+        margin: 0;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+    }
+
+    .security-note li {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+    }
+
+    .btn-copy {
+        background: var(--success);
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-copy:hover {
+        background: var(--success-dark);
+    }
+
+    .btn-back {
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+
+    .btn-back:hover {
+        border-color: var(--accent-primary);
+        color: var(--accent-primary);
+    }
+
+    .copy-success {
+        position: absolute;
+        top: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--success);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .copy-success.show {
+        opacity: 1;
+    }
+
+    @media (max-width: 768px) {
+        .magic-link-card {
+            padding: 1.5rem;
+        }
+
+        .magic-link-icon {
+            font-size: 3rem;
+        }
+
+        .magic-link-display {
+            padding: 1rem;
+        }
+
+        .magic-link-display a {
+            font-size: 0.8rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .action-buttons .btn-copy,
+        .action-buttons .btn-back {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="magic-link-container">
+    <div class="magic-link-card">
+        <div class="magic-link-icon">🔐</div>
+        
+        <h2>Your Secure Access Link</h2>
+
+        {% if user %}
+        <p>Alias: <strong>{{ user.alias }}</strong></p>
+        {% endif %}
+        
+        <p>Copy and visit this link to access your account. This link is unique to you and provides secure access to ShadowIQ. 
+           For future logins, you will need your password along with your pseudonym.</p>
+
+        {% if magic_link %}
+        <div class="magic-link-display">
+            <div class="copy-success" id="copySuccess">Copied!</div>
+            <a href="{{ magic_link }}" id="magicLink" target="_blank">{{ magic_link }}</a>
+        </div>
+        {% else %}
+        <div class="error-message">
+            <p><strong>Error:</strong> Magic link not generated. Please try again.</p>
+        </div>
+        {% endif %}
+
+        <div class="security-note">
+            <h3>🛡️ Security Notice</h3>
+            <ul>
+                <li>This link can only be used <strong>once</strong></li>
+                <li>Never share your magic link or password with anyone</li>
+                <li>If you didn't request this link, please ignore this message</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            {% if magic_link %}
+            <button class="btn-copy" onclick="copyMagicLink()">
+                Copy Link to Clipboard
+            </button>
+            {% endif %}
+            <a href="{% url 'core:home' %}" class="btn-back">
+                ← Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function copyMagicLink() {
+    const magicLink = document.getElementById('magicLink').href;
+    const copySuccess = document.getElementById('copySuccess');
+
+    navigator.clipboard.writeText(magicLink).then(() => {
+        copySuccess.classList.add('show');
+        setTimeout(() => copySuccess.classList.remove('show'), 2000);
+    }).catch(err => {
+        const textArea = document.createElement('textarea');
+        textArea.value = magicLink;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        copySuccess.classList.add('show');
+        setTimeout(() => copySuccess.classList.remove('show'), 2000);
+    });
+}
+</script>
+{% endblock %}

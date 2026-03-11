@@ -1,0 +1,773 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.title }} - Project Details{% endblock %}
+
+{% block content %}
+<a href="{% url 'core:analyst_dashboard' %}" class="back-link">
+    &larr; Back to Dashboard
+</a>
+<div class="project-detail-container">
+    <!-- Project Header -->
+    <div class="project-header">
+        <div class="header-content">
+            <div class="project-title-section">
+                <h1>{{ project.title }}</h1>
+                <div class="project-meta">
+                    <span class="status-badge status-{{ project.status|lower }}">
+                        {{ project.get_status_display }}
+                    </span>
+                    <span class="project-type">{{ project.get_stage_display }}</span>
+                </div>
+            </div>
+            <div class="project-actions">
+                <button class="btn btn-secondary" onclick="toggleProjectInfo()">
+                    <i class="fas fa-info-circle"></i> Project Info
+                </button>
+                <form id="submit-work-form" method="post" action="{% url 'core:analyst_submit_work' project.project_id %}" class="inline-form">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-paper-plane"></i> Submit for Review
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Info Panel -->
+    <div id="project-info-panel" class="info-panel">
+        <div class="info-grid">
+            <div class="info-item">
+                <label><i class="fas fa-user"></i> Client</label>
+                <span>{{ project.client.alias }}</span>
+            </div>
+            <div class="info-item">
+                <label><i class="fas fa-calendar"></i> Created</label>
+                <span>{{ project.created_at|date:"M d, Y" }}</span>
+            </div>
+            <div class="info-item">
+                <label><i class="fas fa-tag"></i> Research Area</label>
+                <span>{{ project.research_area|default:"Not specified" }}</span>
+            </div>
+            <div class="info-item">
+                <label><i class="fas fa-id-card"></i> Project ID</label>
+                <span class="project-id">{{ project.project_id }}</span>
+            </div>
+            <div class="info-item">
+                <label><i class="fas fa-cogs"></i> Support Type</label>
+                <span>{{ project.get_support_type_display }}</span>
+            </div>
+            {% if project.sample_size %}
+            <div class="info-item">
+                <label><i class="fas fa-users"></i> Sample Size</label>
+                <span>{{ project.sample_size }}</span>
+            </div>
+            {% endif %}
+            <!-- Display deadline range -->
+            {% if project.deadline_range %}
+            <div class="info-item">
+                <label><i class="fas fa-clock"></i> Expected Timeline</label>
+                <span>{{ project.get_deadline_range_display }}</span>
+            </div>
+            {% elif project.deadline %}
+            <div class="info-item">
+                <label><i class="fas fa-clock"></i> Deadline</label>
+                <span>{{ project.deadline|date:"M d, Y" }}</span>
+            </div>
+            {% endif %}
+            <!-- Display budget range -->
+            {% if project.budget_range %}
+            <div class="info-item">
+                <label><i class="fas fa-dollar-sign"></i> Budget Range</label>
+                <span>{{ project.get_budget_range_display }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Left Column -->
+        <div class="left-column">
+            <!-- Project Description -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-file-alt"></i> Project Description</h2>
+                </div>
+                <div class="card-content">
+                    <p>{{ project.description|default:"No description provided."|linebreaks }}</p>
+                    
+                    <!-- Display attachment if exists -->
+                    {% if project.attachment %}
+                    <div class="attachment-card" style="display: flex; align-items: center; gap: 1rem; padding: 1rem; background: #252525; border: 1px solid #333; border-radius: 6px; margin-top: 1rem;">
+                        <span style="font-size: 2rem; color: #00bfff;">📎</span>
+                        <div style="flex: 1;">
+                            <div style="color: #fff; font-weight: 500; margin-bottom: 0.25rem;">{{ project.attachment_filename|default:"Attached Document" }}</div>
+                            <div style="font-size: 0.8rem; color: #b0b0b0;">Client uploaded supporting document</div>
+                        </div>
+                        <a href="{{ project.attachment.url }}" class="btn btn-primary btn-sm" target="_blank" download>
+                            Download
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if project.preferred_methods %}
+            <!-- Preferred Methods -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-flask"></i> Preferred Methods</h2>
+                </div>
+                <div class="card-content">
+                    <p>{{ project.preferred_methods|linebreaks }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Deliverables Section -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-download"></i> Deliverables</h2>
+                    <span class="badge">{{ project.deliverables.count }}</span>
+                </div>
+                <div class="card-content">
+                    {% if project.deliverables.exists %}
+                        <div class="deliverables-list">
+                            {% for deliverable in project.deliverables.all %}
+                            <div class="deliverable-item">
+                                <div class="deliverable-icon">
+                                    <i class="fas fa-file-{{ deliverable.get_file_icon }}"></i>
+                                </div>
+                                <div class="deliverable-info">
+                                    <div class="deliverable-header">
+                                        <a href="{{ deliverable.file.url }}" target="_blank" class="deliverable-link">
+                                            {{ deliverable.filename }}
+                                        </a>
+                                        <span class="deliverable-type">{{ deliverable.get_deliverable_type_display }}</span>
+                                    </div>
+                                    <div class="deliverable-meta">
+                                        <span class="upload-date">
+                                            <i class="fas fa-clock"></i>
+                                            {{ deliverable.uploaded_at|date:"M d, Y H:i" }}
+                                        </span>
+                                        {% if deliverable.description %}
+                                        <span class="deliverable-desc">{{ deliverable.description }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>No deliverables uploaded yet</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+                        
+            <!-- Chat Widget -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-comments"></i> Project Communication</h2>
+                </div>
+                <div class="card-content">
+                    {% include "core/chat_widget.html" %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="right-column">
+            <!-- Milestones -->
+            {% if project.milestones.exists %}
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-tasks"></i> Milestones</h2>
+                </div>
+                <div class="card-content">
+                    {% for milestone in project.milestones.all %}
+                    <div style="padding: 1rem; background: #252525; border: 1px solid #333; border-radius: 6px; margin-bottom: 0.75rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <strong style="color: #fff;">{{ milestone.title }}</strong>
+                            <span style="color: #00bfff; font-weight: 600;">${{ milestone.amount }}</span>
+                        </div>
+                        <p style="color: #b0b0b0; font-size: 0.875rem; margin-bottom: 0.5rem;">{{ milestone.description }}</p>
+                        <div style="display: flex; gap: 1rem; font-size: 0.75rem; color: #777;">
+                            <span>Status: {{ milestone.get_status_display }}</span>
+                            <span>Due: {{ milestone.due_date|date:"M d" }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Upload Deliverable -->
+            <div class="content-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-upload"></i> Upload Deliverable</h2>
+                </div>
+                <div class="card-content">
+                    <form id="upload-form" method="post" enctype="multipart/form-data" 
+                          action="{% url 'core:analyst_upload_deliverable' project.project_id %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label class="form-label">Deliverable Type</label>
+                            <select name="type" class="form-select" required>
+                                <option value="">Select type</option>
+                                <option value="report">Report</option>
+                                <option value="notebook">Notebook</option>
+                                <option value="code">Code Bundle</option>
+                                <option value="data_log">Data Log</option>
+                                <option value="sow">Statement of Work</option>
+                                <option value="qa_report">QA Report</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Description (Optional)</label>
+                            <textarea name="description" rows="3" class="form-textarea" 
+                                      placeholder="Brief description of this deliverable..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">File</label>
+                            <div class="file-upload">
+                                <input type="file" name="file" id="file-input" required 
+                                       class="file-input" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.py,.ipynb,.r">
+                                <label for="file-input" class="file-upload-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span class="file-text">Choose file...</span>
+                                </label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-full">
+                            <i class="fas fa-upload"></i> Upload Deliverable
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Main Container */
+.project-detail-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #b0b0b0;
+    text-decoration: none;
+    margin: 1rem 0 0 20px;
+    transition: color 0.2s;
+}
+
+.back-link:hover {
+    color: #00bfff;
+}
+
+.project-header {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.project-title-section h1 {
+    margin: 0 0 12px 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.project-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-in_progress {
+    background: rgba(255, 193, 7, 0.15);
+    color: #FFC107;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-qa {
+    background: rgba(156, 39, 176, 0.15);
+    color: #9C27B0;
+    border: 1px solid rgba(156, 39, 176, 0.3);
+}
+
+.status-completed {
+    background: rgba(76, 175, 80, 0.15);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.project-type {
+    padding: 4px 10px;
+    background: #333;
+    color: #b0b0b0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.project-actions {
+    display: flex;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.inline-form {
+    margin: 0;
+}
+
+.info-panel {
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: none;
+}
+
+.info-panel.show {
+    display: block;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.info-item label {
+    font-size: 12px;
+    color: #b0b0b0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.info-item span {
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.project-id {
+    font-family: 'Courier New', monospace;
+    color: #00bfff !important;
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 20px;
+    align-items: start;
+}
+
+.content-card {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.card-header {
+    padding: 20px;
+    border-bottom: 1px solid #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge {
+    background: #00bfff;
+    color: #000;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.card-content {
+    padding: 20px;
+}
+
+.deliverables-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.deliverable-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 6px;
+    transition: border-color 0.2s;
+}
+
+.deliverable-item:hover {
+    border-color: #444;
+}
+
+.deliverable-icon {
+    width: 40px;
+    height: 40px;
+    background: #333;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00bfff;
+    font-size: 16px;
+}
+
+.deliverable-info {
+    flex: 1;
+}
+
+.deliverable-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.deliverable-link {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.deliverable-link:hover {
+    color: #00bfff;
+}
+
+.deliverable-type {
+    background: #333;
+    color: #b0b0b0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.deliverable-meta {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 12px;
+    color: #b0b0b0;
+}
+
+.upload-date {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b0b0b0;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.form-select, .form-textarea {
+    width: 100%;
+    padding: 12px;
+    background: #252525;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-select:focus, .form-textarea:focus {
+    outline: none;
+    border-color: #00bfff;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.file-upload {
+    position: relative;
+}
+
+.file-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #252525;
+    border: 2px dashed #333;
+    border-radius: 6px;
+    color: #b0b0b0;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    justify-content: center;
+}
+
+.file-upload-label:hover {
+    border-color: #00bfff;
+    color: #00bfff;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: #00bfff;
+    color: #000;
+    font-weight: 600;
+}
+
+.btn-primary:hover {
+    background: #0080ff;
+    color: #fff;
+}
+
+.btn-success {
+    background: #4CAF50;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background: #45a049;
+}
+
+.btn-secondary {
+    background: #333;
+    color: #b0b0b0;
+    border: 1px solid #444;
+}
+
+.btn-secondary:hover {
+    background: #444;
+    color: #ffffff;
+}
+
+.btn-sm {
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+.btn-full {
+    width: 100%;
+    justify-content: center;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #777;
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 14px;
+}
+
+@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .right-column {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .project-detail-container {
+        padding: 15px;
+    }
+    
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .project-actions {
+        width: 100%;
+        justify-content: stretch;
+    }
+    
+    .project-actions .btn {
+        flex: 1;
+        justify-content: center;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+function toggleProjectInfo() {
+    const panel = document.getElementById('project-info-panel');
+    panel.classList.toggle('show');
+}
+
+document.getElementById('file-input')?.addEventListener('change', function(e) {
+    const fileText = this.nextElementSibling.querySelector('.file-text');
+    if (this.files.length > 0) {
+        fileText.textContent = this.files[0].name;
+    } else {
+        fileText.textContent = 'Choose file...';
+    }
+});
+
+document.getElementById('upload-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    try {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        submitBtn.disabled = true;
+        
+        const formData = new FormData(this);
+        const res = await fetch(this.action, {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            alert('Deliverable uploaded successfully!');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert(data.error || 'Upload failed');
+        }
+    } catch (error) {
+        alert('Upload failed: ' + error.message);
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+document.getElementById('submit-work-form')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    if (!confirm('Are you sure you want to submit this work for review? This will notify the client.')) {
+        return;
+    }
+    
+    try {
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+        submitBtn.disabled = true;
+        
+        const res = await fetch(this.action, {
+            method: 'POST',
+            headers: {'X-CSRFToken': '{{ csrf_token }}'}
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            alert('Work submitted for review successfully!');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            alert(data.error || 'Submission failed');
+        }
+    } catch (error) {
+        alert('Submission failed: ' + error.message);
+    } finally {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+</script>
+{% endblock %}
