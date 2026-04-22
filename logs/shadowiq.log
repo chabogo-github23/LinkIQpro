@@ -1429,3 +1429,6 @@ INFO 2026-04-22 18:46:44,365 autoreload 20644 10092 Watching for file changes wi
 INFO 2026-04-22 18:52:52,058 autoreload 7952 13180 Watching for file changes with StatReloader
 INFO 2026-04-22 19:46:04,725 autoreload 6680 6672 Watching for file changes with StatReloader
 INFO 2026-04-23 01:50:15,263 autoreload 20960 1876 Watching for file changes with StatReloader
+WARNING 2026-04-23 01:50:41,775 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 01:51:04,456 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 01:51:24,108 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
