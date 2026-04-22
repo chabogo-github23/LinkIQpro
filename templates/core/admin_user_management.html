@@ -260,14 +260,6 @@
         <a href="{% url 'core:admin_create_user' %}" class="btn btn-primary">+ Create New User</a>
     </div>
 
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}" style="margin-bottom: 1rem; padding: 1rem; border-radius: 0.5rem; background: {% if message.tags == 'success' %}rgba(39, 174, 96, 0.2){% else %}rgba(255, 107, 107, 0.2){% endif %};">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-
     <div class="stats-grid">
         <div class="stat-card">
             <div class="stat-value">{{ total_users }}</div>
