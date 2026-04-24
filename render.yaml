@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: shadowiq
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+    startCommand: gunicorn shadowiq.wsgi:application
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.8
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: CSRF_TRUSTED_ORIGINS
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
