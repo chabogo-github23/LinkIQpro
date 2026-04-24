@@ -1432,3 +1432,53 @@ INFO 2026-04-23 01:50:15,263 autoreload 20960 1876 Watching for file changes wit
 WARNING 2026-04-23 01:50:41,775 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
 WARNING 2026-04-23 01:51:04,456 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
 WARNING 2026-04-23 01:51:24,108 log 20960 22380 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2026-04-23 02:08:01,809 autoreload 16872 20128 Watching for file changes with StatReloader
+WARNING 2026-04-23 03:03:24,541 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 03:04:44,450 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 03:04:51,752 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 03:04:51,941 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 03:04:57,275 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+WARNING 2026-04-23 03:05:04,379 log 16872 12068 Not Found: /.well-known/appspecific/com.chrome.devtools.json
+INFO 2026-04-23 11:11:33,263 autoreload 11652 11368 Watching for file changes with StatReloader
+WARNING 2026-04-23 13:40:05,950 log 11652 17624 Not Found: /favicon.ico
+INFO 2026-04-23 15:31:22,200 services 11652 20756 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+ERROR 2026-04-23 15:31:22,400 utils 11652 20756 Failed to fetch exchange rates: HTTPSConnectionPool(host='api.exchangerate-api.com', port=443): Max retries exceeded with url: /v4/latest/USD (Caused by NameResolutionError("<urllib3.connection.HTTPSConnection object at 0x000001BB7560B0E0>: Failed to resolve 'api.exchangerate-api.com' ([Errno 11001] getaddrinfo failed)"))
+ERROR 2026-04-23 15:31:22,403 paystack 11652 20756 Currency conversion failed: Failed to fetch exchange rates. Please try again.
+WARNING 2026-04-23 15:31:22,405 log 11652 20756 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+WARNING 2026-04-24 13:09:16,192 log 11652 21444 Not Found: /project/SIQ-TZ6ABV/None
+INFO 2026-04-24 14:47:35,053 autoreload 21052 4604 Watching for file changes with StatReloader
+WARNING 2026-04-24 14:47:50,773 base 21052 17852 Session data corrupted
+WARNING 2026-04-24 14:47:50,961 base 21052 17852 Session data corrupted
+WARNING 2026-04-24 14:47:53,750 base 21052 17852 Session data corrupted
+WARNING 2026-04-24 14:48:01,294 base 21052 17852 Session data corrupted
+WARNING 2026-04-24 14:48:05,782 log 21052 17852 Not Found: /project/SIQ-TZ6ABV/None
+WARNING 2026-04-24 14:48:24,249 log 21052 17852 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-04-24 14:49:05,396 services 21052 17852 Initiating Paystack payment: project=SIQ-TZ6ABV, amount=$0.01 USD, target_currency=KES, milestones=1
+INFO 2026-04-24 14:49:07,692 utils 21052 17852 Currency conversion: $0.01 USD -> 1.29 KES (rate: 129.12, smallest unit: 129)
+INFO 2026-04-24 14:49:07,694 paystack 21052 17852 Paystack payment: $0.01 USD -> 1.29 KES (smallest unit: 129)
+INFO 2026-04-24 14:49:07,695 paystack 21052 17852 Paystack payload: email=calebchabogo@gmail.com, amount=129, currency=KES
+INFO 2026-04-24 14:49:09,782 services 21052 17852 Paystack payment initiated: ref=hfsv54z7j8, converted=1.2912000000000001 KES
+WARNING 2026-04-24 14:50:36,762 log 21052 17852 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+WARNING 2026-04-24 15:08:44,795 log 21052 21172 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+WARNING 2026-04-24 15:09:46,146 log 21052 21172 Bad Request: /project/SIQ-TZ6ABV/create-milestone-payment/
+INFO 2026-04-24 15:22:58,748 autoreload 21052 4604 C:\Users\HomePC\shadow\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-04-24 15:23:02,472 autoreload 23268 19968 Watching for file changes with StatReloader
+INFO 2026-04-24 15:23:06,383 autoreload 23268 19968 C:\Users\HomePC\shadow\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-04-24 15:23:10,597 autoreload 3328 12384 Watching for file changes with StatReloader
+WARNING 2026-04-24 15:23:34,944 log 3328 21856 Not Found: /project/SIQ-TZ6ABV/None
+INFO 2026-04-24 16:10:08,828 autoreload 22520 18140 Watching for file changes with StatReloader
+WARNING 2026-04-24 16:14:54,556 log 22520 18252 Forbidden (Origin checking failed - https://c166-102-204-91-170.ngrok-free.app does not match any trusted origins.): /auth/request-magic-link/
+WARNING 2026-04-24 16:14:55,389 log 22520 18252 Not Found: /favicon.ico
+WARNING 2026-04-24 16:15:34,278 log 22520 18252 Forbidden (Origin checking failed - https://c166-102-204-91-170.ngrok-free.app does not match any trusted origins.): /auth/request-magic-link/
+WARNING 2026-04-24 16:17:13,776 log 22520 8236 Not Found: /project/SIQ-TZ6ABV/None
+WARNING 2026-04-24 16:17:55,337 log 22520 20224 Forbidden (Origin checking failed - https://c166-102-204-91-170.ngrok-free.app does not match any trusted origins.): /auth/request-magic-link/
+WARNING 2026-04-24 16:18:46,431 log 22520 20224 Forbidden (Origin checking failed - https://c166-102-204-91-170.ngrok-free.app does not match any trusted origins.): /auth/request-magic-link/
+INFO 2026-04-24 16:22:13,001 autoreload 22520 18140 C:\Users\HomePC\shadow\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-04-24 16:22:16,834 autoreload 23548 22088 Watching for file changes with StatReloader
+INFO 2026-04-24 16:23:11,421 autoreload 14556 1128 Watching for file changes with StatReloader
+WARNING 2026-04-24 16:25:27,439 log 14556 21516 Not Found: /project/SIQ-TZ6ABV/None
+INFO 2026-04-24 17:05:47,334 autoreload 6720 13492 Watching for file changes with StatReloader
+INFO 2026-04-24 17:57:39,294 autoreload 17320 4084 Watching for file changes with StatReloader
+INFO 2026-04-24 18:01:16,741 autoreload 17320 4084 C:\Users\HomePC\shadow\shadowIQr\shadowiq\settings.py changed, reloading.
+INFO 2026-04-24 18:01:20,260 autoreload 15328 240 Watching for file changes with StatReloader
+INFO 2026-04-24 18:01:59,651 autoreload 13716 17260 Watching for file changes with StatReloader

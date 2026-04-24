@@ -1,0 +1,1 @@
+web: gunicorn shadowiq.wsgi:application
