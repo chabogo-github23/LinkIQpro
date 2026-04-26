@@ -859,7 +859,7 @@ body {
                             <span>{{ milestone.get_payment_status_display }}</span>
                         </div>
                         {% if milestone.payment_status == 'unfunded' and project.status == 'accepted' %}
-                        <a href="{% url 'core:milestone_payment' project.project_id milestone.id %}" class="btn btn-primary btn-sm" style="margin-top: 0.75rem; width: 100%; text-align: center;">
+                        <a href="{% url 'core:milestone_payment' project.project_id %}" class="btn btn-primary btn-sm" style="margin-top: 0.75rem; width: 100%; text-align: center;">
                             Pay Now
                         </a>
                         {% endif %}
