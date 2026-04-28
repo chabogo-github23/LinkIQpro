@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Check Your Email - ShadowIQ{% endblock %}
+{% block title %}Check Your Email - LinkIQpro{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -62,7 +62,7 @@
     <h1>Check Your Email</h1>
     <p>We've sent a magic link to:</p>
     <div class="email-highlight">{{ email }}</div>
-    <p>Click the link in the email to access your ShadowIQ account. The link expires in 24 hours.</p>
+    <p>Click the link in the email to access your LinkIQpro account. The link expires in 24 hours.</p>
     <p style="font-size: 0.875rem; margin-top: 2rem;">
         Didn't receive the email? Check your spam folder or <a href="{% url 'core:login' %}" style="color: var(--accent-primary);">try again</a>.
     </p>

@@ -74,8 +74,9 @@ TEMPLATES = [
 WSGI_APPLICATION = 'shadowiq.wsgi.application'
 
 database_url = os.environ.get('DATABASE_URL', '').strip()
+use_sqlite_local = os.environ.get('USE_SQLITE_LOCAL', 'False').lower() == 'true'
 
-if database_url:
+if database_url and not use_sqlite_local:
     parsed_db = urlparse(database_url)
     query_params = parse_qs(parsed_db.query)
 
@@ -130,15 +131,6 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_AGE = 86400 * 7  # 7 days
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-
-# Security settings
-SECURE_SSL_REDIRECT = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SECURE = not DEBUG
-SECURE_HSTS_SECONDS = 31536000 if not DEBUG else 0
-SECURE_HSTS_INCLUDE_SUBDOMAINS = not DEBUG
-SECURE_HSTS_PRELOAD = not DEBUG
-
 
 # Email settings for password reset
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
@@ -204,4 +196,48 @@ CSRF_TRUSTED_ORIGINS = get_list_env(
     'CSRF_TRUSTED_ORIGINS',
     'https://*.ngrok-free.app',
 )
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Vercel/Serverless configuration
+IS_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
+
+if IS_VERCEL:
+    # Allow Vercel domains
+    ALLOWED_HOSTS = get_list_env('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+    allowed_host = os.environ.get('VERCEL_BRANCH_URL', '')
+    if allowed_host:
+        ALLOWED_HOSTS.append(allowed_host)
+    allowed_host = os.environ.get('VERCEL_URL', '')
+    if allowed_host:
+        ALLOWED_HOSTS.append(allowed_host)
+    
+    # CSRF trusted origins for Vercel
+    CSRF_TRUSTED_ORIGINS = get_list_env('CSRF_TRUSTED_ORIGINS', 'https://*.ngrok-free.app')
+    vercel_url = os.environ.get('VERCEL_URL', '')
+    if vercel_url:
+        CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_url}')
+    vercel_branch_url = os.environ.get('VERCEL_BRANCH_URL', '')
+    if vercel_branch_url:
+        CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_branch_url}')
+    
+    # Security settings for production behind Vercel's HTTPS
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # Disable persistent database connections for serverless
+    if 'default' in DATABASES:
+        DATABASES['default']['CONN_MAX_AGE'] = 0
+        if 'OPTIONS' not in DATABASES['default']:
+            DATABASES['default']['OPTIONS'] = {}
+        DATABASES['default']['OPTIONS']['sslmode'] = 'require'
+
+# Default Security Settings (Handled by environment)
+if not DEBUG and not IS_VERCEL:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+else:
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
