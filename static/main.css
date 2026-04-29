@@ -1,0 +1,622 @@
+/* ============================================
+   CSS CUSTOM PROPERTIES (THEME VARIABLES)
+   ============================================ */
+
+/* Light Theme Variables (Default) */
+:root {
+    /* Text colors */
+    --text-primary: #1a1a1a;
+    --text-secondary: #2c2c2c;
+    --text-muted: #4a4a4a;
+    
+    /* Background colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f1f3f5;
+    
+    /* Accent colors */
+    --accent-primary: #007bff;
+    --accent-secondary: #00d9ff;
+    --accent-gradient: linear-gradient(135deg, #007bff, #00d9ff);
+    
+    /* Status colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --info: #3b82f6;
+    
+    /* Border colors */
+    --border-color: rgba(0, 0, 0, 0.1);
+    --border-light: rgba(0, 0, 0, 0.05);
+    
+    /* Shadow */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark Theme Variables */
+body.dark-theme {
+    --text-primary: #ffffff;
+    --text-secondary: #e0e0e0;
+    --text-muted: #b0b0b0;
+    
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2a2a2a;
+    
+    --accent-primary: #66b0ff;
+    --accent-secondary: #66e0ff;
+    --accent-gradient: linear-gradient(135deg, #66b0ff, #66e0ff);
+    
+    --success: #34d399;
+    --warning: #fbbf24;
+    --error: #f87171;
+    --info: #60a5fa;
+    
+    --border-color: rgba(255, 255, 255, 0.1);
+    --border-light: rgba(255, 255, 255, 0.05);
+    
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.25);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Apply theme variables to body */
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Ensure all text elements use theme variables */
+p, li, .text-content, .description, span:not(.badge):not(.icon) {
+    color: var(--text-secondary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--text-primary);
+}
+
+a {
+    color: var(--accent-primary);
+}
+
+a:hover {
+    color: var(--accent-secondary);
+}
+
+.text-muted, small, .small-text {
+    color: var(--text-muted);
+}
+
+/* Fix for the landing page background gradient */
+.landing-page::before {
+    background:
+        radial-gradient(circle at top left, rgba(0, 217, 255, 0.22), transparent 42%),
+        radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 28%),
+        linear-gradient(180deg, rgba(8, 19, 28, 0.95), rgba(15, 15, 15, 0));
+}
+
+/* Fix hero panel and cards for dark/light mode */
+.hero-panel {
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.06), rgba(0, 0, 0, 0.02)),
+        var(--bg-secondary);
+    border: 1px solid var(--border-color);
+}
+
+body.dark-theme .hero-panel {
+    background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
+        var(--bg-secondary);
+}
+
+.feature-card,
+.service-card,
+.use-case-item,
+.process-step,
+.panel-stat,
+.panel-workflow,
+.trust-item {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+}
+
+body.dark-theme .feature-card,
+body.dark-theme .service-card,
+body.dark-theme .use-case-item,
+body.dark-theme .process-step {
+    background: var(--bg-tertiary);
+}
+
+/* Fix panel text colors */
+.panel-stat strong {
+    color: var(--text-primary);
+}
+
+.panel-stat span,
+.panel-workflow li,
+.panel-workflow ul {
+    color: var(--text-secondary);
+}
+
+.panel-workflow li strong {
+    background: rgba(0, 217, 255, 0.12);
+    color: var(--accent-primary);
+}
+
+/* Fix section headings */
+.section-heading h2 {
+    color: var(--accent-primary);
+}
+
+.section-heading p {
+    color: var(--text-secondary);
+}
+
+/* Fix CTA section */
+.cta-section {
+    background:
+        radial-gradient(circle at top left, rgba(0, 217, 255, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(0, 217, 255, 0.12), rgba(0, 153, 204, 0.08)),
+        var(--bg-secondary);
+    border-color: var(--accent-primary);
+}
+
+/* Fix buttons */
+.btn-primary {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-secondary);
+    color: white;
+}
+
+.btn-secondary {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    border-color: var(--accent-primary);
+    color: var(--accent-primary);
+}
+
+/* Fix jump links */
+.section-jump-links a {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.section-jump-links a:hover {
+    color: var(--text-primary);
+    border-color: var(--accent-primary);
+}
+
+
+/* ============================================
+   BASE TYPOGRAPHY & THEME DEFAULTS
+   ============================================ */
+
+/* Light Theme Defaults - Improved Contrast */
+body {
+    background-color: #ffffff;
+    color: #1a1a1a; /* Darker for better legibility */
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings - Maximum contrast */
+h1, h2, h3, h4, h5, h6 {
+    color: #000000;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+}
+
+/* Paragraphs and body text */
+p, li, .text-content, .description {
+    color: #2c2c2c;
+    font-weight: 400;
+    line-height: 1.7;
+}
+
+/* Links - Highly visible */
+a {
+    color: #0056b3;
+    text-decoration: underline;
+    font-weight: 500;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: #003d80;
+    text-decoration: none;
+}
+
+/* Buttons and interactive elements */
+button, .btn, input, textarea, select {
+    color: #1a1a1a;
+    font-weight: 500;
+}
+
+/* Secondary / muted text - Much darker than default */
+.text-muted, .secondary-text, small, .small-text, .help-text {
+    color: #4a4a4a;
+    font-weight: 400;
+}
+
+/* Code blocks */
+code, pre {
+    color: #2c3e50;
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-size: 0.9em;
+}
+
+pre {
+    padding: 12px;
+    overflow-x: auto;
+}
+
+/* Form elements */
+label {
+    color: #1a1a1a;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Placeholder text - Fix for too-light placeholders */
+::placeholder {
+    color: #6c6c6c !important;
+    opacity: 1;
+}
+
+:-ms-input-placeholder {
+    color: #6c6c6c !important;
+}
+
+::-ms-input-placeholder {
+    color: #6c6c6c !important;
+}
+
+/* Cards and containers */
+.card, .container-box, .panel {
+    color: #2c2c2c;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+/* Lists */
+ul, ol {
+    color: #2c2c2c;
+}
+
+/* Blockquotes */
+blockquote {
+    color: #4a4a4a;
+    border-left: 4px solid #007bff;
+    padding-left: 1rem;
+    margin: 1rem 0;
+}
+
+/* Tables */
+table {
+    color: #2c2c2c;
+}
+
+th {
+    color: #000000;
+    font-weight: 600;
+}
+
+td {
+    color: #2c2c2c;
+}
+
+/* ============================================
+   HAMBURGER MENU ICON
+   ============================================ */
+
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 25px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    z-index: 1000;
+}
+
+.menu-toggle .bar {
+    width: 100%;
+    height: 3px;
+    background-color: #1a1a1a; /* Darker for better visibility */
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Hamburger animation */
+.menu-toggle.open .bar:nth-child(1) {
+    transform: translateY(9px) rotate(45deg);
+}
+
+.menu-toggle.open .bar:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.open .bar:nth-child(3) {
+    transform: translateY(-9px) rotate(-45deg);
+}
+
+/* ============================================
+   MOBILE NAVIGATION MENU
+   ============================================ */
+
+.mobile-nav {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 280px; /* Slightly wider for better readability */
+    height: 100vh;
+    background-color: #ffffff;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.15);
+    padding-top: 70px;
+    z-index: 999;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+}
+
+.mobile-nav.is-open {
+    transform: translateX(0);
+}
+
+.mobile-nav a {
+    padding: 15px 24px;
+    text-decoration: none;
+    color: #1a1a1a;
+    font-weight: 500;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background-color 0.2s ease;
+}
+
+.mobile-nav a:hover {
+    background-color: #f5f5f5;
+    color: #0056b3;
+}
+
+/* ============================================
+   THEME TOGGLE BUTTON
+   ============================================ */
+
+.theme-toggle-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    margin: 20px;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 500;
+    align-self: center;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.02);
+}
+
+.theme-toggle-button:active {
+    transform: scale(0.98);
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINT
+   ============================================ */
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+    
+    .desktop-nav {
+        display: none;
+    }
+}
+
+/* ============================================
+   DARK THEME STYLES - Enhanced Version
+   ============================================ */
+
+body.dark-theme {
+    background-color: #121212; /* Darker, richer dark */
+    color: #e8e8e8;
+}
+
+body.dark-theme h1,
+body.dark-theme h2,
+body.dark-theme h3,
+body.dark-theme h4,
+body.dark-theme h5,
+body.dark-theme h6 {
+    color: #ffffff;
+}
+
+body.dark-theme p,
+body.dark-theme li,
+body.dark-theme .text-content,
+body.dark-theme .description {
+    color: #d0d0d0;
+}
+
+body.dark-theme a {
+    color: #66b0ff;
+}
+
+body.dark-theme a:hover {
+    color: #8cc4ff;
+}
+
+body.dark-theme .text-muted,
+body.dark-theme .secondary-text,
+body.dark-theme small,
+body.dark-theme .small-text,
+body.dark-theme .help-text {
+    color: #b0b0b0;
+}
+
+body.dark-theme code,
+body.dark-theme pre {
+    color: #e8e8e8;
+    background-color: #2a2a2a;
+}
+
+body.dark-theme label {
+    color: #e8e8e8;
+}
+
+body.dark-theme ::placeholder {
+    color: #8a8a8a !important;
+}
+
+body.dark-theme .card,
+body.dark-theme .container-box,
+body.dark-theme .panel {
+    background-color: #1e1e1e;
+    border-color: #333333;
+    color: #e8e8e8;
+}
+
+body.dark-theme blockquote {
+    color: #b0b0b0;
+    border-left-color: #66b0ff;
+}
+
+body.dark-theme table {
+    color: #e8e8e8;
+}
+
+body.dark-theme th {
+    color: #ffffff;
+}
+
+body.dark-theme td {
+    color: #d0d0d0;
+}
+
+/* Dark Theme - Menu Elements */
+body.dark-theme .menu-toggle .bar {
+    background-color: #e8e8e8;
+}
+
+body.dark-theme .mobile-nav {
+    background-color: #1a1a1a;
+    box-shadow: -2px 0 8px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .mobile-nav a {
+    color: #e8e8e8;
+    border-bottom: 1px solid #333333;
+}
+
+body.dark-theme .mobile-nav a:hover {
+    background-color: #2a2a2a;
+    color: #66b0ff;
+}
+
+/* Dark Theme - Form Elements */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select {
+    background-color: #2a2a2a;
+    color: #e8e8e8;
+    border-color: #444444;
+}
+
+body.dark-theme button:not(.theme-toggle-button) {
+    background-color: #333333;
+    color: #e8e8e8;
+    border-color: #555555;
+}
+
+body.dark-theme button:not(.theme-toggle-button):hover {
+    background-color: #444444;
+}
+
+/* ============================================
+   LANDING PAGE SPECIFIC IMPROVEMENTS
+   ============================================ */
+
+/* Hero section text */
+.hero h1, .landing-title, .main-heading, .hero-text {
+    text-shadow: none;
+    letter-spacing: -0.02em;
+}
+
+/* Call-to-action buttons */
+.cta-button, .primary-button {
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+/* Testimonials or card text */
+.testimonial-text, .card-text {
+    line-height: 1.7;
+    color: #2c2c2c;
+}
+
+body.dark-theme .testimonial-text,
+body.dark-theme .card-text {
+    color: #d0d0d0;
+}
+
+/* ============================================
+   UTILITY CLASSES FOR BETTER VISIBILITY
+   ============================================ */
+
+.text-high-contrast {
+    color: #000000 !important;
+}
+
+.text-readable {
+    color: #2c2c2c !important;
+}
+
+body.dark-theme .text-high-contrast {
+    color: #ffffff !important;
+}
+
+body.dark-theme .text-readable {
+    color: #e8e8e8 !important;
+}
+
+/* Improved focus states for accessibility */
+*:focus-visible {
+    outline: 2px solid #0056b3;
+    outline-offset: 2px;
+}
+
+body.dark-theme *:focus-visible {
+    outline: 2px solid #66b0ff;
+}
+
+/* Smooth scrolling for better UX */
+html {
+    scroll-behavior: smooth;
+}

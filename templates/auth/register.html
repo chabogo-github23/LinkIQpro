@@ -7,7 +7,7 @@
 <div class="auth-container">
     <div class="auth-card">
         <h1>Create Your Account</h1>
-        <p>Register with a pseudonym to maintain your privacy</p>
+        <p>Register with a Username to maintain your privacy</p>
 
         {% if error %}
             <div class="alert alert-danger">{{ error }}</div>
@@ -17,9 +17,9 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="alias">Pseudonym / Username *</label>
+                <label for="alias">Username /*</label>
                 <input type="text" id="alias" name="alias" required
-                       placeholder="Choose a unique pseudonym" 
+                       placeholder="Choose a unique Username" 
                        value="{{ alias|default:'' }}"
                        minlength="3">
                 <small>At least 3 characters. This will be your identity on LinkIQpro.</small>

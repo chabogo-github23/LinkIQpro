@@ -7,20 +7,21 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-def get_list_env(name, default=''):
-    value = os.environ.get(name, default)
-    return [item.strip() for item in value.split(',') if item.strip()]
-
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
 DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 def get_list_env(name, default=""):
-    return [x.strip() for x in os.environ.get(name, default).split(",") if x.strip()]
+    value = os.environ.get(name, default)
+    return [x.strip() for x in value.split(",") if x.strip()]
 
 ALLOWED_HOSTS = get_list_env("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = get_list_env("CSRF_TRUSTED_ORIGINS")
+
+# Always allow local development origins if DEBUG is True
+if DEBUG:
+    ALLOWED_HOSTS.extend(["localhost", "127.0.0.1", "[::1]"])
+    CSRF_TRUSTED_ORIGINS.extend(["http://localhost:8000", "http://127.0.0.1:8000"])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -39,17 +40,25 @@ INSTALLED_APPS = [
     'apps.messaging',
     'apps.audit',
     'apps.negotiations',
+    'sslserver',
+
     
     # Legacy core app (for backward compatibility during migration)
     'core',
 ]
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': 'dmldohxr0',
-    'API_KEY': '627527312298178',
-    'API_SECRET': 'zw0I9vSuezU_Zn1ttUXmi8yinrQ'
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dmldohxr0'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '627527312298178'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'zw0I9vSuezU_Zn1ttUXmi8yinrQ')
 }
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
+# Use Cloudinary for media only in production or if explicitly configured
+if not DEBUG or os.environ.get('USE_CLOUDINARY_IN_DEV', 'False').lower() == 'true':
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,9 +141,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-#STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -172,8 +178,10 @@ PAYPAL_CLIENT_ID = os.getenv("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.getenv("PAYPAL_SECRET", "")
 PAYPAL_SECRET = os.getenv("PAYPAL_SECRET", "")  
 PAYPAL_MODE = os.getenv("PAYPAL_MODE", "sandbox")
-#PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com" if PAYPAL_MODE == "sandbox" else "https://api-m.paypal.com"
-PAYPAL_BASE_URL = "https://api-m.paypal.com"
+if PAYPAL_MODE == "sandbox":
+    PAYPAL_BASE_URL = "https://api-m.sandbox.paypal.com"
+else:
+    PAYPAL_BASE_URL = "https://api-m.paypal.com"
 
 
 # Paystack API keys
@@ -207,32 +215,23 @@ LOGGING = {
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "SAMEORIGIN"
 
-CSRF_TRUSTED_ORIGINS = get_list_env(
-    'CSRF_TRUSTED_ORIGINS',
-    'https://*.ngrok-free.app',
-)
-
 # Vercel/Serverless configuration
 IS_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
 
 if IS_VERCEL:
-    # Allow Vercel domains
-    ALLOWED_HOSTS = get_list_env('ALLOWED_HOSTS', 'localhost,127.0.0.1')
-    allowed_host = os.environ.get('VERCEL_BRANCH_URL', '')
-    if allowed_host:
-        ALLOWED_HOSTS.append(allowed_host)
-    allowed_host = os.environ.get('VERCEL_URL', '')
-    if allowed_host:
-        ALLOWED_HOSTS.append(allowed_host)
-    
-    # CSRF trusted origins for Vercel
-    CSRF_TRUSTED_ORIGINS = get_list_env('CSRF_TRUSTED_ORIGINS', 'https://*.ngrok-free.app')
-    vercel_url = os.environ.get('VERCEL_URL', '')
+    # Dynamically add Vercel deployment URLs to allowed hosts
+    vercel_url = os.environ.get('VERCEL_URL')
     if vercel_url:
-        CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_url}')
-    vercel_branch_url = os.environ.get('VERCEL_BRANCH_URL', '')
+        ALLOWED_HOSTS.append(vercel_url)
+        CSRF_TRUSTED_ORIGINS.append(f"https://{vercel_url}")
+
+    vercel_branch_url = os.environ.get('VERCEL_BRANCH_URL')
     if vercel_branch_url:
-        CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_branch_url}')
+        ALLOWED_HOSTS.append(vercel_branch_url)
+        CSRF_TRUSTED_ORIGINS.append(f"https://{vercel_branch_url}")
+    
+    # Clean duplicates
+    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS))
     
     # Security settings for production behind Vercel's HTTPS
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -247,12 +246,13 @@ if IS_VERCEL:
             DATABASES['default']['OPTIONS'] = {}
         DATABASES['default']['OPTIONS']['sslmode'] = 'require'
 
-# Default Security Settings (Handled by environment)
-if not DEBUG and not IS_VERCEL:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-else:
+# Final Security overrides based on DEBUG mode
+if DEBUG:
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
+else:
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')

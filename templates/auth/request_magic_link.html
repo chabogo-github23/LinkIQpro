@@ -7,7 +7,7 @@
 <div class="auth-container">
     <div class="auth-card">
         <h1>Get Secure Access</h1>
-        <p>Enter your pseudonym/Username and password to receive a secure login access link</p>
+        <p>Enter your Username and password to receive a secure login access link</p>
 
         {% if error %}
             <div class="alert alert-danger">{{ error }}</div>
@@ -17,9 +17,9 @@
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="alias">Choose Your pseudonym/Username</label>
+                <label for="alias">Choose Your Username</label>
                 <input type="text" id="alias" name="alias" required
-                       placeholder="pseudonym/Username" value="{{ request.POST.alias }}">
+                       placeholder="Username" value="{{ request.POST.alias }}">
             </div>
             
             <div class="form-group">
