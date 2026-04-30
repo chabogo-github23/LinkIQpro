@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
-DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 def get_list_env(name, default=""):
     value = os.environ.get(name, default)
@@ -40,14 +40,14 @@ INSTALLED_APPS = [
     'apps.messaging',
     'apps.audit',
     'apps.negotiations',
-    #'sslserver',
+   # 'sslserver',
 
     
     # Legacy core app (for backward compatibility during migration)
     'core',
 ]
-if DEBUG:
-    INSTALLED_APPS.append('sslserver')
+#if DEBUG:
+ #   INSTALLED_APPS.append('sslserver')
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dmldohxr0'),
@@ -255,7 +255,8 @@ if DEBUG:
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
 else:
-    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() == 'true'
+    # Default to False locally, but True on Vercel or if explicitly set
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', str(IS_VERCEL)).lower() == 'true'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
