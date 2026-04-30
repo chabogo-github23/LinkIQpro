@@ -22,6 +22,7 @@
     }
   ],
   "env": {
+    "DEBUG": "False",
     "DJANGO_SETTINGS_MODULE": "shadowiq.settings",
     "VERCEL": "1"
   }

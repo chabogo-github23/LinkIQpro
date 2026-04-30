@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DJANGO_DEBUG', 'False') == 'True'
 
 def get_list_env(name, default=""):
     value = os.environ.get(name, default)
@@ -40,12 +40,15 @@ INSTALLED_APPS = [
     'apps.messaging',
     'apps.audit',
     'apps.negotiations',
-    'sslserver',
+    #'sslserver',
 
     
     # Legacy core app (for backward compatibility during migration)
     'core',
 ]
+if DEBUG:
+    INSTALLED_APPS.append('sslserver')
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dmldohxr0'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '627527312298178'),
