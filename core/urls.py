@@ -24,6 +24,14 @@ urlpatterns = [
     path('dashboard/client/', views.client_dashboard, name='client_dashboard'),
     path('dashboard/analyst/', views.analyst_dashboard, name='analyst_dashboard'),
     path('dashboard/admin/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/sub-admin/', views.sub_admin_dashboard, name='sub_admin_dashboard'),
+    path('dashboard/sub-admin/activities/', views.sub_admin_activities, name='sub_admin_activities'),
+    path('dashboard/sub-admin/analysts/', views.sub_admin_analyst_list, name='sub_admin_analyst_list'),
+    path('dashboard/sub-admin/analysts/create/', views.sub_admin_create_analyst, name='sub_admin_create_analyst'),
+    path('dashboard/sub-admin/analysts/<uuid:user_id>/', views.sub_admin_analyst_detail, name='sub_admin_analyst_detail'),
+    path('dashboard/sub-admin/analysts/<uuid:user_id>/edit/', views.sub_admin_edit_analyst, name='sub_admin_edit_analyst'),
+    path('dashboard/sub-admin/projects/', views.sub_admin_project_list, name='sub_admin_project_list'),
+    path('dashboard/sub-admin/projects/<str:project_id>/', views.sub_admin_project_manage, name='sub_admin_project_manage'),
 
     # Project submission
     path('project/submit/', views.submit_project, name='submit_project'),

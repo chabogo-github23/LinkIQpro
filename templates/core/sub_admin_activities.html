@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Workspace Activities{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'core:sub_admin_dashboard' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <h1>Workspace Activities</h1>
+    <p>Recent actions from your projects and analysts in real-time.</p>
+</div>
+
+{% if logs %}
+<div class="activity-timeline">
+    {% for log in logs %}
+    <div class="activity-item">
+        <div class="activity-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1;">
+                <div style="width: 32px; height: 32px; background: var(--bg-tertiary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-primary);">
+                    <i class="fas fa-{% if 'created' in log.action|lower %}plus{% elif 'updated' in log.action|lower %}edit{% elif 'assigned' in log.action|lower %}user-tie{% elif 'deleted' in log.action|lower %}trash{% else %}info-circle{% endif %}"></i>
+                </div>
+                <div style="flex: 1;">
+                    <strong class="activity-action">{{ log.action }}</strong>
+                    {% if log.project %}
+                    <span style="color: var(--accent-secondary); margin-left: 0.5rem; font-size: 0.9rem;">
+                        <i class="fas fa-folder"></i> {{ log.project.project_id }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            <span class="activity-time">
+                <i class="fas fa-clock"></i> {{ log.created_at|date:"M d, Y H:i" }}
+            </span>
+        </div>
+        <div class="activity-by">
+            By: <strong>{{ log.user.alias|default:"System" }}</strong>
+            {% if log.project %} | Project: <strong>{{ log.project.title|truncatewords:4 }}</strong>{% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-inbox"></i>
+    <p>No activities recorded yet. Your actions will appear here.</p>
+</div>
+{% endif %}
+{% endblock %}

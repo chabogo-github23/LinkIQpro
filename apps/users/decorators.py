@@ -34,6 +34,8 @@ def pseudonymous_user_required(view_func):
         user = get_current_user(request)
         if not user:
             return redirect('core:request_magic_link')
+        if not user.is_active:
+            return redirect('core:request_magic_link')
         request.user = user
         return view_func(request, *args, **kwargs)
     return wrapper
@@ -46,7 +48,23 @@ def admin_required(view_func):
         user = get_current_user(request)
         if not user:
             return redirect('core:request_magic_link')
+        if not user.is_active:
+            return redirect('core:request_magic_link')
         if not user.is_admin:
+            return render(request, 'core/access_denied.html', status=403)
+        request.user = user
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+def main_admin_required(view_func):
+    """Decorator requiring main admin role"""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        user = get_current_user(request)
+        if not user:
+            return redirect('core:request_magic_link')
+        if not user.is_active or not user.is_main_admin:
             return render(request, 'core/access_denied.html', status=403)
         request.user = user
         return view_func(request, *args, **kwargs)
@@ -60,7 +78,25 @@ def analyst_required(view_func):
         user = get_current_user(request)
         if not user:
             return redirect('core:request_magic_link')
+        if not user.is_active:
+            return redirect('core:request_magic_link')
         if not user.is_analyst:
+            return render(request, 'core/access_denied.html', status=403)
+        request.user = user
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+def sub_admin_required(view_func):
+    """Decorator requiring sub-admin role"""
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        user = get_current_user(request)
+        if not user:
+            return redirect('core:request_magic_link')
+        if not user.is_active:
+            return redirect('core:request_magic_link')
+        if not user.is_sub_admin:
             return render(request, 'core/access_denied.html', status=403)
         request.user = user
         return view_func(request, *args, **kwargs)
@@ -73,6 +109,8 @@ def client_required(view_func):
     def wrapper(request, *args, **kwargs):
         user = get_current_user(request)
         if not user:
+            return redirect('core:request_magic_link')
+        if not user.is_active:
             return redirect('core:request_magic_link')
         if user.is_admin or user.is_analyst:
             return render(request, 'core/access_denied.html', status=403)

@@ -9,6 +9,7 @@
     <meta name="description" content="{% block meta_description %}LinkIQpro provides managed research, analytics, coding, and technical project delivery through a trusted milestone-based workflow.{% endblock %}">
     <title>{% block title %}LinkIQpro - Managed Technical Project Delivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
+    <link rel="stylesheet" href="{% static 'sub-admin-analyst.css' %}">
     <script src="{% static 'main.js' %}"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
@@ -290,31 +291,36 @@
                 white-space: normal;
             }
 
-            /* nav-links will become a fixed sliding panel on mobile */
+            /* nav-links will become a modal popup at top-right on mobile */
             .nav-links {
                 position: fixed;
-                top: 0;
-                right: 0;
-                height: 100vh;
-                    width: min(70vw, 260px);
-                    background: linear-gradient(180deg, rgba(16,24,31,0.98), rgba(16,24,31,0.94));
-                    backdrop-filter: blur(12px);
-                    box-shadow: -20px 0 50px rgba(0,0,0,0.5);
-                    transform: translateX(100%);
-                    transition: transform 320ms cubic-bezier(0.4, 0, 0.2, 1);
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.6rem;
-                    padding: 70px 1rem 1.5rem 1rem;
-                    z-index: 210;
-                    align-items: stretch;
-                    justify-content: flex-start;
-                    overflow-y: auto;
+                top: 60px;
+                right: 1rem;
+                width: min(85vw, 320px);
+                max-height: calc(100vh - 100px);
+                background: linear-gradient(180deg, rgba(16,24,31,0.99), rgba(16,24,31,0.96));
+                backdrop-filter: blur(16px);
+                border: 1px solid rgba(255,255,255,0.08);
+                border-radius: 12px;
+                box-shadow: 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04);
+                transform: scale(0.95) translateY(-10px);
+                opacity: 0;
+                pointer-events: none;
+                transition: all 220ms cubic-bezier(0.4, 0, 0.2, 1);
+                display: flex;
+                flex-direction: column;
+                gap: 0.6rem;
+                padding: 0.75rem;
+                z-index: 210;
+                align-items: stretch;
+                justify-content: flex-start;
+                overflow-y: auto;
             }
 
-            /* Open state: slide into view */
+            /* Open state: fade and scale into view */
             nav.nav-open .nav-links {
-                transform: translateX(0);
+                transform: scale(1) translateY(0);
+                opacity: 1;
                 pointer-events: auto;
             }
 
@@ -524,9 +530,9 @@
 
             @media (max-width: 768px) {
                 [data-theme="light"] nav .nav-links {
-                    background: linear-gradient(180deg, rgba(247,248,251,0.98), rgba(247,248,251,0.96));
-                    box-shadow: -10px 0 30px rgba(11,18,32,0.04);
-                    border-left: 1px solid rgba(11,18,32,0.06);
+                    background: linear-gradient(180deg, rgba(247,248,251,0.99), rgba(247,248,251,0.96));
+                    box-shadow: 0 20px 60px rgba(11,18,32,0.15), inset 0 1px 0 rgba(11,18,32,0.04);
+                    border-color: rgba(11,18,32,0.08);
                 }
 
                 [data-theme="light"] .nav-links .nav-link,
@@ -538,12 +544,27 @@
             }
 
             [data-theme="light"] .mobile-nav-overlay {
-                background: rgba(11,18,32,0.06);
+                background: rgba(11,18,32,0.1);
+                backdrop-filter: blur(2px);
             }
 
             [data-theme="light"] .mobile-menu-button {
-                border: 1px solid rgba(11,18,32,0.06);
-                background: rgba(11,18,32,0.02);
+                border: 1px solid rgba(11,18,32,0.08);
+                background: rgba(11,18,32,0.03);
+                color: var(--text-primary);
+            }
+
+            [data-theme="light"] .mobile-menu-button:hover {
+                background: rgba(11,18,32,0.06);
+                border-color: rgba(11,18,32,0.12);
+            }
+
+            [data-theme="light"] #mobile-menu-close {
+                color: var(--text-secondary);
+            }
+
+            [data-theme="light"] #mobile-menu-close:hover {
+                background: rgba(11,18,32,0.06);
                 color: var(--text-primary);
             }
 
@@ -621,7 +642,34 @@
 
             /* Hide close button by default */
             .nav-close-item {
-                display: none !important;
+                display: flex !important;
+                margin-bottom: 0.5rem;
+                padding-bottom: 0.75rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+                justify-content: flex-end;
+            }
+
+            /* Close button styling */
+            #mobile-menu-close {
+                width: 32px;
+                height: 32px;
+                padding: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--text-secondary);
+                transition: all 0.2s ease;
+                border-radius: 6px;
+            }
+
+            #mobile-menu-close:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: var(--text-primary);
+            }
+
+            #mobile-menu-close:focus-visible {
+                outline: 2px solid var(--accent-primary);
+                outline-offset: 2px;
             }
 
             @media (max-width: 768px) {
@@ -646,16 +694,17 @@
                     align-items: center;
                     justify-content: flex-start;
                 }
-                    /* overlay (invisible by default) */
+                    /* overlay (minimal for modal) */
                     .mobile-nav-overlay {
                         position: fixed;
                         inset: 0;
-                        background: rgba(0,0,0,0.45);
+                        background: rgba(0,0,0,0.2);
                         opacity: 0;
                         visibility: hidden;
                         transition: opacity 220ms ease, visibility 220ms ease;
                         z-index: 180;
                         pointer-events: none;
+                        backdrop-filter: blur(2px);
                     }
                     .mobile-nav-overlay.open {
                         opacity: 1;
@@ -664,22 +713,35 @@
                     }
                     /* staggered intro for links */
                     .nav-links li {
-                        transform: translateX(12px);
+                        transform: translateX(0);
                         opacity: 0;
-                        transition: transform 280ms cubic-bezier(.2,.9,.2,1), opacity 280ms ease, z-index 0s;
+                        transition: opacity 200ms ease;
                     }
                     .nav-links a, .nav-links button {
                         position: relative;
                         z-index: 141; /* ensure links sit above overlay */
                         pointer-events: auto;
+                        padding: 0.6rem 0.8rem;
+                        border-radius: 8px;
+                        font-size: 14px;
                     }
+                    
+                    .nav-links .nav-link {
+                        width: 100%;
+                        justify-content: flex-start;
+                        padding-left: 0.8rem;
+                    }
+
+                    .nav-links li:not(.nav-close-item) {
+                        transform: translateX(0);
+                    }
+
                     nav.nav-open .nav-links li {
                         transform: translateX(0);
                         opacity: 1;
                     }
                     nav.nav-open .nav-links li:nth-child(1) { 
                         transition-delay: 0s;
-                        transform: translateX(0);
                         opacity: 1;
                     }
                     nav.nav-open .nav-links li:nth-child(2) { transition-delay: 0.04s; }
@@ -841,7 +903,7 @@
                 <a href="{% url 'core:home' %}" class="logo-container" aria-label="LinkIQpro home">
                     <img src="https://res.cloudinary.com/dmldohxr0/image/upload/q_auto/f_auto/v1777461737/linkiqpro_d0vqhs.jpg" alt="LinkIQpro Logo" class="logo-image">
                     <span class="brand-lockup">
-                        <span class="brand-tagline">INTELLIGENCE IN THE SHADOWS</span>
+                        <span class="brand-tagline">Engineered for Trust. Built for Delivery</span>
                     </span>
                 </a>
 
@@ -856,9 +918,11 @@
                 </button>
                 <ul class="nav-links" id="site-nav-links">
                     <li class="nav-close-item">
-                        <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Close menu" title="Close menu">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
+{% comment %}
+                            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Close menu" title="Close menu">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+{% endcomment %}
                     </li>
                     <li><a href="{% url 'core:home' %}" class="nav-link">Home</a></li>
                     {% comment %}

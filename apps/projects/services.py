@@ -76,10 +76,14 @@ class ProjectWorkflowService:
         project = self.project_repo.update_status(project, 'rejected')
         return ProjectResult(success=True, project=project)
     
-    def assign_analyst(self, project: Project, analyst) -> ProjectResult:
+    def assign_analyst(self, project: Project, analyst, acting_user=None) -> ProjectResult:
         """Assign an analyst to the project"""
         if not analyst.is_analyst:
             return ProjectResult(success=False, error='User is not an analyst.')
+        if project.tenant_admin and analyst.parent_admin_id != project.tenant_admin_id:
+            return ProjectResult(success=False, error='Analyst must belong to this sub-admin workspace.')
+        if acting_user and getattr(acting_user, 'is_sub_admin', False) and project.tenant_admin_id != acting_user.id:
+            return ProjectResult(success=False, error='You can only assign analysts to your own projects.')
         
         project = self.project_repo.assign_analyst(project, analyst)
         return ProjectResult(success=True, project=project)

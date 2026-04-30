@@ -42,6 +42,7 @@ class PseudonymousUser(models.Model):
     
     # Role flags
     is_admin = models.BooleanField(default=False)
+    is_sub_admin = models.BooleanField(default=False)
     is_analyst = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -51,6 +52,13 @@ class PseudonymousUser(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     last_login = models.DateTimeField(null=True, blank=True)
     last_seen = models.DateTimeField(default=timezone.now)
+    parent_admin = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='managed_users'
+    )
 
     class Meta:
         ordering = ['-created_at']
@@ -111,11 +119,19 @@ class PseudonymousUser(models.Model):
     @property
     def role(self):
         """Return the user's primary role"""
+        if self.is_admin and not self.is_sub_admin:
+            return 'main_admin'
+        if self.is_sub_admin:
+            return 'sub_admin'
         if self.is_admin:
             return 'admin'
-        elif self.is_analyst:
+        if self.is_analyst:
             return 'analyst'
         return 'client'
+
+    @property
+    def is_main_admin(self):
+        return self.is_admin and not self.is_sub_admin
 
 
 class AuthToken(models.Model):

@@ -251,7 +251,7 @@
 
 {% block content %}
 <div class="container">
-    <a href="{% url 'core:admin_dashboard' %}" class="back-link">
+    <a href="{% if user.is_sub_admin %}{% url 'core:sub_admin_dashboard' %}{% else %}{% url 'core:admin_dashboard' %}{% endif %}" class="back-link">
         &larr; Back to Dashboard
     </a>
 
@@ -284,6 +284,7 @@
             <a href="?role=all{% if search_query %}&search={{ search_query }}{% endif %}" class="role-tab {% if role_filter == 'all' %}active{% endif %}">All</a>
             <a href="?role=client{% if search_query %}&search={{ search_query }}{% endif %}" class="role-tab {% if role_filter == 'client' %}active{% endif %}">Clients</a>
             <a href="?role=analyst{% if search_query %}&search={{ search_query }}{% endif %}" class="role-tab {% if role_filter == 'analyst' %}active{% endif %}">Analysts</a>
+            <a href="?role=sub_admin{% if search_query %}&search={{ search_query }}{% endif %}" class="role-tab {% if role_filter == 'sub_admin' %}active{% endif %}">Sub-admins</a>
             <a href="?role=admin{% if search_query %}&search={{ search_query }}{% endif %}" class="role-tab {% if role_filter == 'admin' %}active{% endif %}">Admins</a>
         </div>
         <form method="get" class="search-box">
@@ -312,7 +313,11 @@
                 </td>
                 <td>
                     {% if u.is_admin %}
+                        {% if u.is_sub_admin %}
+                        <span class="role-badge admin">Sub-admin</span>
+                        {% else %}
                         <span class="role-badge admin">Admin</span>
+                        {% endif %}
                     {% elif u.is_analyst %}
                         <span class="role-badge analyst">Analyst</span>
                     {% else %}

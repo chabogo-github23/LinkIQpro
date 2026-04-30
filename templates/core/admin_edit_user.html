@@ -161,9 +161,14 @@
             <div class="form-group">
                 <label for="role">Role *</label>
                 <select id="role" name="role" required>
+                    {% if not user.is_sub_admin %}
                     <option value="client" {% if current_role == 'client' %}selected{% endif %}>Client</option>
+                    {% endif %}
                     <option value="analyst" {% if current_role == 'analyst' %}selected{% endif %}>Analyst</option>
+                    {% if user.is_main_admin %}
+                    <option value="sub_admin" {% if current_role == 'sub_admin' %}selected{% endif %}>Sub-admin</option>
                     <option value="admin" {% if current_role == 'admin' %}selected{% endif %}>Admin</option>
+                    {% endif %}
                 </select>
             </div>
 

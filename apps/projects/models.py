@@ -9,6 +9,7 @@ Projects Domain Models
 import uuid
 import secrets
 import string
+from decimal import Decimal
 from django.db import models
 from django.utils import timezone
 from django.core.validators import MinValueValidator
@@ -86,6 +87,13 @@ class Project(models.Model):
         on_delete=models.PROTECT, 
         related_name='projects'
     )
+    tenant_admin = models.ForeignKey(
+        'users.PseudonymousUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='tenant_projects'
+    )
     assigned_analyst = models.ForeignKey(
         'users.PseudonymousUser', 
         on_delete=models.SET_NULL, 
@@ -134,8 +142,10 @@ class Project(models.Model):
     irb_approval_provided = models.BooleanField(default=False)
  
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sub_admin_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     released_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -174,6 +184,10 @@ class Project(models.Model):
                                  if milestone.payment_status in ['funded', 'released'])
             self.released_amount = sum(milestone.amount for milestone in milestones 
                                      if milestone.payment_status == 'released')
+        if self.tenant_admin and self.total_price:
+            self.sub_admin_fee = self.total_price * Decimal('0.02')
+        else:
+            self.sub_admin_fee = 0
         
         super().save(*args, **kwargs)
 

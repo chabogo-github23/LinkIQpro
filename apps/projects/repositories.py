@@ -31,14 +31,19 @@ class ProjectRepository:
     
     @staticmethod
     def get_analyst_projects(analyst) -> List[Project]:
-        return list(Project.objects.filter(assigned_analyst=analyst).order_by('-created_at'))
+        return list(Project.objects.filter(assigned_analyst=analyst, is_active=True).order_by('-created_at'))
     
     @staticmethod
-    def get_all_projects() -> List[Project]:
-        return list(Project.objects.all().order_by('-created_at'))
+    def get_all_projects(acting_user=None) -> List[Project]:
+        query = Project.objects.filter(is_active=True)
+        if acting_user and getattr(acting_user, 'is_sub_admin', False):
+            query = query.filter(tenant_admin=acting_user)
+        elif acting_user and getattr(acting_user, 'is_main_admin', False):
+            query = query.filter(tenant_admin__isnull=True)
+        return list(query.order_by('-created_at'))
     
     @staticmethod
-    def create_project(client, title: str, description: str, stage: str, 
+    def create_project(client, title: str, description: str, stage: str,
                       support_type: str, research_area: str, **kwargs) -> Project:
         return Project.objects.create(
             client=client,

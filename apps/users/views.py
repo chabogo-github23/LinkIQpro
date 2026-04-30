@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.db.models import Q
 
 from .models import PseudonymousUser
 from .services import (
@@ -19,6 +20,7 @@ from .decorators import (
     admin_required,
     analyst_required,
     client_required,
+    sub_admin_required,
     get_client_ip
 )
 from apps.audit.services import AuditService
@@ -128,6 +130,8 @@ def verify_magic_link(request):
         user_agent=request.META.get('HTTP_USER_AGENT')
     )
 
+    if user.is_sub_admin:
+        return redirect('core:sub_admin_dashboard')
     if user.is_admin:
         return redirect('core:admin_dashboard')
     elif user.is_analyst:
@@ -230,11 +234,11 @@ def admin_dashboard(request):
     """Admin dashboard"""
     from apps.projects.repositories import ProjectRepository
     
-    users = PseudonymousUser.objects.all().order_by('-created_at')
-    projects = ProjectRepository.get_all_projects()
+    users = PseudonymousUser.objects.all().order_by('-created_at') if request.user.is_main_admin else PseudonymousUser.objects.filter(parent_admin=request.user, is_analyst=True).order_by('-created_at')
+    projects = ProjectRepository.get_all_projects(acting_user=request.user)
     
     user_service = UserManagementService()
-    counts = user_service.get_user_stats()
+    counts = user_service.get_user_stats(acting_user=request.user)
     
     return render(request, 'core/admin_dashboard.html', {
         'users': users,
@@ -247,6 +251,99 @@ def admin_dashboard(request):
     })
 
 
+@sub_admin_required
+def sub_admin_dashboard(request):
+    """Sub-admin dashboard"""
+    from apps.projects.models import Project
+
+    projects = Project.objects.filter(tenant_admin=request.user, is_active=True).order_by('-created_at')
+    analysts = PseudonymousUser.objects.filter(parent_admin=request.user, is_analyst=True).order_by('-created_at')
+    counts = UserManagementService().get_user_stats(acting_user=request.user)
+
+    return render(request, 'core/sub_admin_dashboard.html', {
+        'user': request.user,
+        'projects': projects,
+        'analysts': analysts,
+        'total_projects': projects.count(),
+        'in_progress_projects': projects.filter(status='in_progress').count(),
+        'completed_projects': projects.filter(status='completed').count(),
+        'total_analysts': counts['analysts'],
+    })
+
+
+@sub_admin_required
+def sub_admin_activities(request):
+    """Sub-admin workspace activity feed"""
+    from django.db.models import Q
+    from apps.audit.models import AuditLog
+
+    logs = AuditLog.objects.filter(
+        Q(project__tenant_admin=request.user) |
+        Q(user__parent_admin=request.user) |
+        Q(user=request.user)
+    ).select_related('user', 'project').order_by('-created_at')[:100]
+
+    return render(request, 'core/sub_admin_activities.html', {
+        'user': request.user,
+        'logs': logs,
+    })
+
+
+@sub_admin_required
+def sub_admin_analyst_list(request):
+    analysts = PseudonymousUser.objects.filter(parent_admin=request.user, is_analyst=True).order_by('-created_at')
+    search_query = request.GET.get('search', '').strip()
+    if search_query:
+        analysts = analysts.filter(alias__icontains=search_query)
+    return render(request, 'core/sub_admin_analyst_list.html', {
+        'user': request.user,
+        'analysts': analysts,
+        'search_query': search_query,
+        'total_analysts': analysts.count(),
+        'active_analysts': analysts.filter(is_active=True).count(),
+    })
+
+
+@sub_admin_required
+def sub_admin_create_analyst(request):
+    if request.method == 'POST':
+        alias = request.POST.get('alias', '').strip()
+        email = request.POST.get('email', '').strip()
+        password = request.POST.get('password', '').strip()
+        confirm_password = request.POST.get('confirm_password', '').strip()
+        if password != confirm_password:
+            return render(request, 'core/sub_admin_create_analyst.html', {'error': 'Passwords do not match.', 'alias': alias, 'email': email, 'user': request.user})
+        user, error = UserManagementService().create_user(alias, email, password, 'analyst', request.user)
+        if error:
+            return render(request, 'core/sub_admin_create_analyst.html', {'error': error, 'alias': alias, 'email': email, 'user': request.user})
+        messages.success(request, f'Analyst "{user.alias}" created successfully.')
+        return redirect('core:sub_admin_analyst_list')
+    return render(request, 'core/sub_admin_create_analyst.html', {'user': request.user})
+
+
+@sub_admin_required
+def sub_admin_analyst_detail(request, user_id):
+    analyst = get_object_or_404(PseudonymousUser, id=user_id, is_analyst=True, parent_admin=request.user)
+    from apps.projects.models import Project
+    projects = Project.objects.filter(Q(assigned_analyst=analyst) | Q(tenant_admin=request.user, assigned_analyst=analyst)).distinct().order_by('-created_at')
+    return render(request, 'core/sub_admin_analyst_detail.html', {'user': request.user, 'analyst': analyst, 'projects': projects})
+
+
+@sub_admin_required
+def sub_admin_edit_analyst(request, user_id):
+    analyst = get_object_or_404(PseudonymousUser, id=user_id, is_analyst=True, parent_admin=request.user)
+    if request.method == 'POST':
+        alias = request.POST.get('alias', '').strip()
+        is_active = request.POST.get('is_active') == 'on'
+        new_password = request.POST.get('new_password', '').strip()
+        success, error = UserManagementService().update_user(analyst, alias, 'analyst', is_active, request.user, new_password or None)
+        if not success:
+            return render(request, 'core/sub_admin_edit_analyst.html', {'user': request.user, 'analyst': analyst, 'error': error})
+        messages.success(request, f'Analyst "{analyst.alias}" updated.')
+        return redirect('core:sub_admin_analyst_detail', user_id=analyst.id)
+    return render(request, 'core/sub_admin_edit_analyst.html', {'user': request.user, 'analyst': analyst})
+
+
 # User Management Views
 @admin_required
 def admin_user_management(request):
@@ -256,8 +353,8 @@ def admin_user_management(request):
     
     from .repositories import UserRepository
     
-    users = UserRepository.get_all_users(role_filter, search_query)
-    counts = UserRepository.get_user_counts()
+    users = UserRepository.get_all_users(role_filter, search_query, acting_user=request.user)
+    counts = UserRepository.get_user_counts(acting_user=request.user)
     
     return render(request, 'core/admin_user_management.html', {
         'users': users,
@@ -274,6 +371,10 @@ def admin_user_detail(request, user_id):
     from apps.projects.models import Project
     
     target_user = get_object_or_404(PseudonymousUser, id=user_id)
+    if request.user.is_sub_admin and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.is_main_admin and target_user.is_analyst and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     if target_user.is_analyst:
         projects = Project.objects.filter(assigned_analyst=target_user).order_by('-created_at')
@@ -296,7 +397,7 @@ def admin_create_user(request):
         email = request.POST.get('email', '').strip()
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
-        role = request.POST.get('role', 'client')
+        role = request.POST.get('role', 'analyst' if request.user.is_sub_admin else 'client')
         
         if password != confirm_password:
             return render(request, 'core/admin_create_user.html', {
@@ -308,7 +409,7 @@ def admin_create_user(request):
             })
         
         service = UserManagementService()
-        user, error = service.create_user(alias, email, password, role)
+        user, error = service.create_user(alias, email, password, role, request.user)
         
         if error:
             return render(request, 'core/admin_create_user.html', {
@@ -335,6 +436,10 @@ def admin_create_user(request):
 def admin_edit_user(request, user_id):
     """Admin edits a user"""
     target_user = get_object_or_404(PseudonymousUser, id=user_id)
+    if request.user.is_sub_admin and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.is_main_admin and target_user.is_analyst and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     if request.method == 'POST':
         alias = request.POST.get('alias', '').strip()
@@ -344,7 +449,7 @@ def admin_edit_user(request, user_id):
         
         service = UserManagementService()
         success, error = service.update_user(
-            target_user, alias, role, is_active, new_password or None
+            target_user, alias, role, is_active, request.user, new_password or None
         )
         
         if not success:
@@ -376,6 +481,10 @@ def admin_delete_user(request, user_id):
     from apps.projects.models import Project
     
     target_user = get_object_or_404(PseudonymousUser, id=user_id)
+    if request.user.is_sub_admin and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.is_main_admin and target_user.is_analyst and target_user.parent_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     if request.method == 'POST':
         service = UserManagementService()

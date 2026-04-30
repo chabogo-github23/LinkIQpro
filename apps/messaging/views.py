@@ -19,7 +19,7 @@ def project_chat(request, project_id):
     user = request.user
 
     # Permission check
-    if not (project.client == user or project.assigned_analyst == user or user.is_admin):
+    if not (project.client == user or project.assigned_analyst == user or user.is_admin or project.tenant_admin_id == user.id):
         return JsonResponse({'error': 'Unauthorized'}, status=403)
 
     chat_service = ChatService()

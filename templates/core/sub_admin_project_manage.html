@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Project - {{ project.project_id }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'core:sub_admin_project_list' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Projects</a>
+    <h1>{{ project.project_id }} - {{ project.title }}</h1>
+    <p>Manage project details, assign analysts, update status, and create milestones.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Project Overview -->
+    <div class="content-card">
+        <h2><i class="fas fa-info-circle"></i> Project Overview</h2>
+        <div class="analyst-details" style="grid-template-columns: 1fr;">
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Project Status</div>
+                <div class="analyst-detail-value">
+                    <span class="project-status-badge {% if project.status == 'pending' %}pending{% elif project.status == 'in_progress' %}in-progress{% elif project.status == 'completed' %}completed{% else %}on-hold{% endif %}">
+                        {{ project.get_status_display }}
+                    </span>
+                </div>
+            </div>
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Support Type</div>
+                <div class="analyst-detail-value">{{ project.get_support_type_display }}</div>
+            </div>
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Description</div>
+                <div class="analyst-detail-value" style="font-size: 0.9rem; color: var(--text-secondary);">{{ project.description|truncatewords:20 }}</div>
+            </div>
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Created</div>
+                <div class="analyst-detail-value">{{ project.created_at|date:"M d, Y" }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Analyst -->
+    <div class="content-card">
+        <h2><i class="fas fa-user-tie"></i> Assign Analyst</h2>
+        <form method="post" class="form-group">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="assign">
+            <div class="form-group">
+                <label for="analyst_id">Select Analyst</label>
+                <select id="analyst_id" name="analyst_id" required style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-primary); color: var(--text-primary); width: 100%;">
+                    <option value="">-- Choose an analyst --</option>
+                    {% for analyst in analysts %}
+                    <option value="{{ analyst.id }}" {% if project.assigned_analyst and analyst.id == project.assigned_analyst.id %}selected{% endif %}>
+                        {{ analyst.alias }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width: 100%;"><i class="fas fa-save"></i> Assign Analyst</button>
+        </form>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Update Status -->
+    <div class="content-card">
+        <h2><i class="fas fa-tasks"></i> Update Status</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_status">
+            <div class="form-group">
+                <label for="status">Project Status</label>
+                <select id="status" name="status" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-primary); color: var(--text-primary); width: 100%;">
+                    {% for value,label in status_choices %}
+                    <option value="{{ value }}" {% if value == project.status %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-primary" type="submit" style="width: 100%;"><i class="fas fa-sync"></i> Update Status</button>
+        </form>
+    </div>
+
+    <!-- Create Milestone -->
+    <div class="content-card">
+        <h2><i class="fas fa-flag"></i> Create Milestone</h2>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="create_milestone">
+            <div class="form-group">
+                <label for="m_title">Title</label>
+                <input type="text" id="m_title" name="title" placeholder="Milestone title" required style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-primary); color: var(--text-primary); width: 100%;">
+            </div>
+            <div class="form-group">
+                <label for="m_amount">Amount ($)</label>
+                <input type="number" id="m_amount" step="0.01" min="0.01" name="amount" placeholder="0.00" required style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-primary); color: var(--text-primary); width: 100%;">
+            </div>
+            <div class="form-group">
+                <label for="m_due">Due Date</label>
+                <input type="date" id="m_due" name="due_date" required style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--bg-primary); color: var(--text-primary); width: 100%;">
+            </div>
+            <button class="btn btn-primary" type="submit" style="width: 100%;"><i class="fas fa-plus"></i> Create Milestone</button>
+        </form>
+    </div>
+</div>
+
+<!-- Milestones -->
+{% if milestones %}
+<div class="content-card" style="margin-top: 1.5rem;">
+    <h2><i class="fas fa-list-check"></i> Milestones</h2>
+    <div class="activity-timeline">
+        {% for m in milestones %}
+        <div class="list-item">
+            <div class="list-item-info">
+                <div class="list-item-title">{{ m.title }}</div>
+                <div class="list-item-meta">
+                    <span><i class="fas fa-dollar-sign"></i> ${{ m.amount }}</span>
+                    <span><i class="fas fa-calendar"></i> Due: {{ m.due_date|date:"M d, Y" }}</span>
+                    <span><i class="fas fa-info-circle"></i> {{ m.get_status_display }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent Activity -->
+<div class="content-card" style="margin-top: 1.5rem;">
+    <h2><i class="fas fa-history"></i> Recent Activity</h2>
+    {% if audit_logs %}
+    <div class="activity-timeline">
+        {% for log in audit_logs %}
+        <div class="activity-item">
+            <div class="activity-header">
+                <span class="activity-action">{{ log.action }}</span>
+                <span class="activity-time">{{ log.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+            <div class="activity-by">By: <strong>{{ log.user.alias|default:"System" }}</strong></div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state" style="padding: 2rem;">
+        <i class="fas fa-inbox"></i>
+        <p>No activity yet</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Project Chat -->
+<div class="content-card" style="margin-top: 1.5rem;">
+    <h2><i class="fas fa-comments"></i> Project Chat</h2>
+    {% include "core/chat_widget.html" %}
+</div>
+{% endblock %}

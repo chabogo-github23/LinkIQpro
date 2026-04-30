@@ -208,6 +208,8 @@ def payment_cancel(request, project_id):
 def release_milestone_payment(request, milestone_id):
     """Release PayPal payment for approved milestone"""
     milestone = get_object_or_404(Milestone, id=milestone_id)
+    if request.user.is_sub_admin and milestone.project.tenant_admin_id != request.user.id:
+        return render(request, "core/access_denied.html", status=403)
 
     if not milestone.is_releasable:
         messages.error(request, "Milestone not ready for release.")

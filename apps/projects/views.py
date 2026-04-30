@@ -21,7 +21,8 @@ from apps.users.decorators import (
     pseudonymous_user_required as require_auth,
     admin_required as require_admin,
     analyst_required as require_analyst,
-    client_required
+    client_required,
+    sub_admin_required
 )
 from apps.users.models import PseudonymousUser
 from apps.audit.services import AuditService
@@ -33,7 +34,10 @@ def project_detail(request, project_id):
     """View project details"""
     project = get_object_or_404(Project, project_id=project_id)
 
-    if project.client.id != request.user.id and not request.user.is_admin:
+    if request.user.is_sub_admin:
+        if project.tenant_admin_id != request.user.id:
+            return render(request, 'core/access_denied.html', status=403)
+    elif project.client.id != request.user.id and not request.user.is_admin:
         return render(request, 'core/access_denied.html', status=403)
     
     from apps.users.repositories import UserRepository
@@ -61,9 +65,11 @@ def project_detail(request, project_id):
     })
 
 
-@client_required
+@require_auth
 def submit_project(request):
     """Project submission"""
+    if not (request.user.role == 'client' or request.user.is_sub_admin):
+        return render(request, 'core/access_denied.html', status=403)
     if request.method == 'POST':
         service = ProjectSubmissionService()
         
@@ -86,6 +92,7 @@ def submit_project(request):
             budget_range=request.POST.get('budget_range'),
             attachment=attachment,
             attachment_filename=attachment_filename,
+            tenant_admin=request.user if request.user.is_sub_admin else None,
         )
         
         if result.success:
@@ -110,6 +117,8 @@ def analyst_project_detail(request, project_id):
     project = get_object_or_404(Project, project_id=project_id)
     
     if project.assigned_analyst != request.user:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.parent_admin_id and project.tenant_admin_id != request.user.parent_admin_id:
         return render(request, 'core/access_denied.html', status=403)
     
     from apps.users.repositories import UserRepository
@@ -253,6 +262,8 @@ def create_milestone(request, project_id):
 def update_milestone_status(request, milestone_id):
     """Update milestone work status"""
     milestone = get_object_or_404(Milestone, id=milestone_id)
+    if request.user.is_sub_admin and milestone.project.tenant_admin_id != request.user.id:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
     new_status = request.POST.get('status')
     
     service = MilestoneService()
@@ -277,6 +288,8 @@ def update_milestone_status(request, milestone_id):
 def approve_milestone(request, milestone_id):
     """Approve a completed milestone"""
     milestone = get_object_or_404(Milestone, id=milestone_id)
+    if request.user.is_sub_admin and milestone.project.tenant_admin_id != request.user.id:
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
     
     service = MilestoneService()
     result = service.approve_milestone(milestone)
@@ -314,6 +327,10 @@ def approve_milestone(request, milestone_id):
 def project_triage(request, project_id):
     """Admin project management view"""
     project = get_object_or_404(Project, project_id=project_id)
+    if request.user.is_main_admin and project.tenant_admin_id is not None:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.is_sub_admin and project.tenant_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     milestones = project.milestones.all().order_by('created_at')
     from apps.audit.models import AuditLog
@@ -321,7 +338,7 @@ def project_triage(request, project_id):
     progress_reports = ProjectProgress.objects.filter(project=project).order_by('-uploaded_at')
     
     from apps.users.repositories import UserRepository
-    analysts = UserRepository.get_analysts()
+    analysts = UserRepository.get_analysts(parent_admin=request.user if (request.user.is_sub_admin or request.user.is_main_admin) else None)
     admins = UserRepository.get_admins()
     
     status_choices = Project.STATUS_CHOICES
@@ -360,7 +377,7 @@ def project_triage(request, project_id):
             if analyst_id:
                 try:
                     analyst = PseudonymousUser.objects.get(id=analyst_id, is_analyst=True)
-                    result = workflow_service.assign_analyst(project, analyst)
+                    result = workflow_service.assign_analyst(project, analyst, acting_user=request.user)
                     if result.success:
                         AuditService.log_from_request('analyst_assigned', request, project,
                             details={'analyst_alias': analyst.alias})
@@ -417,6 +434,8 @@ def project_triage(request, project_id):
 def admin_upload_progress(request, project_id):
     """Admin uploads PDF progress for a project"""
     project = get_object_or_404(Project, project_id=project_id)
+    if request.user.is_sub_admin and project.tenant_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
 
     if request.method == "POST":
         uploaded_file = request.FILES.get("progress_file")
@@ -451,6 +470,10 @@ def view_progress_pdf(request, progress_id):
 def admin_project_review(request, project_id):
     """Admin reviews project"""
     project = get_object_or_404(Project, project_id=project_id)
+    if request.user.is_main_admin and project.tenant_admin_id is not None:
+        return render(request, 'core/access_denied.html', status=403)
+    if request.user.is_sub_admin and project.tenant_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -487,6 +510,10 @@ def admin_project_review(request, project_id):
 def admin_assign_analyst(request, project_id):
     """Admin assigns analyst to project"""
     project = get_object_or_404(Project, project_id=project_id)
+    if request.user.is_main_admin and project.tenant_admin_id is not None:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+    if request.user.is_sub_admin and project.tenant_admin_id != request.user.id:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
     
     if request.method == 'POST':
         analyst_id = request.POST.get('analyst_id')
@@ -494,7 +521,7 @@ def admin_assign_analyst(request, project_id):
         try:
             analyst = PseudonymousUser.objects.get(id=analyst_id, is_analyst=True)
             workflow_service = ProjectWorkflowService()
-            result = workflow_service.assign_analyst(project, analyst)
+            result = workflow_service.assign_analyst(project, analyst, acting_user=request.user)
             
             if result.success:
                 ChatService().create_system_message(project, f'Project assigned to analyst: {analyst.alias}')
@@ -508,7 +535,7 @@ def admin_assign_analyst(request, project_id):
             return JsonResponse({'error': 'Analyst not found'}, status=404)
     
     from apps.users.repositories import UserRepository
-    analysts = UserRepository.get_analysts()
+    analysts = UserRepository.get_analysts(parent_admin=request.user if (request.user.is_sub_admin or request.user.is_main_admin) else None)
     
     return render(request, 'core/admin_assign_analyst.html', {
         'project': project,
@@ -521,6 +548,8 @@ def admin_assign_analyst(request, project_id):
 def admin_review_deliverable(request, project_id):
     """Admin reviews deliverable"""
     project = get_object_or_404(Project, project_id=project_id)
+    if request.user.is_sub_admin and project.tenant_admin_id != request.user.id:
+        return render(request, 'core/access_denied.html', status=403)
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -545,4 +574,73 @@ def admin_review_deliverable(request, project_id):
         'project': project,
         'deliverables': deliverables,
         'user': request.user
+    })
+
+
+@sub_admin_required
+def sub_admin_project_list(request):
+    projects = Project.objects.filter(tenant_admin=request.user, is_active=True).order_by('-created_at')
+    status = request.GET.get('status', '').strip()
+    if status:
+        projects = projects.filter(status=status)
+    return render(request, 'core/sub_admin_project_list.html', {
+        'user': request.user,
+        'projects': projects,
+        'status': status,
+        'status_choices': Project.STATUS_CHOICES,
+    })
+
+
+@sub_admin_required
+def sub_admin_project_manage(request, project_id):
+    project = get_object_or_404(Project, project_id=project_id, tenant_admin=request.user)
+    milestones = project.milestones.all().order_by('created_at')
+    from apps.users.repositories import UserRepository
+    analysts = UserRepository.get_analysts(parent_admin=request.user)
+    from apps.audit.models import AuditLog
+    audit_logs = AuditLog.objects.filter(project=project).order_by('-created_at')[:10]
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        workflow_service = ProjectWorkflowService()
+        milestone_service = MilestoneService()
+        if action == 'assign':
+            analyst_id = request.POST.get('analyst_id')
+            try:
+                analyst = PseudonymousUser.objects.get(id=analyst_id, is_analyst=True, parent_admin=request.user)
+                result = workflow_service.assign_analyst(project, analyst, acting_user=request.user)
+                if result.success:
+                    messages.success(request, f'Assigned to {analyst.alias}.')
+                else:
+                    messages.error(request, result.error)
+            except PseudonymousUser.DoesNotExist:
+                messages.error(request, 'Invalid analyst selected.')
+        elif action == 'update_status':
+            new_status = request.POST.get('status')
+            if new_status in dict(Project.STATUS_CHOICES):
+                project.status = new_status
+                project.save()
+                messages.success(request, 'Project status updated.')
+        elif action == 'create_milestone':
+            result = milestone_service.create_milestone(
+                project=project,
+                title=request.POST.get('title'),
+                description=request.POST.get('description'),
+                amount=Decimal(request.POST.get('amount', 0)),
+                due_date=request.POST.get('due_date'),
+                delivery_instructions=request.POST.get('delivery_instructions', '')
+            )
+            if result.success:
+                messages.success(request, 'Milestone created.')
+            else:
+                messages.error(request, result.error)
+        return redirect('core:sub_admin_project_manage', project_id=project.project_id)
+
+    return render(request, 'core/sub_admin_project_manage.html', {
+        'user': request.user,
+        'project': project,
+        'milestones': milestones,
+        'analysts': analysts,
+        'audit_logs': audit_logs,
+        'status_choices': Project.STATUS_CHOICES,
     })

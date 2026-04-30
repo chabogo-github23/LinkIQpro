@@ -48,11 +48,17 @@ class ChatService:
     def _validate_chat_permission(self, project: Project, sender: PseudonymousUser,
                                   receiver: PseudonymousUser) -> Optional[str]:
         """Validate that sender can chat with receiver"""
-        if sender.is_admin:
+        if sender.is_sub_admin:
+            if receiver != project.assigned_analyst:
+                return 'Sub-admin can only chat with assigned analyst'
+        elif sender.is_admin:
             if receiver not in [project.client, project.assigned_analyst]:
                 return 'Admin can only chat with client or analyst'
         elif sender == project.assigned_analyst:
-            if not receiver.is_admin:
+            if project.tenant_admin:
+                if receiver != project.tenant_admin:
+                    return 'Analyst can only chat with their sub-admin for this project'
+            elif not receiver.is_admin:
                 return 'Analyst can only chat with admin'
         elif sender == project.client:
             if not receiver.is_admin:
@@ -108,18 +114,24 @@ class ChatService:
         """Get available chat targets for a user"""
         targets = []
         
-        if user.is_admin:
+        if user.is_sub_admin:
+            if project.assigned_analyst and project.assigned_analyst.id != user.id:
+                targets.append({'id': str(project.assigned_analyst.id), 'alias': project.assigned_analyst.alias})
+        elif user.is_admin:
             if project.client and project.client.id != user.id:
                 targets.append({'id': str(project.client.id), 'alias': project.client.alias})
             if project.assigned_analyst and project.assigned_analyst.id != user.id:
                 targets.append({'id': str(project.assigned_analyst.id), 'alias': project.assigned_analyst.alias})
         
         elif user == project.assigned_analyst or user.is_analyst:
-            admins = PseudonymousUser.objects.filter(is_admin=True).exclude(id=user.id)
-            for admin in admins:
-                targets.append({'id': str(admin.id), 'alias': admin.alias})
-            if project.client and project.client.id != user.id:
-                targets.append({'id': str(project.client.id), 'alias': project.client.alias})
+            if project.tenant_admin:
+                targets.append({'id': str(project.tenant_admin.id), 'alias': project.tenant_admin.alias})
+            else:
+                admins = PseudonymousUser.objects.filter(is_admin=True, is_sub_admin=False).exclude(id=user.id)
+                for admin in admins:
+                    targets.append({'id': str(admin.id), 'alias': admin.alias})
+                if project.client and project.client.id != user.id:
+                    targets.append({'id': str(project.client.id), 'alias': project.client.alias})
         
         elif user == project.client:
             admins = PseudonymousUser.objects.filter(is_admin=True).exclude(id=user.id)

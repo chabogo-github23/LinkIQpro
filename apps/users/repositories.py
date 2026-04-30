@@ -4,6 +4,7 @@ Single Responsibility: Data access for user entities
 """
 from typing import Optional, List
 from django.utils import timezone
+from django.db.models import Q
 from .models import PseudonymousUser, AuthToken, hash_email
 
 
@@ -54,48 +55,78 @@ class UserRepository:
         return PseudonymousUser.objects.filter(email_hash=hashed).exists()
     
     @staticmethod
-    def get_analysts() -> List[PseudonymousUser]:
-        return list(PseudonymousUser.objects.filter(is_analyst=True, is_active=True))
+    def get_analysts(parent_admin: Optional[PseudonymousUser] = None) -> List[PseudonymousUser]:
+        query = PseudonymousUser.objects.filter(is_analyst=True, is_active=True)
+        if parent_admin:
+            query = query.filter(parent_admin=parent_admin)
+        return list(query)
     
     @staticmethod
     def get_admins() -> List[PseudonymousUser]:
-        return list(PseudonymousUser.objects.filter(is_admin=True, is_active=True))
+        return list(PseudonymousUser.objects.filter(is_admin=True, is_sub_admin=False, is_active=True))
     
     @staticmethod
-    def get_all_users(role_filter: str = 'all', search_query: str = ''):
-        users = PseudonymousUser.objects.all().order_by('-created_at')
+    def get_all_users(role_filter: str = 'all', search_query: str = '', acting_user: Optional[PseudonymousUser] = None):
+        users = PseudonymousUser.objects.all()
+        if acting_user and acting_user.is_sub_admin:
+            users = users.filter(parent_admin=acting_user)
+        elif acting_user and acting_user.is_main_admin:
+            users = users.filter(Q(is_analyst=False) | Q(parent_admin=acting_user))
         
         if role_filter == 'client':
             users = users.filter(is_admin=False, is_analyst=False)
         elif role_filter == 'analyst':
             users = users.filter(is_analyst=True)
+            if acting_user and acting_user.is_main_admin:
+                users = users.filter(parent_admin=acting_user)
         elif role_filter == 'admin':
             users = users.filter(is_admin=True)
+        elif role_filter == 'sub_admin':
+            users = users.filter(is_sub_admin=True)
         
         if search_query:
             users = users.filter(alias__icontains=search_query)
         
-        return users
+        return users.order_by('-created_at')
     
     @staticmethod
-    def get_user_counts() -> dict:
+    def get_user_counts(acting_user: Optional[PseudonymousUser] = None) -> dict:
+        users = PseudonymousUser.objects.all()
+        if acting_user and acting_user.is_sub_admin:
+            users = users.filter(parent_admin=acting_user)
+        elif acting_user and acting_user.is_main_admin:
+            analyst_count = users.filter(is_analyst=True, parent_admin=acting_user).count()
+            client_count = users.filter(is_admin=False, is_analyst=False, is_sub_admin=False).count()
+            admin_count = users.filter(is_admin=True, is_sub_admin=False).count()
+            sub_admin_count = users.filter(is_sub_admin=True).count()
+            return {
+                'total': analyst_count + client_count + admin_count + sub_admin_count,
+                'clients': client_count,
+                'analysts': analyst_count,
+                'admins': admin_count,
+                'sub_admins': sub_admin_count,
+            }
         return {
-            'total': PseudonymousUser.objects.count(),
-            'clients': PseudonymousUser.objects.filter(is_admin=False, is_analyst=False).count(),
-            'analysts': PseudonymousUser.objects.filter(is_analyst=True).count(),
-            'admins': PseudonymousUser.objects.filter(is_admin=True).count(),
+            'total': users.count(),
+            'clients': users.filter(is_admin=False, is_analyst=False, is_sub_admin=False).count(),
+            'analysts': users.filter(is_analyst=True).count(),
+            'admins': users.filter(is_admin=True, is_sub_admin=False).count(),
+            'sub_admins': users.filter(is_sub_admin=True).count(),
         }
     
     @staticmethod
-    def create_user(alias: str, email: str = None, password: str = None, 
-                   is_admin: bool = False, is_analyst: bool = False) -> PseudonymousUser:
+    def create_user(alias: str, email: str = None, password: str = None,
+                   is_admin: bool = False, is_sub_admin: bool = False, is_analyst: bool = False,
+                   parent_admin: Optional[PseudonymousUser] = None) -> PseudonymousUser:
         import secrets
         
         user = PseudonymousUser.objects.create(
             alias=alias,
             email_hash=hash_email(email) if email else None,
             is_admin=is_admin,
+            is_sub_admin=is_sub_admin,
             is_analyst=is_analyst,
+            parent_admin=parent_admin,
             magic_token=secrets.token_urlsafe(32),
             magic_token_expires=timezone.now() + timezone.timedelta(hours=24)
         )

@@ -210,7 +210,7 @@ class UserManagementService:
     def __init__(self, user_repo: UserRepository = None):
         self.user_repo = user_repo or UserRepository()
     
-    def create_user(self, alias: str, email: str, password: str, role: str) -> Tuple[Optional[PseudonymousUser], Optional[str]]:
+    def create_user(self, alias: str, email: str, password: str, role: str, acting_user: PseudonymousUser) -> Tuple[Optional[PseudonymousUser], Optional[str]]:
         """Admin creates a new user"""
         # Validation
         if not alias or len(alias) < 3:
@@ -228,18 +228,33 @@ class UserManagementService:
         if not password or len(password) < 6:
             return None, 'Password must be at least 6 characters long.'
         
+        if role == 'sub_admin' and not acting_user.is_main_admin:
+            return None, 'Only the main admin can create sub-admin accounts.'
+        if role == 'analyst' and not (acting_user.is_main_admin or acting_user.is_sub_admin):
+            return None, 'Only admins can create analysts.'
+        if acting_user.is_sub_admin and role != 'analyst':
+            return None, 'Sub-admins can only create analysts.'
+
+        parent_admin = None
+        if role == 'analyst':
+            parent_admin = acting_user
+        elif role == 'sub_admin' and acting_user.is_main_admin:
+            parent_admin = acting_user
+
         user = self.user_repo.create_user(
             alias=alias,
             email=email,
             password=password,
             is_admin=(role == 'admin'),
-            is_analyst=(role == 'analyst')
+            is_sub_admin=(role == 'sub_admin'),
+            is_analyst=(role == 'analyst'),
+            parent_admin=parent_admin
         )
         
         return user, None
     
-    def update_user(self, user: PseudonymousUser, alias: str, role: str, 
-                   is_active: bool, new_password: str = None) -> Tuple[bool, Optional[str]]:
+    def update_user(self, user: PseudonymousUser, alias: str, role: str,
+                   is_active: bool, acting_user: PseudonymousUser, new_password: str = None) -> Tuple[bool, Optional[str]]:
         """Admin updates an existing user"""
         if not alias or len(alias) < 3:
             return False, 'Alias must be at least 3 characters long.'
@@ -250,13 +265,25 @@ class UserManagementService:
         if new_password and len(new_password) < 6:
             return False, 'New password must be at least 6 characters long.'
         
+        if acting_user.is_sub_admin and user.parent_admin_id != acting_user.id:
+            return False, 'You can only manage analysts in your own workspace.'
+        if acting_user.is_sub_admin and role != 'analyst':
+            return False, 'Sub-admins can only manage analyst roles.'
+        if acting_user.is_main_admin and user.is_analyst and user.parent_admin_id != acting_user.id:
+            return False, 'You can only manage analysts you created.'
+
         self.user_repo.update_user(
             user,
             alias=alias,
             is_admin=(role == 'admin'),
+            is_sub_admin=(role == 'sub_admin'),
             is_analyst=(role == 'analyst'),
             is_active=is_active
         )
+        if not is_active and user.is_sub_admin:
+            PseudonymousUser.objects.filter(parent_admin=user, is_analyst=True).update(is_active=False)
+            from apps.projects.models import Project
+            Project.objects.filter(tenant_admin=user).update(is_active=False)
         
         if new_password:
             user.set_password(new_password)
@@ -267,10 +294,14 @@ class UserManagementService:
         """Admin deletes a user"""
         if user.id == requesting_user.id:
             return False, 'You cannot delete your own account.'
+        if requesting_user.is_sub_admin and user.parent_admin_id != requesting_user.id:
+            return False, 'You can only delete users in your own workspace.'
+        if requesting_user.is_main_admin and user.is_analyst and user.parent_admin_id != requesting_user.id:
+            return False, 'You can only delete analysts you created.'
         
         self.user_repo.delete_user(user)
         return True, None
     
-    def get_user_stats(self) -> dict:
+    def get_user_stats(self, acting_user: Optional[PseudonymousUser] = None) -> dict:
         """Get user statistics"""
-        return self.user_repo.get_user_counts()
+        return self.user_repo.get_user_counts(acting_user=acting_user)

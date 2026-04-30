@@ -18,6 +18,12 @@ from apps.users.views import (
     client_dashboard,
     analyst_dashboard,
     admin_dashboard,
+    sub_admin_dashboard,
+    sub_admin_activities,
+    sub_admin_analyst_list,
+    sub_admin_create_analyst,
+    sub_admin_analyst_detail,
+    sub_admin_edit_analyst,
     admin_user_management,
     admin_user_detail,
     admin_create_user,
@@ -40,6 +46,8 @@ from apps.projects.views import (
     admin_project_review,
     admin_assign_analyst,
     admin_review_deliverable,
+    sub_admin_project_list,
+    sub_admin_project_manage,
 )
 
 # Re-export Payment views

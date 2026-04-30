@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Analyst Management{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'core:sub_admin_dashboard' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+    <h1>Your Analysts</h1>
+    <p>Manage only analysts in your workspace. Create, edit, and track their performance.</p>
+    <div class="action-buttons">
+        <a href="{% url 'core:sub_admin_create_analyst' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Create Analyst</a>
+        <span class="badge badge-primary">Total: {{ total_analysts }}</span>
+        <span class="badge badge-success">Active: {{ active_analysts }}</span>
+    </div>
+</div>
+
+<div class="search-bar">
+    <i class="fas fa-search"></i>
+    <form method="get" style="width: 100%;">
+        <input type="text" name="search" value="{{ search_query }}" placeholder="Search analyst by alias or email...">
+    </form>
+</div>
+
+{% if analysts %}
+<div class="activity-timeline">
+    {% for analyst in analysts %}
+    <div class="analyst-card">
+        <div class="analyst-header">
+            <div class="analyst-name">{{ analyst.alias }}</div>
+            <span class="analyst-status {% if analyst.is_active %}active{% else %}inactive{% endif %}">
+                <i class="fas fa-{% if analyst.is_active %}check-circle{% else %}ban{% endif %}"></i>
+                {% if analyst.is_active %}Active{% else %}Inactive{% endif %}
+            </span>
+        </div>
+        <div class="analyst-details">
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Email</div>
+                <div class="analyst-detail-value" style="font-size: 0.9rem;">{{ analyst.email }}</div>
+            </div>
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Created</div>
+                <div class="analyst-detail-value">{{ analyst.created_at|date:"M d, Y" }}</div>
+            </div>
+            <div class="analyst-detail-item">
+                <div class="analyst-detail-label">Status</div>
+                <div class="analyst-detail-value">{% if analyst.is_active %}<span class="badge badge-success">Active</span>{% else %}<span class="badge badge-error">Inactive</span>{% endif %}</div>
+            </div>
+        </div>
+        <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.5rem;">
+            <a href="{% url 'core:sub_admin_analyst_detail' analyst.id %}" class="btn btn-primary" style="flex: 1;"><i class="fas fa-eye"></i> View Details</a>
+            <a href="{% url 'core:sub_admin_edit_analyst' analyst.id %}" class="btn btn-secondary" style="flex: 1;"><i class="fas fa-edit"></i> Edit</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <i class="fas fa-users"></i>
+    <p>No analysts found. <a href="{% url 'core:sub_admin_create_analyst' %}" style="text-decoration: underline;">Create your first analyst</a></p>
+</div>
+{% endif %}
+{% endblock %}

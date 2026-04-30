@@ -3,22 +3,7 @@
         <h3>LinkIQpro Chat</h3>
         <div class="chat-controls">
             <select id="chatTarget" class="chat-select">
-                {% if request.user.is_admin %}
-                    <!-- Admin can chat with client or analyst -->
-                    <option value="">Select user to chat with...</option>
-                    <option value="{{ project.client.id }}">Client ({{ project.client.alias }})</option>
-                    {% if project.assigned_analyst %}
-                        <option value="{{ project.assigned_analyst.id }}">Analyst ({{ project.assigned_analyst.alias }})</option>
-                    {% endif %}
-                {% else %}
-                    <!-- Client/Analyst can only chat with admin -->
-                    <option value="">Select admin to chat with...</option>
-                    {% for admin in admins %}
-                        <option value="{{ admin.id }}">Admin ({{ admin.alias }})</option>
-                    {% empty %}
-                        <option value="">No admins available</option>
-                    {% endfor %}
-                {% endif %}
+                <option value="">Select user to chat with...</option>
             </select>
             <button class="chat-close" id="chatClose">×</button>
         </div>
@@ -554,6 +539,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    async function loadTargets() {
+        try {
+            const response = await fetch(`/project/${projectId}/chat/`);
+            const data = await response.json();
+            if (!data.success) return;
+            const targets = Array.isArray(data.targets) ? data.targets : [];
+            chatTarget.innerHTML = '<option value="">Select user to chat with...</option>';
+            targets.forEach(target => {
+                const option = document.createElement('option');
+                option.value = target.id;
+                option.textContent = target.alias;
+                chatTarget.appendChild(option);
+            });
+            if (targets.length === 1) {
+                currentReceiverId = targets[0].id;
+                chatTarget.value = currentReceiverId;
+                toggleChatInput(true);
+                loadMessages();
+            } else if (targets.length === 0) {
+                toggleChatInput(false);
+                showSystemMessage('No valid chat participant for this project yet.');
+            }
+        } catch (error) {
+            console.error('Error loading chat targets:', error);
+        }
+    }
+
     /** 🟢 Add message to chat UI - IMPROVED */
     function addMessageToChat(sender, content, timestamp, type = 'received', messageType = 'text', fileUrl = null, filename = null) {
         const messageDiv = document.createElement('div');
@@ -820,8 +832,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     /** Initial setup */
     toggleChatInput(!!currentReceiverId);
-    if (currentReceiverId) {
-        loadMessages();
-    }
+    loadTargets();
 });
 </script>

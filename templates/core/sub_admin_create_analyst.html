@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Create Analyst{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <a href="{% url 'core:sub_admin_analyst_list' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Analysts</a>
+    <h1>Create New Analyst</h1>
+    <p>Add a new analyst to your workspace to manage projects and collaborate.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-error">
+    <strong><i class="fas fa-exclamation-circle"></i> Error:</strong> {{ error }}
+</div>
+{% endif %}
+
+<div class="form-container" style="max-width: 500px;">
+    <form method="post" class="form-group">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label for="alias"><i class="fas fa-user"></i> Analyst Alias</label>
+            <input type="text" id="alias" name="alias" value="{{ alias|default:'' }}" required placeholder="Enter unique analyst name">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">This will be the analyst's public display name</small>
+        </div>
+
+        <div class="form-group">
+            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
+            <input type="email" id="email" name="email" value="{{ email|default:'' }}" required placeholder="analyst@example.com">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">Used for login and communications</small>
+        </div>
+
+        <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <input type="password" id="password" name="password" required placeholder="Enter secure password">
+            <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">Minimum 8 characters recommended</small>
+        </div>
+
+        <div class="form-group">
+            <label for="confirm_password"><i class="fas fa-lock"></i> Confirm Password</label>
+            <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm password">
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit" style="flex: 1;"><i class="fas fa-check"></i> Create Analyst</button>
+            <a href="{% url 'core:sub_admin_analyst_list' %}" class="btn btn-secondary" style="flex: 1;"><i class="fas fa-times"></i> Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
