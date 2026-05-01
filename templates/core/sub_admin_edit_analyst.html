@@ -1,53 +1,27 @@
 {% extends "base.html" %}
-
-{% block title %}Edit Analyst - {{ analyst.alias }}{% endblock %}
-
+{% block title %}Edit Analyst{% endblock %}
+{% block extra_css %}
+<style>
+.wrap{max-width:760px;margin:1.25rem 0}.panel{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.9rem;padding:1rem}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}.form-group{margin-bottom:.9rem}
+@media (max-width:700px){.row{grid-template-columns:1fr}}
+</style>
+{% endblock %}
 {% block content %}
-<div class="page-header">
-    <a href="{% url 'core:sub_admin_analyst_detail' analyst.id %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Analyst</a>
-    <h1>Edit {{ analyst.alias }}</h1>
-    <p>Update analyst information and credentials.</p>
-</div>
-
-{% if error %}
-<div class="alert alert-error">
-    <strong><i class="fas fa-exclamation-circle"></i> Error:</strong> {{ error }}
-</div>
-{% endif %}
-
-<div class="form-container" style="max-width: 500px;">
-    <form method="post">
-        {% csrf_token %}
-        
-        <div class="form-group">
-            <label for="alias"><i class="fas fa-user"></i> Alias</label>
-            <input type="text" id="alias" name="alias" value="{{ analyst.alias }}" required placeholder="Analyst name">
-        </div>
-
-        <div class="form-group">
-            <label for="email"><i class="fas fa-envelope"></i> Email Address</label>
-            <input type="email" id="email" name="email" value="{{ analyst.email }}" disabled style="opacity: 0.7; cursor: not-allowed;">
-            <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">Email cannot be changed after creation</small>
-        </div>
-
-        <div class="form-group">
-            <label for="new_password"><i class="fas fa-lock"></i> New Password (Optional)</label>
-            <input type="password" id="new_password" name="new_password" placeholder="Leave blank to keep current password">
-            <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">Only fill if you want to reset the password</small>
-        </div>
-
-        <div class="form-group" style="display: flex; align-items: center; gap: 0.75rem;">
-            <input type="checkbox" id="is_active" name="is_active" {% if analyst.is_active %}checked{% endif %} style="width: auto; margin: 0;">
-            <label for="is_active" style="margin: 0;">
-                <i class="fas fa-check-circle"></i> Active Account
-            </label>
-        </div>
-        <small style="color: var(--text-muted); display: block; margin-top: 0.35rem;">Uncheck to deactivate this analyst account</small>
-
-        <div class="form-actions">
-            <button class="btn btn-primary" type="submit" style="flex: 1;"><i class="fas fa-save"></i> Save Changes</button>
-            <a href="{% url 'core:sub_admin_analyst_detail' analyst.id %}" class="btn btn-secondary" style="flex: 1;"><i class="fas fa-times"></i> Cancel</a>
-        </div>
+<div class="wrap">
+  <a href="{% url 'core:sub_admin_analyst_detail' analyst.id %}" class="btn btn-secondary">Back</a>
+  <h1 style="margin:.8rem 0 .2rem">Edit {{ analyst.alias }}</h1>
+  <p style="color:var(--text-secondary);margin:0 0 1rem">Update profile and account state.</p>
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+  <div class="panel">
+    <form method="post">{% csrf_token %}
+      <div class="row">
+        <div class="form-group"><label for="alias">Alias</label><input id="alias" type="text" name="alias" value="{{ analyst.alias }}" required></div>
+        <div class="form-group"><label for="new_password">New Password (Optional)</label><input id="new_password" type="password" name="new_password"></div>
+      </div>
+      <div class="form-group"><label><input type="checkbox" name="is_active" {% if analyst.is_active %}checked{% endif %}> Active Account</label></div>
+      <div style="display:flex;gap:.6rem;flex-wrap:wrap"><button class="btn btn-primary" type="submit">Save Changes</button><a href="{% url 'core:sub_admin_analyst_detail' analyst.id %}" class="btn btn-secondary">Cancel</a></div>
     </form>
+  </div>
 </div>
 {% endblock %}

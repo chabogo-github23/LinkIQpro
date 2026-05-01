@@ -1,66 +1,43 @@
 {% extends "base.html" %}
-
 {% block title %}Project Management{% endblock %}
-
+{% block extra_css %}
+<style>
+.top{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:flex-end;margin:1.25rem 0}
+.top p{color:var(--text-secondary);margin:.35rem 0 0}
+.panel{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.9rem;overflow:auto}
+table{width:100%;border-collapse:collapse}th,td{padding:.9rem 1rem;text-align:left}th{font-size:.8rem;color:var(--text-secondary);text-transform:uppercase;border-bottom:1px solid var(--border-color)}td{border-bottom:1px solid var(--border-color)}
+.pill{padding:.24rem .58rem;border-radius:999px;border:1px solid var(--border-color);font-size:.74rem}
+</style>
+{% endblock %}
 {% block content %}
-<div class="page-header">
-    <a href="{% url 'core:sub_admin_dashboard' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-    <h1>Your Projects</h1>
-    <p>Manage only projects created in your workspace. Assign analysts, track progress, and update statuses.</p>
-    <div class="action-buttons">
-        <a href="{% url 'core:submit_project' %}" class="btn btn-primary"><i class="fas fa-plus"></i> Create Project</a>
-        <form method="get" style="display: flex; gap: 0.5rem;">
-            <select name="status" onchange="this.form.submit()" style="padding: 0.65rem 1rem; border-radius: 0.5rem; border: 1px solid var(--border-color); background: var(--bg-secondary); color: var(--text-primary);">
-                <option value="">📊 All Statuses</option>
-                {% for value,label in status_choices %}
-                <option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>
-                {% endfor %}
-            </select>
-        </form>
-    </div>
-</div>
-
-{% if projects %}
-<div class="responsive-table">
-    <table>
-        <thead>
-            <tr>
-                <th>Project ID</th>
-                <th>Title</th>
-                <th>Status</th>
-                <th>Assigned Analyst</th>
-                <th>Created</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in projects %}
-            <tr>
-                <td><span class="badge badge-secondary">{{ project.project_id }}</span></td>
-                <td><strong>{{ project.title|truncatewords:6 }}</strong></td>
-                <td>
-                    <span class="project-status-badge {% if project.status == 'pending' %}pending{% elif project.status == 'in_progress' %}in-progress{% elif project.status == 'completed' %}completed{% else %}on-hold{% endif %}">
-                        {{ project.get_status_display }}
-                    </span>
-                </td>
-                <td>
-                    {% if project.assigned_analyst %}
-                    <span class="badge badge-primary">{{ project.assigned_analyst.alias }}</span>
-                    {% else %}
-                    <span class="badge" style="background: rgba(239, 68, 68, 0.15); color: var(--error);">Unassigned</span>
-                    {% endif %}
-                </td>
-                <td><small>{{ project.created_at|date:"M d, Y" }}</small></td>
-                <td><a class="btn btn-secondary" href="{% url 'core:sub_admin_project_manage' project.project_id %}"><i class="fas fa-edit"></i> Manage</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% else %}
-<div class="empty-state">
-    <i class="fas fa-inbox"></i>
-    <p>No projects found. <a href="{% url 'core:submit_project' %}" style="text-decoration: underline;">Create your first project</a></p>
-</div>
-{% endif %}
+<section class="top">
+  <div>
+    <a href="{% url 'core:sub_admin_dashboard' %}" class="btn btn-secondary">Back</a>
+    <h1 style="margin:.65rem 0 0">Projects</h1>
+    <p>All projects created inside your workspace.</p>
+  </div>
+  <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+    <a href="{% url 'core:submit_project' %}" class="btn btn-primary">Create Project</a>
+    <form method="get"><select name="status" onchange="this.form.submit()"><option value="">All Statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}</select></form>
+  </div>
+</section>
+<section class="panel">
+  <table>
+    <thead><tr><th>Project</th><th>Title</th><th>Status</th><th>Analyst</th><th>Created</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td><span class="pill">{{ project.project_id }}</span></td>
+        <td>{{ project.title|truncatewords:7 }}</td>
+        <td>{{ project.get_status_display }}</td>
+        <td>{{ project.assigned_analyst.alias|default:"Unassigned" }}</td>
+        <td>{{ project.created_at|date:"M d, Y" }}</td>
+        <td><a class="btn btn-secondary" href="{% url 'core:sub_admin_project_manage' project.project_id %}">Manage</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="color:var(--text-secondary)">No projects found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
 {% endblock %}

@@ -1,98 +1,47 @@
 {% extends "base.html" %}
-
-{% block title %}Analyst Details - {{ analyst.alias }}{% endblock %}
-
+{% block title %}Analyst Details{% endblock %}
+{% block extra_css %}
+<style>
+.head{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:1.25rem 0}
+.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}
+.card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.85rem;padding:1rem}
+.k{font-size:.74rem;color:var(--text-secondary);text-transform:uppercase}.v{font-weight:600}
+.tbl{margin-top:1rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.85rem;overflow:auto}
+table{width:100%;border-collapse:collapse}th,td{padding:.85rem 1rem;text-align:left}th{font-size:.8rem;color:var(--text-secondary);text-transform:uppercase;border-bottom:1px solid var(--border-color)}td{border-bottom:1px solid var(--border-color)}
+@media (max-width:900px){.meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:540px){.meta{grid-template-columns:1fr}}
+</style>
+{% endblock %}
 {% block content %}
-<div class="page-header">
-    <a href="{% url 'core:sub_admin_analyst_list' %}" class="btn btn-secondary" style="margin-bottom:1rem;"><i class="fas fa-arrow-left"></i> Back to Analysts</a>
-    <h1>{{ analyst.alias }}</h1>
-    <p>
-        <span class="analyst-status {% if analyst.is_active %}active{% else %}inactive{% endif %}">
-            <i class="fas fa-{% if analyst.is_active %}check-circle{% else %}ban{% endif %}"></i>
-            {% if analyst.is_active %}Active{% else %}Inactive{% endif %}
-        </span>
-    </p>
-    <div class="action-buttons" style="margin-top: 1rem;">
-        <a href="{% url 'core:sub_admin_edit_analyst' analyst.id %}" class="btn btn-primary"><i class="fas fa-edit"></i> Edit Analyst</a>
-    </div>
-</div>
+<section class="head">
+  <div>
+    <a href="{% url 'core:sub_admin_analyst_list' %}" class="btn btn-secondary">Back</a>
+    <h1 style="margin:.65rem 0 0">{{ analyst.alias }}</h1>
+  </div>
+  <div><a href="{% url 'core:sub_admin_edit_analyst' analyst.id %}" class="btn btn-primary">Edit Analyst</a></div>
+</section>
 
-<div style="display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem;">
-    <div>
-        <div class="content-card">
-            <h2><i class="fas fa-info-circle"></i> Analyst Information</h2>
-            <div class="analyst-details" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
-                <div class="analyst-detail-item">
-                    <div class="analyst-detail-label">Full Alias</div>
-                    <div class="analyst-detail-value">{{ analyst.alias }}</div>
-                </div>
-                <div class="analyst-detail-item">
-                    <div class="analyst-detail-label">Email</div>
-                    <div class="analyst-detail-value" style="font-size: 0.9rem;">{{ analyst.email }}</div>
-                </div>
-                <div class="analyst-detail-item">
-                    <div class="analyst-detail-label">Status</div>
-                    <div class="analyst-detail-value">
-                        {% if analyst.is_active %}
-                        <span class="badge badge-success">Active</span>
-                        {% else %}
-                        <span class="badge badge-error">Inactive</span>
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="analyst-detail-item">
-                    <div class="analyst-detail-label">Created On</div>
-                    <div class="analyst-detail-value">{{ analyst.created_at|date:"M d, Y H:i" }}</div>
-                </div>
-            </div>
-        </div>
+<section class="meta">
+  <article class="card"><div class="k">Status</div><div class="v">{% if analyst.is_active %}Active{% else %}Inactive{% endif %}</div></article>
+  <article class="card"><div class="k">Alias</div><div class="v">{{ analyst.alias }}</div></article>
+  <article class="card"><div class="k">Created</div><div class="v">{{ analyst.created_at|date:"M d, Y H:i" }}</div></article>
+  <article class="card"><div class="k">Projects</div><div class="v">{{ projects|length }}</div></article>
+</section>
 
-        <div class="content-card">
-            <h2><i class="fas fa-project-diagram"></i> Assigned Projects</h2>
-            {% if projects %}
-            <div class="activity-timeline">
-                {% for project in projects %}
-                <div class="list-item">
-                    <div class="list-item-info">
-                        <div class="list-item-title">{{ project.project_id }} - {{ project.title|truncatewords:5 }}</div>
-                        <div class="list-item-meta">
-                            <span>
-                                <i class="fas fa-spinner"></i>
-                                <span class="project-status-badge {% if project.status == 'pending' %}pending{% elif project.status == 'in_progress' %}in-progress{% else %}completed{% endif %}">
-                                    {{ project.get_status_display }}
-                                </span>
-                            </span>
-                        </div>
-                    </div>
-                    <div class="list-item-actions">
-                        <a class="btn btn-secondary" href="{% url 'core:sub_admin_project_manage' project.project_id %}"><i class="fas fa-external-link-alt"></i> Open</a>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-            {% else %}
-            <div class="empty-state" style="padding: 2rem;">
-                <i class="fas fa-inbox"></i>
-                <p>No projects assigned yet.</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-
-    <div>
-        <div class="content-card">
-            <h2><i class="fas fa-chart-bar"></i> Quick Stats</h2>
-            <div style="display: grid; gap: 1rem;">
-                <div style="text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: 0.5rem;">
-                    <div style="font-size: 1.8rem; font-weight: 700; color: var(--accent-primary);">{{ projects|length }}</div>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Total Projects</div>
-                </div>
-                <div style="text-align: center; padding: 1rem; background: var(--bg-tertiary); border-radius: 0.5rem;">
-                    <div style="font-size: 1.8rem; font-weight: 700; color: var(--success);">{{ projects|length }}</div>
-                    <div style="font-size: 0.9rem; color: var(--text-secondary);">Active Projects</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<section class="tbl">
+  <table>
+    <thead><tr><th>Project</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody>
+      {% for project in projects %}
+      <tr>
+        <td>{{ project.project_id }} - {{ project.title|truncatewords:6 }}</td>
+        <td>{{ project.get_status_display }}</td>
+        <td><a class="btn btn-secondary" href="{% url 'core:sub_admin_project_manage' project.project_id %}">Open</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" style="color:var(--text-secondary)">No assigned projects yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</section>
 {% endblock %}
