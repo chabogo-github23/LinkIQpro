@@ -2,143 +2,185 @@
 
 {% block title %}Analyst Dashboard - LinkIQpro{% endblock %}
 
-{% block content %}
-<div class="page-header">
-    <h1>Welcome, {{ user.alias }}! 👋</h1>
-    <p>Manage your research projects and track their progress in real-time.</p>
-</div>
-
-<!-- Stats Summary -->
-<div class="dashboard-stats">
-    <div class="stat-card">
-        <div class="stat-card-value">{{ assigned_projects|length }}</div>
-        <div class="stat-card-label"><i class="fas fa-folder"></i> Total Projects</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-card-value">{{ active_projects_count }}</div>
-        <div class="stat-card-label"><i class="fas fa-hourglass-half"></i> Active</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-card-value">{{ completed_projects_count }}</div>
-        <div class="stat-card-label"><i class="fas fa-check-circle"></i> Completed</div>
-    </div>
-</div>
-
-<!-- Projects Section -->
-<div class="content-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-        <h2><i class="fas fa-project-diagram"></i> Your Projects</h2>
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-            <button class="filter-btn active" data-filter="all" style="padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; transition: all 0.2s;">All</button>
-            <button class="filter-btn" data-filter="pending" style="padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; transition: all 0.2s;">Pending</button>
-            <button class="filter-btn" data-filter="in_progress" style="padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; transition: all 0.2s;">Active</button>
-            <button class="filter-btn" data-filter="completed" style="padding: 0.5rem 1rem; border-radius: 2rem; border: 1px solid var(--border-color); background: transparent; color: var(--text-secondary); cursor: pointer; font-size: 0.9rem; transition: all 0.2s;">Completed</button>
-        </div>
-    </div>
-
-    {% if assigned_projects %}
-    <div class="activity-timeline">
-        {% for project in assigned_projects %}
-        <div class="project-card" data-status="{{ project.status }}">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
-                <div style="flex: 1;">
-                    <h3 class="project-title" style="margin: 0 0 0.5rem 0; font-size: 1.15rem;">
-                        <a href="{% url 'core:analyst_project_detail' project.project_id %}" style="color: var(--text-primary); text-decoration: none;">
-                            {{ project.title }}
-                        </a>
-                    </h3>
-                    <span class="badge badge-secondary">{{ project.get_project_type_display }}</span>
-                </div>
-                <span class="project-status-badge {% if project.status == 'pending' %}pending{% elif project.status == 'in_progress' %}in-progress{% elif project.status == 'completed' %}completed{% else %}on-hold{% endif %}">
-                    {{ project.get_status_display }}
-                </span>
-            </div>
-            
-            <div class="project-meta" style="margin-top: 1rem;">
-                <div class="project-meta-item">
-                    <i class="fas fa-user"></i>
-                    <span>Client: {{ project.client.alias }}</span>
-                </div>
-                <div class="project-meta-item">
-                    <i class="fas fa-calendar"></i>
-                    <span>Submitted: {{ project.created_at|date:"M d, Y" }}</span>
-                </div>
-                {% if project.area %}
-                <div class="project-meta-item">
-                    <i class="fas fa-tag"></i>
-                    <span>Area: {{ project.area }}</span>
-                </div>
-                {% endif %}
-            </div>
-            
-            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color);">
-                <p style="color: var(--text-secondary); line-height: 1.6; margin: 0 0 1rem 0;">{{ project.description|truncatewords:30 }}</p>
-                <a href="{% url 'core:analyst_project_detail' project.project_id %}" class="btn btn-primary" style="display: inline-flex;">
-                    <i class="fas fa-eye"></i> View Details
-                </a>
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-    {% else %}
-    <div class="empty-state">
-        <i class="fas fa-folder-open"></i>
-        <h3 style="font-size: 1.2rem; margin: 1rem 0 0.5rem 0;">No Projects Assigned</h3>
-        <p>You don't have any projects assigned yet. New projects will appear here once assigned by your sub-admin.</p>
-    </div>
-    {% endif %}
-</div>
-
+{% block extra_css %}
 <style>
-/* Filter Button Styles */
+.analyst-shell { display: grid; gap: 1.1rem; }
+.hero {
+    background: linear-gradient(145deg, rgba(0, 217, 255, 0.12), rgba(0, 153, 204, 0.08));
+    border: 1px solid rgba(0, 217, 255, 0.22);
+    border-radius: 1rem;
+    padding: 1.2rem;
+}
+.hero h1 { margin: 0; font-size: 1.5rem; }
+.hero p { margin: 0.5rem 0 0; color: var(--text-secondary); }
+.stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.8rem; }
+.stat-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.9rem;
+    padding: 1rem;
+}
+.stat-value { font-size: 1.7rem; font-weight: 800; color: var(--text-primary); }
+.stat-label { margin-top: 0.3rem; color: var(--text-secondary); font-size: 0.9rem; }
+.surface {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 1rem;
+}
+.surface-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.9rem;
+}
+.surface-head h2 { margin: 0; font-size: 1.2rem; }
+.filter-group { display: flex; gap: 0.45rem; flex-wrap: wrap; }
 .filter-btn {
-    transition: all 0.2s ease;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.84rem;
 }
-
-.filter-btn:hover {
-    border-color: var(--accent-primary);
-    color: var(--accent-primary);
-}
-
-.filter-btn.active {
-    background: var(--accent-primary);
-    border-color: var(--accent-primary);
-    color: white;
-}
-
-/* Project Card Enhancement */
+.filter-btn:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+.filter-btn.active { background: var(--accent-primary); border-color: var(--accent-primary); color: #fff; }
+.project-list { display: grid; gap: 0.8rem; }
 .project-card {
-    transition: all 0.3s ease;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.9rem;
+    padding: 0.95rem;
+    display: grid;
+    gap: 0.7rem;
 }
-
-.project-card:hover {
-    border-color: var(--accent-primary);
-    transform: translateY(-2px);
+.project-card:hover { border-color: rgba(0, 217, 255, 0.34); }
+.project-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.8rem; }
+.project-title { margin: 0; font-size: 1.05rem; }
+.project-title a { color: var(--text-primary); text-decoration: none; }
+.project-title a:hover { color: var(--accent-primary); }
+.meta-row { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--text-secondary); font-size: 0.88rem; }
+.pill {
+    border-radius: 999px;
+    padding: 0.2rem 0.58rem;
+    font-size: 0.75rem;
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
 }
-
-.project-card a {
-    text-decoration: none;
-    transition: color 0.2s ease;
+.status-pill { font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; }
+.status-pending { color: #f59e0b; border-color: rgba(245, 158, 11, 0.35); background: rgba(245, 158, 11, 0.14); }
+.status-in-progress { color: #38bdf8; border-color: rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.14); }
+.status-completed { color: #10b981; border-color: rgba(16, 185, 129, 0.35); background: rgba(16, 185, 129, 0.14); }
+.status-other { color: #cbd5e1; border-color: rgba(148, 163, 184, 0.35); background: rgba(148, 163, 184, 0.12); }
+.project-desc { margin: 0; color: var(--text-secondary); line-height: 1.55; }
+.project-actions { padding-top: 0.45rem; border-top: 1px solid var(--border-color); }
+.empty-state {
+    text-align: center;
+    border: 1px dashed var(--border-color);
+    border-radius: 0.9rem;
+    padding: 2rem 1rem;
+    color: var(--text-secondary);
 }
-
-.project-card a:hover {
-    color: var(--accent-secondary);
+.empty-state i { font-size: 1.8rem; margin-bottom: 0.45rem; display: inline-block; }
+@media (max-width: 900px) {
+    .stats-grid { grid-template-columns: 1fr; }
 }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="analyst-shell">
+    <section class="hero">
+        <h1>Welcome, {{ user.alias }}</h1>
+        <p>Track assigned projects, monitor status, and open each project workspace to deliver updates.</p>
+    </section>
+
+    <section class="stats-grid">
+        <article class="stat-card">
+            <div class="stat-value">{{ assigned_projects|length }}</div>
+            <div class="stat-label"><i class="fas fa-folder"></i> Total Assigned Projects</div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-value">{{ active_projects_count }}</div>
+            <div class="stat-label"><i class="fas fa-hourglass-half"></i> Active Projects</div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-value">{{ completed_projects_count }}</div>
+            <div class="stat-label"><i class="fas fa-check-circle"></i> Completed Projects</div>
+        </article>
+    </section>
+
+    <section class="surface">
+        <div class="surface-head">
+            <h2><i class="fas fa-project-diagram"></i> Assigned Projects</h2>
+            <div class="filter-group">
+                <button class="filter-btn active" data-filter="all" type="button">All</button>
+                <button class="filter-btn" data-filter="pending" type="button">Pending</button>
+                <button class="filter-btn" data-filter="in_progress" type="button">Active</button>
+                <button class="filter-btn" data-filter="completed" type="button">Completed</button>
+            </div>
+        </div>
+
+        {% if assigned_projects %}
+        <div class="project-list">
+            {% for project in assigned_projects %}
+            <article class="project-card" data-status="{{ project.status }}">
+                <div class="project-top">
+                    <div>
+                        <h3 class="project-title">
+                            <a href="{% url 'core:analyst_project_detail' project.project_id %}">{{ project.title }}</a>
+                        </h3>
+                        <span class="pill">{{ project.get_project_type_display }}</span>
+                    </div>
+                    <span class="pill status-pill {% if project.status == 'pending' %}status-pending{% elif project.status == 'in_progress' %}status-in-progress{% elif project.status == 'completed' %}status-completed{% else %}status-other{% endif %}">
+                        {{ project.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="meta-row">
+                    <span><i class="fas fa-user"></i> Client: {{ project.client.alias }}</span>
+                    <span><i class="fas fa-calendar"></i> {{ project.created_at|date:"M d, Y" }}</span>
+                    {% if project.area %}
+                    <span><i class="fas fa-tag"></i> {{ project.area }}</span>
+                    {% endif %}
+                </div>
+
+                <p class="project-desc">{{ project.description|truncatewords:30 }}</p>
+
+                <div class="project-actions">
+                    <a href="{% url 'core:analyst_project_detail' project.project_id %}" class="btn btn-primary">Open Project</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-folder-open"></i>
+            <h3>No Projects Assigned</h3>
+            <p>New projects assigned by your sub-admin will appear here.</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
 
 <script>
-// Project Filtering
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
     const filterButtons = document.querySelectorAll('.filter-btn');
-    filterButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            filterButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+    const cards = document.querySelectorAll('.project-card');
 
-            const filter = btn.dataset.filter;
-            document.querySelectorAll('.project-card').forEach(card => {
+    filterButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            filterButtons.forEach(function (btn) { btn.classList.remove('active'); });
+            button.classList.add('active');
+
+            const filter = button.dataset.filter;
+            cards.forEach(function (card) {
                 const status = card.dataset.status;
-                card.style.display = filter === 'all' || status === filter ? 'flex' : 'none';
+                card.style.display = (filter === 'all' || status === filter) ? 'grid' : 'none';
             });
         });
     });

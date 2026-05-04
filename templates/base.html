@@ -10,7 +10,6 @@
     <title>{% block title %}LinkIQpro - Managed Technical Project Delivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <link rel="stylesheet" href="{% static 'sub-admin-analyst.css' %}">
-    <script src="{% static 'main.js' %}"></script>
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
@@ -720,10 +719,14 @@
                     .nav-links a, .nav-links button {
                         position: relative;
                         z-index: 141; /* ensure links sit above overlay */
-                        pointer-events: auto;
+                        pointer-events: none;
                         padding: 0.6rem 0.8rem;
                         border-radius: 8px;
                         font-size: 14px;
+                    }
+                    nav.nav-open .nav-links a,
+                    nav.nav-open .nav-links button {
+                        pointer-events: auto;
                     }
                     
                     .nav-links .nav-link {
@@ -937,7 +940,7 @@
                         <li><a href="{% url 'core:request_magic_link' %}" class="nav-link nav-link-primary">Login</a></li>
                     {% endif %}
                     <li class="nav-theme">
-                        <button id="theme-toggle" class="theme-toggle" title="Toggle theme" aria-pressed="false">
+                        <button id="theme-toggle" class="theme-toggle" type="button" title="Toggle theme" aria-pressed="false">
                             <i id="theme-icon" class="fa-solid fa-moon"></i>
                             <span style="margin-left:0.5rem">Theme</span>
                         </button>

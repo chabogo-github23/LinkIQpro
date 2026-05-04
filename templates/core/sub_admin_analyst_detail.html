@@ -2,21 +2,25 @@
 {% block title %}Analyst Details{% endblock %}
 {% block extra_css %}
 <style>
-.head{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:1.25rem 0}
-.meta{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}
-.card{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.85rem;padding:1rem}
-.k{font-size:.74rem;color:var(--text-secondary);text-transform:uppercase}.v{font-weight:600}
-.tbl{margin-top:1rem;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:.85rem;overflow:auto}
-table{width:100%;border-collapse:collapse}th,td{padding:.85rem 1rem;text-align:left}th{font-size:.8rem;color:var(--text-secondary);text-transform:uppercase;border-bottom:1px solid var(--border-color)}td{border-bottom:1px solid var(--border-color)}
-@media (max-width:900px){.meta{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:540px){.meta{grid-template-columns:1fr}}
+.head { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin: 1.25rem 0; }
+.meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0.75rem; }
+.card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 0.9rem; padding: 0.9rem; }
+.k { font-size: 0.74rem; color: var(--text-secondary); text-transform: uppercase; }
+.v { font-weight: 700; margin-top: 0.25rem; }
+.tbl { margin-top: 0.95rem; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 0.9rem; overflow: auto; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 0.8rem 0.95rem; text-align: left; }
+th { font-size: 0.79rem; color: var(--text-secondary); text-transform: uppercase; border-bottom: 1px solid var(--border-color); }
+td { border-bottom: 1px solid var(--border-color); }
+@media (max-width: 900px) { .meta { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 540px) { .meta { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
 {% block content %}
 <section class="head">
   <div>
     <a href="{% url 'core:sub_admin_analyst_list' %}" class="btn btn-secondary">Back</a>
-    <h1 style="margin:.65rem 0 0">{{ analyst.alias }}</h1>
+    <h1 style="margin:.6rem 0 0">{{ analyst.alias }}</h1>
   </div>
   <div><a href="{% url 'core:sub_admin_edit_analyst' analyst.id %}" class="btn btn-primary">Edit Analyst</a></div>
 </section>
@@ -34,7 +38,7 @@ table{width:100%;border-collapse:collapse}th,td{padding:.85rem 1rem;text-align:l
     <tbody>
       {% for project in projects %}
       <tr>
-        <td>{{ project.project_id }} - {{ project.title|truncatewords:6 }}</td>
+        <td>{{ project.project_id }} - {{ project.title|truncatewords:8 }}</td>
         <td>{{ project.get_status_display }}</td>
         <td><a class="btn btn-secondary" href="{% url 'core:sub_admin_project_manage' project.project_id %}">Open</a></td>
       </tr>
