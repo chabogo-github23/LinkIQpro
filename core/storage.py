@@ -3,13 +3,36 @@ import hashlib
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
-import boto3
-from botocore.exceptions import ClientError
+from cloudinary_storage.storage import (
+    MediaCloudinaryStorage,
+    RESOURCE_TYPES,
+)
+
+
+class MediaCloudinaryStorageByExtension(MediaCloudinaryStorage):
+    """Store media uploads in the correct Cloudinary resource bucket."""
+
+    image_extensions = {
+        'avif', 'bmp', 'gif', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'tif', 'tiff', 'webp',
+    }
+    video_extensions = {
+        'avi', 'm4v', 'mkv', 'mov', 'mp4', 'mpeg', 'mpg', 'ogv', 'webm', 'wmv',
+    }
+
+    def _get_resource_type(self, name):
+        extension = name.rsplit('.', 1)[-1].lower() if '.' in name else ''
+        if extension in self.image_extensions:
+            return RESOURCE_TYPES['IMAGE']
+        if extension in self.video_extensions:
+            return RESOURCE_TYPES['VIDEO']
+        return RESOURCE_TYPES['RAW']
 
 class S3StorageManager:
     """Manage S3 file uploads and downloads"""
     
     def __init__(self):
+        import boto3
+
         self.s3_client = boto3.client(
             's3',
             aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
@@ -25,6 +48,8 @@ class S3StorageManager:
     
     def get_upload_url(self, s3_key, content_type='application/octet-stream'):
         """Generate presigned POST URL for client-side upload"""
+        from botocore.exceptions import ClientError
+
         try:
             response = self.s3_client.generate_presigned_post(
                 Bucket=self.bucket_name,
@@ -46,6 +71,8 @@ class S3StorageManager:
     
     def get_download_url(self, s3_key, expires_in=3600):
         """Generate presigned download URL"""
+        from botocore.exceptions import ClientError
+
         try:
             url = self.s3_client.generate_presigned_url(
                 'get_object',
@@ -59,6 +86,8 @@ class S3StorageManager:
     
     def delete_file(self, s3_key):
         """Delete file from S3"""
+        from botocore.exceptions import ClientError
+
         try:
             self.s3_client.delete_object(Bucket=self.bucket_name, Key=s3_key)
             return True
@@ -74,6 +103,8 @@ class S3StorageManager:
     
     def get_file_metadata(self, s3_key):
         """Get file metadata from S3"""
+        from botocore.exceptions import ClientError
+
         try:
             response = self.s3_client.head_object(Bucket=self.bucket_name, Key=s3_key)
             return {

@@ -10,8 +10,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
-IS_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+IS_VERCEL = os.environ.get('VERCEL', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
 
 def get_list_env(name, default=""):
     value = os.environ.get(name, default)
@@ -166,7 +166,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 if USE_CLOUDINARY:
     STORAGES = {
         'default': {
-            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+            'BACKEND': 'core.storage.MediaCloudinaryStorageByExtension',
         },
         'staticfiles': {
             'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',

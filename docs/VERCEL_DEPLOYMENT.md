@@ -33,7 +33,14 @@ SECRET_KEY=your-django-secret-key
 DEBUG=False
 ALLOWED_HOSTS=your-domain.com,*.vercel.app
 CSRF_TRUSTED_ORIGINS=https://your-domain.com,https://*.vercel.app
+CLOUDINARY_CLOUD_NAME=your-cloudinary-cloud-name
+CLOUDINARY_API_KEY=your-cloudinary-api-key
+CLOUDINARY_API_SECRET=your-cloudinary-api-secret
 ```
+
+Vercel has a read-only application filesystem, so uploaded media cannot be saved under
+`MEDIA_ROOT`. Production uploads use Cloudinary; without the Cloudinary variables above,
+the app will fail configuration instead of falling back to `/var/task/media`.
 
 **Optional Variables (for payment processing):**
 ```bash
