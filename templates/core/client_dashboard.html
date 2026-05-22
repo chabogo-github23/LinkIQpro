@@ -286,6 +286,26 @@
 {% endblock %}
 
 {% block content %}
+<!-- Page Header with Navigation -->
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Dashboard</h1>
+        <p>Manage your research projects and track their progress</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{% url 'core:submit_project' %}" class="btn btn-primary">
+            <i class="fas fa-plus-circle"></i>
+            New Project
+        </a>
+{% comment %}
+            <a href="{% url 'core:home' %}" class="btn btn-secondary">
+                <i class="fas fa-home"></i>
+                Home
+            </a>
+{% endcomment %}
+    </div>
+</div>
+
 <div class="dashboard-header">
     <h1>Welcome, {{ request.user_obj.alias }}</h1>
     <p>Manage your research projects and track their progress</p>
@@ -365,10 +385,12 @@
     {% endif %}
 </div>
 
-<!-- Action Buttons -->
-<div class="hero-buttons">
-    <a href="{% url 'core:submit_project' %}" class="btn btn-primary">Submit Project</a>
-</div>
+{% comment %}
+    <!-- Action Buttons -->
+    <div class="hero-buttons">
+        <a href="{% url 'core:submit_project' %}" class="btn btn-primary">Submit Project</a>
+    </div>
+{% endcomment %}
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

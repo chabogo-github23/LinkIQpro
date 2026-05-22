@@ -1,0 +1,50 @@
+{# Breadcrumb navigation component #}
+{% load static %}
+
+<div class="breadcrumb-container">
+    <nav class="breadcrumb" aria-label="breadcrumb">
+        <ul class="breadcrumb-list">
+            <!-- Home -->
+            <li class="breadcrumb-item">
+                <a href="{% url 'core:home' %}" class="breadcrumb-link">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </li>
+            
+            <!-- Dashboard based on role -->
+            {% if user.is_authenticated %}
+                {% if user.is_superuser or user.groups.all|length > 0 and 'Admin' in user.groups.values_list %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'core:admin_dashboard' %}" class="breadcrumb-link">Admin</a>
+                    </li>
+                {% elif user.role == 'analyst' or user.groups.all|length > 0 and 'Analyst' in user.groups.values_list %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'core:analyst_dashboard' %}" class="breadcrumb-link">Analyst</a>
+                    </li>
+                {% elif user.role == 'sub_admin' or user.groups.all|length > 0 and 'SubAdmin' in user.groups.values_list %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'core:sub_admin_dashboard' %}" class="breadcrumb-link">Sub-Admin</a>
+                    </li>
+                {% else %}
+                    <li class="breadcrumb-item">
+                        <a href="{% url 'core:client_dashboard' %}" class="breadcrumb-link">Dashboard</a>
+                    </li>
+                {% endif %}
+            {% endif %}
+            
+            <!-- Custom breadcrumbs -->
+            {% if breadcrumbs %}
+                {% for breadcrumb in breadcrumbs %}
+                    <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
+                        {% if breadcrumb.url %}
+                            <a href="{{ breadcrumb.url }}" class="breadcrumb-link">{{ breadcrumb.label }}</a>
+                        {% else %}
+                            <span class="breadcrumb-label">{{ breadcrumb.label }}</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </nav>
+</div>

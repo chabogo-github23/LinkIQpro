@@ -596,9 +596,24 @@ body {
 
 {% block content %}
 <div class="project-detail-page">
-    <a href="{% url 'core:client_dashboard' %}" class="back-link">
-        ← Back to Dashboard
-    </a>
+    {% url 'core:client_dashboard' as client_dashboard_url %}
+    {% include "includes/page_nav_controls.html" with back_url=client_dashboard_url %}
+
+    <!-- Quick Navigation -->
+    <div class="quick-nav">
+        <a href="{% url 'core:client_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+        <button onclick="window.history.back()" class="btn btn-secondary">
+            <i class="fas fa-undo"></i>
+            Go Back
+        </button>
+        <button onclick="location.reload()" class="btn btn-secondary">
+            <i class="fas fa-sync-alt"></i>
+            Refresh
+        </button>
+    </div>
 
     <!-- Project Header -->
     <div class="project-header">

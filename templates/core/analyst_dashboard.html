@@ -93,6 +93,22 @@
 {% endblock %}
 
 {% block content %}
+{% url 'core:home' as home_url %}
+{% include "includes/page_nav_controls.html" with back_url=home_url %}
+<!-- Page Header with Navigation -->
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Analyst Dashboard</h1>
+        <p>Track assigned projects and monitor status</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{% url 'core:home' %}" class="btn btn-secondary">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+    </div>
+</div>
+
 <div class="analyst-shell">
     <section class="hero">
         <h1>Welcome, {{ user.alias }}</h1>

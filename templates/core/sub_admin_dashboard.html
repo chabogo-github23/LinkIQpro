@@ -18,6 +18,20 @@ table{width:100%;border-collapse:collapse}th,td{padding:.9rem 1rem;text-align:le
 </style>
 {% endblock %}
 {% block content %}
+<!-- Page Header with Navigation -->
+<div class="page-header">
+    <div class="page-header-content">
+        <h1>Sub-Admin Dashboard</h1>
+        <p>Control your analysts, projects, and delivery flow</p>
+    </div>
+    <div class="page-header-actions">
+        <a href="{% url 'core:home' %}" class="btn btn-secondary">
+            <i class="fas fa-home"></i>
+            Home
+        </a>
+    </div>
+</div>
+
 <section class="sa-head">
   <div>
     <h1>Sub-admin Workspace</h1>

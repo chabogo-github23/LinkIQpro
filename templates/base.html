@@ -10,6 +10,7 @@
     <title>{% block title %}LinkIQpro - Managed Technical Project Delivery{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'main.css' %}">
     <link rel="stylesheet" href="{% static 'sub-admin-analyst.css' %}">
+    <link rel="stylesheet" href="{% static 'navigation.css' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
@@ -951,8 +952,16 @@
     </header>
     <div id="mobile-nav-overlay" class="mobile-nav-overlay" aria-hidden="true"></div>
 
+    {% if request.user.is_authenticated %}
+        {% include "includes/navigation.html" %}
+    {% endif %}
+
     <main>
         <div class="container">
+            {% if request.user.is_authenticated %}
+                {% include "includes/breadcrumb.html" %}
+            {% endif %}
+            
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }}">

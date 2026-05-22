@@ -80,7 +80,24 @@
 
 {% block content %}
 <div class="workspace">
-    <a href="{% url 'core:analyst_dashboard' %}" class="back-link">&larr; Back to Dashboard</a>
+    {% url 'core:analyst_dashboard' as analyst_dashboard_url %}
+    {% include "includes/page_nav_controls.html" with back_url=analyst_dashboard_url %}
+
+    <!-- Quick Navigation -->
+    <div class="quick-nav">
+        <a href="{% url 'core:analyst_dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+        <button onclick="window.history.back()" class="btn btn-secondary">
+            <i class="fas fa-undo"></i>
+            Go Back
+        </button>
+        <button onclick="location.reload()" class="btn btn-secondary">
+            <i class="fas fa-sync-alt"></i>
+            Refresh
+        </button>
+    </div>
 
     <section class="header-card">
         <div class="header-row">

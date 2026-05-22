@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
+from django.core.exceptions import ImproperlyConfigured
 
 load_dotenv()
 
@@ -10,6 +11,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+IS_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
 
 def get_list_env(name, default=""):
     value = os.environ.get(name, default)
@@ -49,19 +51,31 @@ INSTALLED_APPS = [
 #if DEBUG:
  #   INSTALLED_APPS.append('sslserver')
 
+CLOUDINARY_CLOUD_NAME = os.environ.get('CLOUDINARY_CLOUD_NAME', '').strip()
+CLOUDINARY_API_KEY = os.environ.get('CLOUDINARY_API_KEY', '').strip()
+CLOUDINARY_API_SECRET = os.environ.get('CLOUDINARY_API_SECRET', '').strip()
+
+# Use Cloudinary in production (or when explicitly enabled in development)
+USE_CLOUDINARY_IN_DEV = os.environ.get('USE_CLOUDINARY_IN_DEV', 'False').lower() == 'true'
+USE_CLOUDINARY = IS_VERCEL or USE_CLOUDINARY_IN_DEV
+
+# Allow CLOUDINARY_URL to be provided directly, otherwise build it from individual vars
+if not os.environ.get('CLOUDINARY_URL') and CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET:
+    os.environ['CLOUDINARY_URL'] = (
+        f"cloudinary://{CLOUDINARY_API_KEY}:{CLOUDINARY_API_SECRET}@{CLOUDINARY_CLOUD_NAME}"
+    )
+
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'dmldohxr0'),
-    'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '627527312298178'),
-    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'zw0I9vSuezU_Zn1ttUXmi8yinrQ')
+    'CLOUD_NAME': CLOUDINARY_CLOUD_NAME,
+    'API_KEY': CLOUDINARY_API_KEY,
+    'API_SECRET': CLOUDINARY_API_SECRET,
+    'SECURE': True,
 }
 
-# Use Cloudinary for media only in production or if explicitly configured
-if not DEBUG or os.environ.get('USE_CLOUDINARY_IN_DEV', 'False').lower() == 'true':
-    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+if USE_CLOUDINARY and not (os.environ.get('CLOUDINARY_URL') or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)):
+    raise ImproperlyConfigured(
+        "Cloudinary is enabled but credentials are missing. Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/CLOUDINARY_API_KEY/CLOUDINARY_API_SECRET."
+    )
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -148,6 +162,26 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# Django 5+ storage configuration
+if USE_CLOUDINARY:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'cloudinary_storage.storage.MediaCloudinaryStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        },
+    }
+else:
+    STORAGES = {
+        'default': {
+            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+        },
+        'staticfiles': {
+            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+        },
+    }
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Session configuration
@@ -217,9 +251,6 @@ LOGGING = {
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "SAMEORIGIN"
-
-# Vercel/Serverless configuration
-IS_VERCEL = os.environ.get('VERCEL', 'False').lower() == 'true'
 
 if IS_VERCEL:
     # Dynamically add Vercel deployment URLs to allowed hosts

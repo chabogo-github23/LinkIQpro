@@ -251,13 +251,20 @@
 
 {% block content %}
 <div class="container">
-    <a href="{% if user.is_sub_admin %}{% url 'core:sub_admin_dashboard' %}{% else %}{% url 'core:admin_dashboard' %}{% endif %}" class="back-link">
-        &larr; Back to Dashboard
-    </a>
+    <!-- Quick Navigation -->
+    <div class="quick-nav">
+        <a href="{% if user.is_sub_admin %}{% url 'core:sub_admin_dashboard' %}{% else %}{% url 'core:admin_dashboard' %}{% endif %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i>
+            Back to Dashboard
+        </a>
+        <a href="{% url 'core:admin_create_user' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i>
+            Create New User
+        </a>
+    </div>
 
     <div class="page-header">
         <h1>User Management</h1>
-        <a href="{% url 'core:admin_create_user' %}" class="btn btn-primary">+ Create New User</a>
     </div>
 
     <div class="stats-grid">

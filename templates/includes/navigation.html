@@ -1,0 +1,134 @@
+{# Role-based navigation menu #}
+{% load static %}
+
+<nav class="nav-sidebar">
+    <div class="nav-header">
+        <h3>Navigation</h3>
+    </div>
+    
+    <ul class="nav-menu">
+        <!-- Client Navigation -->
+        {% if user.role == 'client' %}
+            <li>
+                <a href="{% url 'core:client_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'client_dashboard' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'core:submit_project' %}" class="nav-item {% if request.resolver_match.url_name == 'submit_project' %}active{% endif %}">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>New Project</span>
+                </a>
+            </li>
+        {% endif %}
+        
+        <!-- Admin Navigation -->
+        {% if user.is_superuser or user.role == 'admin' %}
+            <li>
+                <a href="{% url 'core:admin_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-section">
+                <span class="nav-section-title">Projects</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:admin_dashboard' %}" class="nav-item">
+                            <i class="fas fa-list"></i>
+                            <span>All Projects</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-section">
+                <span class="nav-section-title">Management</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:admin_user_management' %}" class="nav-item {% if request.resolver_match.url_name == 'admin_user_management' %}active{% endif %}">
+                            <i class="fas fa-users"></i>
+                            <span>Users</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:admin_create_user' %}" class="nav-item {% if request.resolver_match.url_name == 'admin_create_user' %}active{% endif %}">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Create User</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+        
+        <!-- Analyst Navigation -->
+        {% if user.role == 'analyst' %}
+            <li>
+                <a href="{% url 'core:analyst_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'analyst_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <span class="nav-section-title">Projects</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:analyst_dashboard' %}#projects" class="nav-item">
+                            <i class="fas fa-tasks"></i>
+                            <span>My Projects</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+        
+        <!-- Sub-Admin Navigation -->
+        {% if user.role == 'sub_admin' %}
+            <li>
+                <a href="{% url 'core:sub_admin_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'sub_admin_dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-section">
+                <span class="nav-section-title">Analysts</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:sub_admin_analyst_list' %}" class="nav-item {% if request.resolver_match.url_name == 'sub_admin_analyst_list' %}active{% endif %}">
+                            <i class="fas fa-list"></i>
+                            <span>Analyst List</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'core:sub_admin_create_analyst' %}" class="nav-item {% if request.resolver_match.url_name == 'sub_admin_create_analyst' %}active{% endif %}">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Create Analyst</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-section">
+                <span class="nav-section-title">Projects</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:sub_admin_project_list' %}" class="nav-item {% if request.resolver_match.url_name == 'sub_admin_project_list' %}active{% endif %}">
+                            <i class="fas fa-list"></i>
+                            <span>Projects</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-section">
+                <span class="nav-section-title">Activity</span>
+                <ul class="nav-submenu">
+                    <li>
+                        <a href="{% url 'core:sub_admin_activities' %}" class="nav-item {% if request.resolver_match.url_name == 'sub_admin_activities' %}active{% endif %}">
+                            <i class="fas fa-history"></i>
+                            <span>Activities</span>
+                        </a>
+                    </li>
+                </ul>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
