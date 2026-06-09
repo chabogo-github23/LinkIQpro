@@ -11,7 +11,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-dev-key-change-in-production')
 
 DEBUG = os.environ.get('DEBUG', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
-IS_VERCEL = os.environ.get('VERCEL', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+IS_VERCEL = (
+    os.environ.get('VERCEL', 'False').strip().lower() in ('1', 'true', 'yes', 'on')
+    or os.environ.get('VERCEL_ENV') is not None
+)
 
 def get_list_env(name, default=""):
     value = os.environ.get(name, default)
@@ -72,7 +75,12 @@ CLOUDINARY_STORAGE = {
     'SECURE': True,
 }
 
-if USE_CLOUDINARY and not (os.environ.get('CLOUDINARY_URL') or (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)):
+CLOUDINARY_CREDENTIALS_PROVIDED = bool(
+    os.environ.get('CLOUDINARY_URL') or
+    (CLOUDINARY_CLOUD_NAME and CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET)
+)
+
+if USE_CLOUDINARY and not CLOUDINARY_CREDENTIALS_PROVIDED:
     raise ImproperlyConfigured(
         "Cloudinary is enabled but credentials are missing. Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/CLOUDINARY_API_KEY/CLOUDINARY_API_SECRET."
     )
@@ -162,23 +170,33 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+if IS_VERCEL and not DEBUG and not CLOUDINARY_CREDENTIALS_PROVIDED:
+    raise ImproperlyConfigured(
+        "Vercel deployment requires remote media storage. "
+        "Set CLOUDINARY_URL or CLOUDINARY_CLOUD_NAME/CLOUDINARY_API_KEY/CLOUDINARY_API_SECRET."
+    )
+
 # Django 5+ storage configuration
 if USE_CLOUDINARY:
+    DEFAULT_FILE_STORAGE = 'core.storage.MediaCloudinaryStorageByExtension'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
     STORAGES = {
         'default': {
-            'BACKEND': 'core.storage.MediaCloudinaryStorageByExtension',
+            'BACKEND': DEFAULT_FILE_STORAGE,
         },
         'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+            'BACKEND': STATICFILES_STORAGE,
         },
     }
 else:
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
     STORAGES = {
         'default': {
-            'BACKEND': 'django.core.files.storage.FileSystemStorage',
+            'BACKEND': DEFAULT_FILE_STORAGE,
         },
         'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage',
+            'BACKEND': STATICFILES_STORAGE,
         },
     }
 
