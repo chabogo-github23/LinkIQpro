@@ -2,3 +2,4 @@
 .aider*
 .vercel
 .env*.local
+node_modules

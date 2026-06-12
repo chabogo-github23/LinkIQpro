@@ -177,28 +177,25 @@ if IS_VERCEL and not DEBUG and not CLOUDINARY_CREDENTIALS_PROVIDED:
     )
 
 # Django 5+ storage configuration
-if USE_CLOUDINARY:
-    DEFAULT_FILE_STORAGE = 'core.storage.MediaCloudinaryStorageByExtension'
+DEFAULT_FILE_STORAGE = 'core.storage.MediaCloudinaryStorageByExtension' if USE_CLOUDINARY else 'django.core.files.storage.FileSystemStorage'
+
+# Use plain WhiteNoise static storage on Vercel to avoid manifest lookup failures during build/deploy.
+# Fallback to compressed static storage in other environments for better performance.
+if IS_VERCEL:
+    STATICFILES_STORAGE = 'whitenoise.storage.StaticFilesStorage'
+elif USE_CLOUDINARY:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-    STORAGES = {
-        'default': {
-            'BACKEND': DEFAULT_FILE_STORAGE,
-        },
-        'staticfiles': {
-            'BACKEND': STATICFILES_STORAGE,
-        },
-    }
 else:
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-    STORAGES = {
-        'default': {
-            'BACKEND': DEFAULT_FILE_STORAGE,
-        },
-        'staticfiles': {
-            'BACKEND': STATICFILES_STORAGE,
-        },
-    }
+
+STORAGES = {
+    'default': {
+        'BACKEND': DEFAULT_FILE_STORAGE,
+    },
+    'staticfiles': {
+        'BACKEND': STATICFILES_STORAGE,
+    },
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
