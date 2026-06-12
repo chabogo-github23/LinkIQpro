@@ -94,18 +94,12 @@
 
 {% block content %}
 {% url 'core:home' as home_url %}
-{% include "includes/page_nav_controls.html" with back_url=home_url %}
+{% include "includes/page_nav_controls.html" with back_url=home_url back_label="Home" %}
 <!-- Page Header with Navigation -->
 <div class="page-header">
     <div class="page-header-content">
         <h1>Analyst Dashboard</h1>
         <p>Track assigned projects and monitor status</p>
-    </div>
-    <div class="page-header-actions">
-        <a href="{% url 'core:home' %}" class="btn btn-secondary">
-            <i class="fas fa-home"></i>
-            Home
-        </a>
     </div>
 </div>
 
@@ -130,7 +124,7 @@
         </article>
     </section>
 
-    <section class="surface">
+    <section class="surface" id="projects">
         <div class="surface-head">
             <h2><i class="fas fa-project-diagram"></i> Assigned Projects</h2>
             <div class="filter-group">

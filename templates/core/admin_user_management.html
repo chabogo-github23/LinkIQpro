@@ -223,19 +223,6 @@
         color: var(--text-secondary);
     }
 
-    .back-link {
-        color: var(--text-secondary);
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .back-link:hover {
-        color: var(--accent-primary);
-    }
-
     @media (max-width: 768px) {
         .users-table {
             display: block;
@@ -251,17 +238,13 @@
 
 {% block content %}
 <div class="container">
-    <!-- Quick Navigation -->
-    <div class="quick-nav">
-        <a href="{% if user.is_sub_admin %}{% url 'core:sub_admin_dashboard' %}{% else %}{% url 'core:admin_dashboard' %}{% endif %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i>
-            Back to Dashboard
-        </a>
-        <a href="{% url 'core:admin_create_user' %}" class="btn btn-primary">
-            <i class="fas fa-user-plus"></i>
-            Create New User
-        </a>
-    </div>
+    {% if user.is_sub_admin %}
+        {% url 'core:sub_admin_dashboard' as dashboard_url %}
+    {% else %}
+        {% url 'core:admin_dashboard' as dashboard_url %}
+    {% endif %}
+    {% url 'core:admin_create_user' as create_user_url %}
+    {% include "includes/page_nav_controls.html" with back_url=dashboard_url back_label="Dashboard" forward_url=create_user_url forward_label="Create User" %}
 
     <div class="page-header">
         <h1>User Management</h1>

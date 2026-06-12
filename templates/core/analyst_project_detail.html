@@ -5,8 +5,6 @@
 {% block extra_css %}
 <style>
 .workspace { max-width: 1320px; margin: 0 auto; display: grid; gap: 1rem; }
-.back-link { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--text-secondary); text-decoration: none; }
-.back-link:hover { color: var(--accent-primary); }
 .header-card, .surface-card {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -81,23 +79,7 @@
 {% block content %}
 <div class="workspace">
     {% url 'core:analyst_dashboard' as analyst_dashboard_url %}
-    {% include "includes/page_nav_controls.html" with back_url=analyst_dashboard_url %}
-
-    <!-- Quick Navigation -->
-    <div class="quick-nav">
-        <a href="{% url 'core:analyst_dashboard' %}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i>
-            Back to Dashboard
-        </a>
-        <button onclick="window.history.back()" class="btn btn-secondary">
-            <i class="fas fa-undo"></i>
-            Go Back
-        </button>
-        <button onclick="location.reload()" class="btn btn-secondary">
-            <i class="fas fa-sync-alt"></i>
-            Refresh
-        </button>
-    </div>
+    {% include "includes/page_nav_controls.html" with back_url=analyst_dashboard_url back_label="Dashboard" %}
 
     <section class="header-card">
         <div class="header-row">
