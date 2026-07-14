@@ -28,12 +28,6 @@
         {% endif %}
 
         {% if user.is_superuser or user.role == 'admin' %}
-            <li>
-                <a href="{% url 'core:admin_dashboard' %}" class="nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
             <li class="nav-section">
                 <span class="nav-section-title">Management</span>
                 <ul class="nav-submenu">

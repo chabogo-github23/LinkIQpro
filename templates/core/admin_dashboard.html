@@ -326,21 +326,37 @@
             grid-template-columns: 1fr;
         }
     }
+
+    .admin-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+        .admin-actions {
+            flex-direction: column;
+        }
+
+        .admin-actions .btn {
+            width: 100%;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
 <!-- Page Header with Navigation -->
-<div class="page-header">
-    <div class="page-header-content">
-        <h1>Admin Dashboard</h1>
-        <p>Manage projects, assign analysts, and track progress</p>
-    </div>
-</div>
-
 <div class="admin-header">
     <h1>Dashboard Overview</h1>
     <p>Monitor all projects and team assignments</p>
+</div>
+
+<!-- Quick Actions -->
+<div class="admin-actions">
+    <a href="{% url 'core:admin_create_user' %}" class="btn btn-primary">Create User</a>
+    <a href="{% url 'core:admin_user_management' %}" class="btn btn-secondary">User Management</a>
 </div>
 
 <!-- Statistics Grid -->
