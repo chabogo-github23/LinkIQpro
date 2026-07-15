@@ -922,17 +922,8 @@
                 </button>
                 <ul class="nav-links" id="site-nav-links">
                     <li class="nav-close-item">
-{% comment %}
-                            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Close menu" title="Close menu">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-{% endcomment %}
                     </li>
                     <li><a href="{% url 'core:home' %}" class="nav-link">Home</a></li>
-                    {% comment %}
-                    <li><a href="{% url 'about' %}" class="nav-link">About</a></li>
-                    <li><a href="{% url 'services' %}" class="nav-link">Services</a></li>
-                    {% endcomment %}
                     
                     {% if request.user.is_authenticated %}  
                         <li><a href="{% url 'core:logout' %}" class="nav-link nav-link-danger">Logout</a></li>
@@ -958,10 +949,6 @@
 
     <main>
         <div class="container">
-            {% if request.user.is_authenticated %}
-                {% include "includes/breadcrumb.html" %}
-            {% endif %}
-            
             {% if messages %}
                 {% for message in messages %}
                     <div class="alert alert-{{ message.tags }}">

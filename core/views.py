@@ -85,6 +85,25 @@ from apps.users.decorators import (
 request_password_reset = password_reset_request
 
 
+def dashboard_redirect(request):
+    """Backward-compatible dashboard entrypoint for older templates and redirects."""
+    user = getattr(request, 'user', None)
+
+    if user and getattr(user, 'is_sub_admin', False):
+        return redirect('core:sub_admin_dashboard')
+    if user and getattr(user, 'is_analyst', False):
+        return redirect('core:analyst_dashboard')
+    if user and getattr(user, 'is_admin', False):
+        return redirect('core:admin_dashboard')
+
+    return redirect('core:client_dashboard')
+
+
+def projects_redirect(request):
+    """Backward-compatible projects entrypoint for older templates."""
+    return dashboard_redirect(request)
+
+
 # Additional views that weren't in domain apps
 def login_placeholder(request):
     """Temporary login page placeholder"""

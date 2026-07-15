@@ -248,6 +248,7 @@ def admin_dashboard(request):
         'total_clients': counts['clients'],
         'total_analysts': counts['analysts'],
         'total_admins': counts['admins'],
+        'hide_breadcrumb': True,
     })
 
 

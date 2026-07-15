@@ -4,20 +4,6 @@
 
 {% block extra_css %}
 <style>
-    .admin-header {
-        margin: 2rem 0;
-    }
-
-    .admin-header h1 {
-        color: var(--accent-primary);
-        margin-bottom: 0.5rem;
-    }
-
-    .admin-header p {
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-    }
-
     .stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -347,11 +333,7 @@
 {% endblock %}
 
 {% block content %}
-<!-- Page Header with Navigation -->
-<div class="admin-header">
-    <h1>Dashboard Overview</h1>
-    <p>Monitor all projects and team assignments</p>
-</div>
+<h1>Dashboard Overview</h1>
 
 <!-- Quick Actions -->
 <div class="admin-actions">

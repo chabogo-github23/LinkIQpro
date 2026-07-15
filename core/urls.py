@@ -11,6 +11,8 @@ app_name = 'core'
 urlpatterns = [
     # --- Main views ---
     path('', views.home, name='home'),
+    path('dashboard/', views.dashboard_redirect, name='dashboard'),
+    path('projects/', views.projects_redirect, name='projects'),
     path('login/', views.login_placeholder, name='login'),
     path('auth/register/', views.register, name='register'),
     path('auth/request-magic-link/', views.request_magic_link, name='request_magic_link'),
