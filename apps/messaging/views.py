@@ -8,6 +8,7 @@ from django.views.decorators.http import require_http_methods
 from apps.projects.models import Project
 from apps.users.models import PseudonymousUser
 from apps.users.decorators import pseudonymous_user_required as require_auth
+from apps.audit.services import AuditService
 from .services import ChatService
 
 
@@ -44,6 +45,18 @@ def project_chat(request, project_id):
         
         if error:
             return JsonResponse({'error': error}, status=403)
+
+        AuditService.log_from_request(
+            'message_sent',
+            request,
+            project,
+            details={
+                'message_type': message.message_type,
+                'filename': message.filename,
+                'receiver_id': str(receiver.id),
+                'receiver_alias': receiver.alias,
+            }
+        )
 
         file_url = None
         if message.file:

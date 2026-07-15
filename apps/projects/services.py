@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from django.utils import timezone
 
-from .models import Project, Milestone, Deliverable
+from .models import Project, Milestone, Deliverable, ProjectActivity
 from .repositories import ProjectRepository, MilestoneRepository, DeliverableRepository
 
 
@@ -207,3 +207,184 @@ class DeliverableService:
         )
         
         return deliverable, None
+
+
+class ProjectActivityService:
+    """Project activity creation and feed helpers."""
+
+    ACTIVITY_SECTION_MAP = {
+        'message': 'project-communication',
+        'progress': 'project-progress',
+        'file': 'project-deliverables',
+        'payment': 'project-payments',
+        'milestone': 'project-milestones',
+        'review': 'project-communication',
+        'deadline': 'project-overview',
+        'completion': 'project-deliverables',
+        'system': 'project-overview',
+    }
+
+    @staticmethod
+    def _project_recipients(project: Project, actor=None) -> List:
+        recipients = []
+        for user in [project.client, project.tenant_admin, project.assigned_analyst, actor]:
+            if user and user not in recipients:
+                recipients.append(user)
+        return recipients
+
+    @classmethod
+    def _normalize_targets(cls, activity_type: str, target_section: str = '') -> str:
+        if target_section:
+            return target_section
+        return cls.ACTIVITY_SECTION_MAP.get(activity_type, 'project-overview')
+
+    @classmethod
+    def create_activity(
+        cls,
+        project: Project,
+        activity_type: str,
+        title: str,
+        description: str = '',
+        sender=None,
+        related_object_id: str = None,
+        target_section: str = '',
+        url: str = None,
+        recipients: List = None,
+    ) -> List[ProjectActivity]:
+        """Create a project activity for all relevant recipients."""
+        if not project or not activity_type or not title:
+            return []
+
+        target_section = cls._normalize_targets(activity_type, target_section)
+        recipient_list = recipients or cls._project_recipients(project, sender)
+        created = []
+
+        for recipient in recipient_list:
+            created.append(ProjectActivity.objects.create(
+                project=project,
+                sender=sender,
+                recipient=recipient,
+                activity_type=activity_type,
+                title=title,
+                description=description or '',
+                target_section=target_section,
+                related_object_id=related_object_id,
+                url=url,
+                is_read=bool(sender and recipient and sender.id == recipient.id),
+                read_at=timezone.now() if sender and recipient and sender.id == recipient.id else None,
+            ))
+
+        return created
+
+    @classmethod
+    def create_from_audit_log(cls, log):
+        """Map an audit log entry to one or more project activities."""
+        if not getattr(log, 'project', None):
+            return []
+
+        details = log.details or {}
+        action_map = {
+            'message_sent': ('message', 'New Message', 'A new project message was sent.', 'project-communication'),
+            'project_submitted': ('system', 'Project Submitted', details.get('title', log.project.title), 'project-overview'),
+            'project_accepted': ('system', 'Project Accepted', 'The project was accepted and moved forward.', 'project-overview'),
+            'project_rejected': ('system', 'Project Rejected', details.get('reason', 'The project was rejected.'), 'project-overview'),
+            'price_set': ('payment', 'Project Price Updated', f"Agreed price set to ${details.get('price', log.project.total_price)}.", 'project-payments'),
+            'status_changed': ('system', 'Project Status Updated', f"Status changed to {details.get('new_status', log.project.status).replace('_', ' ').title()}.", 'project-overview'),
+            'analyst_assigned': ('system', 'Analyst Assigned', f"Assigned to {details.get('analyst_alias', 'an analyst')}.", 'project-overview'),
+            'milestone_created': ('milestone', 'Milestone Created', details.get('title', 'A new milestone was created.'), 'project-milestones'),
+            'milestone_status_updated': ('milestone', 'Milestone Updated', f"Milestone moved to {details.get('new_status', 'a new status')}.", 'project-milestones'),
+            'milestone_status_changed': ('milestone', 'Milestone Updated', f"Milestone moved to {details.get('new_status', 'a new status')}.", 'project-milestones'),
+            'milestone_approved': ('review', 'Milestone Approved', details.get('title', 'A milestone was approved.'), 'project-milestones'),
+            'deliverable_uploaded': ('file', 'Deliverable Uploaded', details.get('deliverable_type', 'A deliverable was uploaded.'), 'project-deliverables'),
+            'deliverable_approved': ('completion', 'Deliverable Approved', 'The final deliverable was approved.', 'project-final-deliverables'),
+            'deliverable_rejected': ('review', 'Deliverable Rejected', details.get('reason', 'The deliverable needs revision.'), 'project-final-deliverables'),
+            'work_submitted': ('progress', 'Work Submitted', 'Work was submitted for review.', 'project-communication'),
+            'progress_uploaded': ('progress', 'Progress Report Uploaded', details.get('filename', 'A progress report was uploaded.'), 'project-progress'),
+            'paystack_payment_success': ('payment', 'Payment Completed', 'Milestone payment completed successfully.', 'project-payments'),
+            'paystack_payment_failed': ('payment', 'Payment Failed', details.get('reason', 'The payment failed.'), 'project-payments'),
+            'paypal_funds_held': ('payment', 'Funds Held in Escrow', 'Payment has been held in escrow.', 'project-payments'),
+            'paypal_authorization_failed': ('payment', 'Payment Authorization Failed', details.get('error', 'PayPal authorization failed.'), 'project-payments'),
+            'paypal_payment_captured': ('payment', 'Payment Released', 'Escrow funds were released.', 'project-payments'),
+            'paystack_payment_released': ('payment', 'Payment Released', 'Payment was released to the project team.', 'project-payments'),
+            'payment_cancelled': ('payment', 'Payment Cancelled', 'A milestone payment attempt was cancelled.', 'project-payments'),
+            'project_delivered': ('completion', 'Project Delivered', 'Completed project deliverables were sent to the client.', 'project-deliverables'),
+        }
+
+        mapped = action_map.get(log.action)
+        if not mapped:
+            return []
+
+        activity_type, title, description, target_section = mapped
+        sender = log.user
+
+        if log.action == 'message_sent':
+            recipients = []
+            if sender:
+                recipients.append(sender)
+            receiver_id = details.get('receiver_id')
+            if receiver_id:
+                try:
+                    from apps.users.models import PseudonymousUser
+                    receiver = PseudonymousUser.objects.filter(id=receiver_id).first()
+                    if receiver and receiver not in recipients:
+                        recipients.append(receiver)
+                except Exception:
+                    pass
+            if not recipients:
+                recipients = cls._project_recipients(log.project, sender)
+            return cls.create_activity(
+                project=log.project,
+                activity_type=activity_type,
+                title=title,
+                description=description,
+                sender=sender,
+                target_section=target_section,
+                recipients=recipients,
+            )
+
+        return cls.create_activity(
+            project=log.project,
+            activity_type=activity_type,
+            title=title,
+            description=description,
+            sender=sender,
+            target_section=target_section,
+            recipients=recipients,
+        )
+
+    @staticmethod
+    def get_project_activities(project: Project, recipient, limit: int = 50):
+        return list(
+            ProjectActivity.objects.filter(project=project, recipient=recipient)
+            .select_related('sender', 'recipient')
+            .order_by('-created_at')[:limit]
+        )
+
+    @staticmethod
+    def get_unread_count(project: Project, recipient) -> int:
+        return ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False).count()
+
+    @staticmethod
+    def get_category_counts(project: Project, recipient) -> dict:
+        queryset = ProjectActivity.objects.filter(project=project, recipient=recipient)
+        counts = {
+            'all': queryset.count(),
+            'message': queryset.filter(activity_type='message').count(),
+            'progress': queryset.filter(activity_type='progress').count(),
+            'file': queryset.filter(activity_type='file').count(),
+            'payment': queryset.filter(activity_type='payment').count(),
+            'milestone': queryset.filter(activity_type='milestone').count(),
+            'review': queryset.filter(activity_type='review').count(),
+            'deadline': queryset.filter(activity_type='deadline').count(),
+            'completion': queryset.filter(activity_type='completion').count(),
+            'system': queryset.filter(activity_type='system').count(),
+        }
+        return counts
+
+    @staticmethod
+    def mark_read(project: Project, recipient, activity_ids: List[str] = None) -> int:
+        queryset = ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False)
+        if activity_ids:
+            queryset = queryset.filter(id__in=activity_ids)
+        updated = queryset.update(is_read=True, read_at=timezone.now())
+        return updated

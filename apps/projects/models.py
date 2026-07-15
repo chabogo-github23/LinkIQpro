@@ -402,3 +402,104 @@ class ProjectProgress(models.Model):
         if self.thumbnail:
             return self.thumbnail.url
         return None
+
+
+class ProjectActivity(models.Model):
+    """Unified project activity feed item, stored per recipient."""
+
+    ACTIVITY_TYPES = [
+        ('message', 'Message'),
+        ('progress', 'Progress'),
+        ('file', 'File'),
+        ('payment', 'Payment'),
+        ('milestone', 'Milestone'),
+        ('review', 'Review'),
+        ('deadline', 'Deadline'),
+        ('completion', 'Completion'),
+        ('system', 'System'),
+    ]
+
+    TARGET_SECTIONS = [
+        ('project-overview', 'Project Overview'),
+        ('project-communication', 'Communication'),
+        ('project-progress', 'Progress'),
+        ('project-deliverables', 'Deliverables'),
+        ('project-payments', 'Payments'),
+        ('project-milestones', 'Milestones'),
+        ('project-final-deliverables', 'Final Deliverables'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='activities')
+    sender = models.ForeignKey(
+        'users.PseudonymousUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='sent_project_activities'
+    )
+    recipient = models.ForeignKey(
+        'users.PseudonymousUser',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='project_activities'
+    )
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_TYPES)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True)
+    target_section = models.CharField(max_length=50, choices=TARGET_SECTIONS, blank=True, default='project-overview')
+    related_object_id = models.CharField(max_length=64, blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    read_at = models.DateTimeField(blank=True, null=True)
+    url = models.CharField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        db_table = 'core_projectactivity'
+        indexes = [
+            models.Index(fields=['project', 'recipient', '-created_at']),
+            models.Index(fields=['project', 'recipient', 'is_read']),
+            models.Index(fields=['project', 'activity_type']),
+        ]
+
+    def __str__(self):
+        return f"{self.project.project_id} - {self.title}"
+
+    @property
+    def sender_label(self):
+        return self.sender.alias if self.sender else 'System'
+
+    @property
+    def icon(self):
+        return {
+            'message': '💬',
+            'progress': '📈',
+            'file': '📄',
+            'payment': '💰',
+            'milestone': '🎯',
+            'review': '✅',
+            'deadline': '⏰',
+            'completion': '🏁',
+            'system': '⚙️',
+        }.get(self.activity_type, '•')
+
+    @property
+    def is_unread(self):
+        return not self.is_read
+
+    @property
+    def status_label(self):
+        return 'Unread' if self.is_unread else 'Read'
+
+    @property
+    def status_class(self):
+        return 'is-unread' if self.is_unread else 'is-read'
+
+    def mark_read(self):
+        if not self.is_read:
+            from django.utils import timezone
+            self.is_read = True
+            self.read_at = timezone.now()
+            self.save(update_fields=['is_read', 'read_at'])

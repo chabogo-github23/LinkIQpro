@@ -442,15 +442,29 @@
 </a>
 <div class="triage-container">
     <!-- Main Content -->
-    <div class="main-content">
+        <div class="main-content">
         <!-- Project Overview -->
-        <div class="section">
+        <div class="section" id="project-overview">
             <div class="project-header">
                 <div>
                     <div class="project-id">{{ project.project_id }}</div>
                     <div class="project-title">{{ project.title }}</div>
                 </div>
                 <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+            </div>
+            <div style="display:flex;justify-content:flex-end;margin:0 0 1rem;">
+                <button
+                    type="button"
+                    class="activity-toggle"
+                    data-activity-toggle
+                    data-activity-target="project-activity-center"
+                    aria-expanded="false"
+                    aria-controls="project-activity-drawer"
+                >
+                    <span class="activity-toggle-icon">🔔</span>
+                    <span>Activity</span>
+                    <span class="activity-count" data-activity-count data-activity-target="project-activity-center">{{ activity_unread_count|default:0 }}</span>
+                </button>
             </div>
 
             <div class="meta-grid">
@@ -540,8 +554,10 @@
             {% endif %}
         </div>
 
+        {% include "includes/project_activity_center.html" with activity_mark_read_url=project_activity_mark_read_url %}
+
         <!-- Milestones Section -->
-        <div class="section">
+        <div class="section" id="project-milestones">
             <h2>🎯 Milestone Management</h2>
 
             <!-- Create Milestone Form -->
@@ -718,7 +734,7 @@
         </div>
 
         <!-- Client Deliverables -->
-        <div class="section">
+        <div class="section" id="project-deliverables">
             <h2>📦 Client Deliverables</h2>
 
             {% if deliverables %}
@@ -756,7 +772,7 @@
         </div>
 
         <!-- Communication -->
-        <div class="section">
+        <div class="section" id="project-communication">
             <h2>💬 Communication</h2>
             {% include "core/chat_widget.html" %}
         </div>
@@ -856,7 +872,7 @@
         {% endif %}
         <!-- Add this section after the Activity Log section -->
         <!-- Add this section after the Activity Log section -->
-        <div class="section">
+        <div class="section" id="project-progress">
             <h2>📊 Progress Reports</h2>
             
             <!-- Upload Progress Form -->

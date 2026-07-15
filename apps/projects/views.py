@@ -8,13 +8,15 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.db import transaction
+from django.urls import reverse
 
 from .models import Project, Milestone, ProjectFile, ProjectProgress
 from .services import (
     ProjectSubmissionService,
     ProjectWorkflowService,
     MilestoneService,
-    DeliverableService
+    DeliverableService,
+    ProjectActivityService
 )
 from .repositories import ProjectRepository, MilestoneRepository
 from apps.users.decorators import (
@@ -51,6 +53,10 @@ def project_detail(request, project_id):
     has_unfunded_milestones = milestones.filter(payment_status='unfunded').exists()
     has_processing_milestones = milestones.filter(payment_status='processing').exists()
     processing_count = milestones.filter(payment_status='processing').count()
+    activity_service = ProjectActivityService()
+    project_activities = activity_service.get_project_activities(project, request.user, limit=40)
+    activity_unread_count = activity_service.get_unread_count(project, request.user)
+    activity_category_counts = activity_service.get_category_counts(project, request.user)
 
     return render(request, 'core/project_detail.html', {
         'project': project,
@@ -62,6 +68,10 @@ def project_detail(request, project_id):
         'has_unfunded_milestones': has_unfunded_milestones,
         'has_processing_milestones': has_processing_milestones,
         'processing_count': processing_count,
+        'project_activities': project_activities,
+        'activity_unread_count': activity_unread_count,
+        'activity_category_counts': activity_category_counts,
+        'project_activity_mark_read_url': reverse('core:project_activity_mark_read', args=[project.project_id]),
     })
 
 
@@ -123,11 +133,21 @@ def analyst_project_detail(request, project_id):
     
     from apps.users.repositories import UserRepository
     admins = UserRepository.get_admins()
+    progress_updates = ProjectProgress.objects.filter(project=project).order_by('-uploaded_at')
+    activity_service = ProjectActivityService()
+    project_activities = activity_service.get_project_activities(project, request.user, limit=40)
+    activity_unread_count = activity_service.get_unread_count(project, request.user)
+    activity_category_counts = activity_service.get_category_counts(project, request.user)
     
     return render(request, 'core/analyst_project_detail.html', {
         'project': project,
         'user': request.user,
-        'admins': admins
+        'admins': admins,
+        'progress_updates': progress_updates,
+        'project_activities': project_activities,
+        'activity_unread_count': activity_unread_count,
+        'activity_category_counts': activity_category_counts,
+        'project_activity_mark_read_url': reverse('core:project_activity_mark_read', args=[project.project_id]),
     })
 
 
@@ -344,6 +364,10 @@ def project_triage(request, project_id):
     status_choices = Project.STATUS_CHOICES
     milestone_status_choices = Milestone.STATUS_CHOICES
     payment_status_choices = Milestone.PAYMENT_STATUS_CHOICES
+    activity_service = ProjectActivityService()
+    project_activities = activity_service.get_project_activities(project, request.user, limit=40)
+    activity_unread_count = activity_service.get_unread_count(project, request.user)
+    activity_category_counts = activity_service.get_category_counts(project, request.user)
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -427,6 +451,10 @@ def project_triage(request, project_id):
         'milestone_status_choices': milestone_status_choices,
         'payment_status_choices': payment_status_choices,
         'progress_reports': progress_reports,
+        'project_activities': project_activities,
+        'activity_unread_count': activity_unread_count,
+        'activity_category_counts': activity_category_counts,
+        'project_activity_mark_read_url': reverse('core:project_activity_mark_read', args=[project.project_id]),
     })
 
 
@@ -442,6 +470,12 @@ def admin_upload_progress(request, project_id):
         if uploaded_file and uploaded_file.name.endswith(".pdf"):
             # Only pass fields that exist in your model
             ProjectProgress.objects.create(project=project, file=uploaded_file)
+            AuditService.log_from_request(
+                'progress_uploaded',
+                request,
+                project,
+                details={'filename': uploaded_file.name}
+            )
             messages.success(request, "Progress PDF uploaded successfully.")
         else:
             messages.error(request, "Please upload a valid PDF file.")
@@ -599,6 +633,10 @@ def sub_admin_project_manage(request, project_id):
     analysts = UserRepository.get_analysts(parent_admin=request.user)
     from apps.audit.models import AuditLog
     audit_logs = AuditLog.objects.filter(project=project).order_by('-created_at')[:10]
+    activity_service = ProjectActivityService()
+    project_activities = activity_service.get_project_activities(project, request.user, limit=40)
+    activity_unread_count = activity_service.get_unread_count(project, request.user)
+    activity_category_counts = activity_service.get_category_counts(project, request.user)
 
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -610,6 +648,7 @@ def sub_admin_project_manage(request, project_id):
                 analyst = PseudonymousUser.objects.get(id=analyst_id, is_analyst=True, parent_admin=request.user)
                 result = workflow_service.assign_analyst(project, analyst, acting_user=request.user)
                 if result.success:
+                    AuditService.log_from_request('analyst_assigned', request, project, details={'analyst_alias': analyst.alias})
                     messages.success(request, f'Assigned to {analyst.alias}.')
                 else:
                     messages.error(request, result.error)
@@ -618,8 +657,10 @@ def sub_admin_project_manage(request, project_id):
         elif action == 'update_status':
             new_status = request.POST.get('status')
             if new_status in dict(Project.STATUS_CHOICES):
+                old_status = project.status
                 project.status = new_status
                 project.save()
+                AuditService.log_from_request('status_changed', request, project, details={'old_status': old_status, 'new_status': new_status})
                 messages.success(request, 'Project status updated.')
         elif action == 'create_milestone':
             result = milestone_service.create_milestone(
@@ -631,6 +672,7 @@ def sub_admin_project_manage(request, project_id):
                 delivery_instructions=request.POST.get('delivery_instructions', '')
             )
             if result.success:
+                AuditService.log_from_request('milestone_created', request, project, details={'milestone_id': str(result.milestone.id), 'title': result.milestone.title, 'amount': float(result.milestone.amount), 'due_date': str(result.milestone.due_date)})
                 messages.success(request, 'Milestone created.')
             else:
                 messages.error(request, result.error)
@@ -643,4 +685,37 @@ def sub_admin_project_manage(request, project_id):
         'analysts': analysts,
         'audit_logs': audit_logs,
         'status_choices': Project.STATUS_CHOICES,
+        'project_activities': project_activities,
+        'activity_unread_count': activity_unread_count,
+        'activity_category_counts': activity_category_counts,
+        'project_activity_mark_read_url': reverse('core:project_activity_mark_read', args=[project.project_id]),
+    })
+
+
+@require_auth
+@require_POST
+def project_activity_mark_read(request, project_id):
+    """Mark project activities as read for the current recipient."""
+    project = get_object_or_404(Project, project_id=project_id)
+
+    if project.client_id != request.user.id and project.tenant_admin_id != request.user.id and project.assigned_analyst_id != request.user.id and not request.user.is_admin:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    activity_ids = []
+    if request.body:
+        import json
+        try:
+            payload = json.loads(request.body.decode('utf-8'))
+            activity_ids = payload.get('activity_ids') or []
+        except Exception:
+            activity_ids = []
+
+    activity_service = ProjectActivityService()
+    updated = activity_service.mark_read(project, request.user, activity_ids=activity_ids or None)
+    unread_count = activity_service.get_unread_count(project, request.user)
+
+    return JsonResponse({
+        'success': True,
+        'updated': updated,
+        'unread_count': unread_count,
     })

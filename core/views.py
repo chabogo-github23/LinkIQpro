@@ -48,6 +48,7 @@ from apps.projects.views import (
     admin_review_deliverable,
     sub_admin_project_list,
     sub_admin_project_manage,
+    project_activity_mark_read,
 )
 
 # Re-export Payment views

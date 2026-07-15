@@ -54,6 +54,13 @@
     padding: 2rem;
 }
 
+.project-header-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: -0.25rem;
+    margin-bottom: 1.25rem;
+}
+
 .project-title {
     display: flex;
     justify-content: space-between;
@@ -594,12 +601,28 @@ body {
         </div>
         <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
     </div>
+    <div class="project-header-footer">
+        <button
+            type="button"
+            class="activity-toggle"
+            data-activity-toggle
+            data-activity-target="project-activity-center"
+            aria-expanded="false"
+            aria-controls="project-activity-drawer"
+        >
+            <span class="activity-toggle-icon">🔔</span>
+            <span>Activity</span>
+            <span class="activity-count" data-activity-count data-activity-target="project-activity-center">{{ activity_unread_count|default:0 }}</span>
+        </button>
+    </div>
+
+    {% include "includes/project_activity_center.html" with activity_mark_read_url=project_activity_mark_read_url %}
 
     <div class="project-container">
         <!-- Main Column -->
         <div class="project-main">
             <!-- Project Details -->
-            <div class="section">
+            <div class="section" id="project-overview">
                 <div class="section-header">
                     <span class="section-icon">📋</span>
                     <h3>Project Information</h3>
@@ -683,7 +706,7 @@ body {
             {% endif %}
 
             <!-- Payment & Milestones Status -->
-            <div class="payment-section">
+            <div class="payment-section" id="project-payments">
                 <div class="payment-header">
                     <h2 class="payment-title">
                         <span>💰</span>
@@ -708,7 +731,7 @@ body {
                 </div>
 
                 <!-- Milestones Progress -->
-                <div style="margin-bottom: 1.5rem;">
+                <div style="margin-bottom: 1.5rem;" id="project-milestones">
                     <h4 style="margin-bottom: 1rem; color: var(--text-primary); font-size: 1rem;">📌 Milestones Breakdown</h4>
                     
                     {% if project.milestones.all %}
@@ -795,7 +818,7 @@ body {
             </div>
 
             <!-- Project Progress Updates -->
-            <div class="section">
+            <div class="section" id="project-progress">
                 <div class="section-header">
                     <span class="section-icon">📊</span>
                     <h2>Project Progress Updates</h2>
@@ -819,6 +842,39 @@ body {
                     <div class="empty-state-icon">📭</div>
                     <p>No progress updates available yet.</p>
                     <small>Check back later for project updates from your analyst.</small>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Client Deliverables -->
+            <div class="section" id="project-deliverables">
+                <div class="section-header">
+                    <span class="section-icon">📦</span>
+                    <h2>Client Deliverables</h2>
+                </div>
+                {% if project.deliverables.exists %}
+                <div class="progress-gallery">
+                    {% for deliverable in project.deliverables.all %}
+                    <div class="progress-item">
+                        <div style="min-height: 120px; display: grid; place-items: center; background: var(--bg-tertiary); border-radius: 0.5rem; border: 1px solid var(--border-color); padding: 1rem;">
+                            <div style="text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: 0.35rem;">📄</div>
+                                <div style="font-weight: 600; color: var(--text-primary);">{{ deliverable.get_deliverable_type_display }}</div>
+                            </div>
+                        </div>
+                        <div class="upload-date">{{ deliverable.uploaded_at|date:"M d, Y H:i" }}</div>
+                        <a href="{{ deliverable.file.url }}" class="view-btn" target="_blank" download>
+                            <span>⬇</span>
+                            Download {{ deliverable.filename|truncatechars:18 }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <div class="empty-state-icon">📭</div>
+                    <p>No deliverables have been uploaded yet.</p>
+                    <small>Final files will appear here when the project is delivered.</small>
                 </div>
                 {% endif %}
             </div>
@@ -870,7 +926,7 @@ body {
             {% endif %}
 
             <!-- Chat Widget -->
-            <div class="section chat-section">
+            <div class="section chat-section" id="project-communication">
                 <div class="chat-header">
                     <h2>
                         <span>💬</span>

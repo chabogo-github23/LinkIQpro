@@ -96,6 +96,18 @@
                     {% csrf_token %}
                     <button type="submit" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Submit for Review</button>
                 </form>
+                <button
+                    type="button"
+                    class="activity-toggle"
+                    data-activity-toggle
+                    data-activity-target="project-activity-center"
+                    aria-expanded="false"
+                    aria-controls="project-activity-drawer"
+                >
+                    <span class="activity-toggle-icon">🔔</span>
+                    <span>Activity</span>
+                    <span class="activity-count" data-activity-count data-activity-target="project-activity-center">{{ activity_unread_count|default:0 }}</span>
+                </button>
             </div>
         </div>
 
@@ -113,9 +125,11 @@
         </div>
     </section>
 
+    {% include "includes/project_activity_center.html" with activity_mark_read_url=project_activity_mark_read_url %}
+
     <section class="main-grid">
         <div>
-            <article class="surface-card">
+            <article class="surface-card" id="project-overview">
                 <div class="card-head"><h2><i class="fas fa-file-alt"></i> Project Description</h2></div>
                 <div class="card-body">
                     <div>{{ project.description|default:"No description provided."|linebreaks }}</div>
@@ -138,7 +152,33 @@
             </article>
             {% endif %}
 
-            <article class="surface-card" style="margin-top:1rem;">
+            <article class="surface-card" style="margin-top:1rem;" id="project-progress">
+                <div class="card-head"><h2><i class="fas fa-chart-line"></i> Progress Updates</h2></div>
+                <div class="card-body">
+                    {% if progress_updates %}
+                    <div class="deliverables-list">
+                        {% for progress in progress_updates %}
+                        <div class="deliverable-item">
+                            <div class="deliverable-head">
+                                <strong>Progress update</strong>
+                                <span class="pill">{{ progress.uploaded_at|date:"M d" }}</span>
+                            </div>
+                            <div class="subtext" style="margin-top:0.35rem;">
+                                {% if progress.thumbnail_url %}
+                                <img src="{{ progress.thumbnail_url }}" alt="Progress preview" style="width:100%;max-height:160px;object-fit:cover;border-radius:0.6rem;margin-top:0.4rem;">
+                                {% endif %}
+                                <a href="{% url 'core:view_progress_pdf' progress.id %}" target="_blank" class="deliverable-link" style="display:inline-block;margin-top:0.5rem;">Open report</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state"><i class="fas fa-inbox"></i><p>No progress updates yet</p></div>
+                    {% endif %}
+                </div>
+            </article>
+
+            <article class="surface-card" style="margin-top:1rem;" id="project-deliverables">
                 <div class="card-head"><h2><i class="fas fa-download"></i> Deliverables</h2><span class="pill">{{ project.deliverables.count }}</span></div>
                 <div class="card-body">
                     {% if project.deliverables.exists %}
@@ -160,7 +200,7 @@
                 </div>
             </article>
 
-            <article class="surface-card" style="margin-top:1rem;">
+            <article class="surface-card" style="margin-top:1rem;" id="project-communication">
                 <div class="card-head"><h2><i class="fas fa-comments"></i> Project Communication</h2></div>
                 <div class="card-body">{% include "core/chat_widget.html" %}</div>
             </article>
@@ -168,7 +208,7 @@
 
         <div>
             {% if project.milestones.exists %}
-            <article class="surface-card">
+            <article class="surface-card" id="project-milestones">
                 <div class="card-head"><h2><i class="fas fa-tasks"></i> Milestones</h2></div>
                 <div class="card-body">
                     <div class="milestone-list">
@@ -187,7 +227,7 @@
             </article>
             {% endif %}
 
-            <article class="surface-card" style="margin-top:1rem;">
+            <article class="surface-card" style="margin-top:1rem;" id="project-deliverable-upload">
                 <div class="card-head"><h2><i class="fas fa-upload"></i> Upload Deliverable</h2></div>
                 <div class="card-body">
                     <form id="upload-form" method="post" enctype="multipart/form-data" action="{% url 'core:analyst_upload_deliverable' project.project_id %}">

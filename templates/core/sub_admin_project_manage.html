@@ -21,8 +21,24 @@
     <a href="{% url 'core:sub_admin_project_list' %}" class="btn btn-secondary">Back</a>
     <h1 style="margin:.65rem 0 0">{{ project.project_id }} - {{ project.title }}</h1>
     <p>Assign analyst, adjust status, plan milestones, and collaborate in chat.</p>
+    <div style="display:flex;justify-content:flex-end;margin-top:.75rem;">
+      <button
+          type="button"
+          class="activity-toggle"
+          data-activity-toggle
+          data-activity-target="project-activity-center"
+          aria-expanded="false"
+          aria-controls="project-activity-drawer"
+      >
+          <span class="activity-toggle-icon">🔔</span>
+          <span>Activity</span>
+          <span class="activity-count" data-activity-count data-activity-target="project-activity-center">{{ activity_unread_count|default:0 }}</span>
+      </button>
+    </div>
   </div>
 </section>
+
+{% include "includes/project_activity_center.html" with activity_mark_read_url=project_activity_mark_read_url %}
 
 <section class="layout">
   <div class="card">

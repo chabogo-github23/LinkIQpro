@@ -1,0 +1,500 @@
+<section class="activity-center" id="project-activity-center" data-activity-center data-mark-read-url="{{ activity_mark_read_url }}">
+    <div class="activity-modal" id="project-activity-modal" data-activity-drawer hidden aria-hidden="true">
+        <div class="activity-modal-backdrop" data-activity-close></div>
+        <div class="activity-modal-panel" role="dialog" aria-modal="true" aria-labelledby="project-activity-title">
+            <div class="activity-drawer-shell">
+                <div class="activity-drawer-header">
+                    <div>
+                        <div class="activity-kicker">Project Activity</div>
+                        <h3 id="project-activity-title">Timeline and filters</h3>
+                    </div>
+                    <button type="button" class="activity-close" data-activity-close aria-label="Close activity center">×</button>
+                </div>
+
+                <div class="activity-filters" role="tablist" aria-label="Project activity filters">
+                    <button type="button" class="activity-filter is-active" data-activity-filter="all">All <span>{{ activity_category_counts.all|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="message">Messages <span>{{ activity_category_counts.message|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="progress">Progress <span>{{ activity_category_counts.progress|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="file">Files <span>{{ activity_category_counts.file|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="payment">Payments <span>{{ activity_category_counts.payment|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="milestone">Milestones <span>{{ activity_category_counts.milestone|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="review">Reviews <span>{{ activity_category_counts.review|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="deadline">Deadlines <span>{{ activity_category_counts.deadline|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="completion">Completion <span>{{ activity_category_counts.completion|default:0 }}</span></button>
+                    <button type="button" class="activity-filter" data-activity-filter="system">System <span>{{ activity_category_counts.system|default:0 }}</span></button>
+                </div>
+
+                <div class="activity-timeline" data-activity-timeline>
+                    {% for activity in project_activities %}
+                    <button
+                        type="button"
+                        class="activity-card {{ activity.status_class }}"
+                        data-activity-card
+                        data-activity-id="{{ activity.id }}"
+                        data-activity-type="{{ activity.activity_type }}"
+                        data-activity-target="{{ activity.target_section }}"
+                        data-read="{{ activity.is_read|yesno:'true,false' }}"
+                    >
+                        <div class="activity-card-icon">{{ activity.icon }}</div>
+                        <div class="activity-card-body">
+                            <div class="activity-card-head">
+                                <div>
+                                    <div class="activity-card-title">{{ activity.title }}</div>
+                                    <div class="activity-card-meta">{{ activity.sender_label }} · {{ activity.created_at|timesince }} ago</div>
+                                </div>
+                                <span class="activity-pill">{{ activity.status_label }}</span>
+                            </div>
+                            {% if activity.description %}
+                            <div class="activity-card-description">{{ activity.description }}</div>
+                            {% endif %}
+                            <div class="activity-card-footer">
+                                <span>{{ activity.get_target_section_display }}</span>
+                                {% if activity.url %}
+                                <span>Open linked item</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </button>
+                    {% empty %}
+                    <div class="activity-empty">
+                        <div class="activity-empty-icon">📭</div>
+                        <h4>No project activity yet</h4>
+                        <p>New messages, file uploads, progress updates, payments, and milestones will appear here.</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+    .activity-center {
+        margin: 0.75rem 0 1.5rem;
+    }
+
+    .activity-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        display: grid;
+        place-items: center;
+    }
+
+    .activity-modal[hidden] {
+        display: none;
+    }
+
+    .activity-modal-backdrop {
+        position: absolute;
+        inset: 0;
+        background: rgba(10, 14, 24, 0.62);
+        backdrop-filter: blur(4px);
+    }
+
+    .activity-modal-panel {
+        position: relative;
+        width: min(980px, calc(100vw - 1.5rem));
+        max-height: min(84vh, 860px);
+        overflow: hidden;
+        border-radius: 1.1rem;
+        box-shadow: 0 30px 90px rgba(0, 0, 0, 0.45);
+        animation: activityModalIn 180ms ease-out;
+    }
+
+    .activity-kicker {
+        color: var(--accent-primary);
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .activity-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        border: 1px solid rgba(0, 217, 255, 0.28);
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.2), rgba(0, 153, 204, 0.16));
+        color: var(--text-primary);
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+    }
+
+    .activity-toggle:hover {
+        transform: translateY(-1px);
+        border-color: rgba(0, 217, 255, 0.44);
+    }
+
+    .activity-toggle-icon {
+        font-size: 1rem;
+    }
+
+    .activity-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.75rem;
+        padding: 0.18rem 0.45rem;
+        border-radius: 999px;
+        background: rgba(15, 15, 15, 0.32);
+        font-size: 0.82rem;
+    }
+
+    .activity-drawer-shell {
+        border: 1px solid var(--border-color);
+        border-radius: 1rem;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.015));
+        box-shadow: 0 24px 70px rgba(0, 0, 0, 0.24);
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .activity-drawer-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1rem 1.1rem;
+        border-bottom: 1px solid var(--border-color);
+        background: rgba(255, 255, 255, 0.02);
+    }
+
+    .activity-drawer-header h3 {
+        margin: 0.1rem 0 0;
+        color: var(--text-primary);
+        font-size: 1.05rem;
+    }
+
+    .activity-close {
+        border: none;
+        background: transparent;
+        color: var(--text-secondary);
+        font-size: 1.5rem;
+        line-height: 1;
+        cursor: pointer;
+        padding: 0.15rem 0.35rem;
+        border-radius: 0.5rem;
+    }
+
+    .activity-close:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text-primary);
+    }
+
+    .activity-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        padding: 0.9rem 1rem 0.25rem;
+    }
+
+    .activity-filter {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        color: var(--text-secondary);
+        border-radius: 999px;
+        padding: 0.5rem 0.8rem;
+        cursor: pointer;
+        transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+    }
+
+    .activity-filter span {
+        font-size: 0.78rem;
+        opacity: 0.9;
+    }
+
+    .activity-filter.is-active,
+    .activity-filter:hover {
+        border-color: rgba(0, 217, 255, 0.34);
+        color: var(--text-primary);
+        background: rgba(0, 217, 255, 0.08);
+    }
+
+    .activity-timeline {
+        display: grid;
+        gap: 0.7rem;
+        padding: 0.9rem 1rem 1rem;
+        overflow: auto;
+        flex: 1;
+    }
+
+    .activity-card {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 0.9rem;
+        width: 100%;
+        text-align: left;
+        border: 1px solid var(--border-color);
+        background: var(--bg-primary);
+        color: inherit;
+        border-radius: 0.95rem;
+        padding: 0.95rem;
+        cursor: pointer;
+        transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+    }
+
+    .activity-card:hover {
+        transform: translateY(-1px);
+        border-color: rgba(0, 217, 255, 0.25);
+    }
+
+    .activity-card.is-unread {
+        border-color: rgba(0, 217, 255, 0.34);
+        background: linear-gradient(135deg, rgba(0, 217, 255, 0.08), rgba(255, 255, 255, 0.02));
+    }
+
+    .activity-card.is-read {
+        opacity: 0.94;
+    }
+
+    .activity-card-icon {
+        width: 2.2rem;
+        height: 2.2rem;
+        display: grid;
+        place-items: center;
+        border-radius: 0.7rem;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-color);
+        font-size: 1rem;
+    }
+
+    .activity-card-body {
+        min-width: 0;
+        display: grid;
+        gap: 0.45rem;
+    }
+
+    .activity-card-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        align-items: flex-start;
+    }
+
+    .activity-card-title {
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.3;
+    }
+
+    .activity-card-meta,
+    .activity-card-footer {
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+    }
+
+    .activity-card-description {
+        color: var(--text-secondary);
+        font-size: 0.92rem;
+        line-height: 1.45;
+    }
+
+    .activity-card-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .activity-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        border-radius: 999px;
+        padding: 0.18rem 0.55rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        white-space: nowrap;
+    }
+
+    .activity-empty {
+        padding: 2.1rem 1.1rem;
+        text-align: center;
+        color: var(--text-secondary);
+        display: grid;
+        gap: 0.5rem;
+        justify-items: center;
+    }
+
+    .activity-empty-icon {
+        font-size: 2rem;
+        opacity: 0.75;
+    }
+
+    @keyframes activityModalIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.98);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .activity-modal-panel {
+            width: calc(100vw - 0.8rem);
+            max-height: calc(100vh - 0.8rem);
+        }
+
+        .activity-card-head {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<script>
+(function () {
+    const root = document.querySelector('[data-activity-center]');
+    if (!root) return;
+
+    const toggleSelector = '[data-activity-toggle][data-activity-target="' + root.id + '"]';
+    const toggle = document.querySelector(toggleSelector);
+    const drawer = root.querySelector('[data-activity-drawer]');
+    const closeButtons = root.querySelectorAll('[data-activity-close]');
+    const countEl = document.querySelector('[data-activity-count][data-activity-target="' + root.id + '"]');
+    const markReadUrl = root.dataset.markReadUrl;
+    const cards = Array.from(root.querySelectorAll('[data-activity-card]'));
+    const filters = Array.from(root.querySelectorAll('[data-activity-filter]'));
+
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.content : '';
+    }
+
+    function setCount(value) {
+        if (countEl) countEl.textContent = String(value);
+    }
+
+    function getUnreadCount() {
+        return cards.filter((card) => card.dataset.read === 'false').length;
+    }
+
+    async function markRead(activityIds) {
+        if (!markReadUrl || !activityIds.length) return;
+
+        try {
+            const response = await fetch(markReadUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken(),
+                },
+                body: JSON.stringify({ activity_ids: activityIds }),
+            });
+            if (!response.ok) return;
+            const data = await response.json();
+            if (data && typeof data.unread_count !== 'undefined') {
+                setCount(data.unread_count);
+            }
+        } catch (error) {
+            return;
+        }
+    }
+
+    function setDrawerOpen(open) {
+        if (!drawer || !toggle) return;
+        drawer.hidden = !open;
+        drawer.setAttribute('aria-hidden', open ? 'false' : 'true');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        document.body.classList.toggle('menu-open', open);
+        if (open) {
+            markAllVisibleAsRead();
+        }
+    }
+
+    function markAllVisibleAsRead() {
+        const unreadIds = cards
+            .filter((card) => card.dataset.read === 'false' && card.style.display !== 'none')
+            .map((card) => card.dataset.activityId);
+        if (!unreadIds.length) return;
+
+        unreadIds.forEach((id) => {
+            const card = root.querySelector('[data-activity-card][data-activity-id="' + id + '"]');
+            if (!card) return;
+            card.dataset.read = 'true';
+            card.classList.remove('is-unread');
+            card.classList.add('is-read');
+            const pill = card.querySelector('.activity-pill');
+            if (pill) pill.textContent = 'Read';
+        });
+
+        setCount(getUnreadCount());
+        markRead(unreadIds);
+    }
+
+    function scrollToSection(sectionId) {
+        if (!sectionId) return;
+        const section = document.getElementById(sectionId);
+        if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
+    function applyFilter(filter) {
+        filters.forEach((button) => {
+            button.classList.toggle('is-active', button.dataset.activityFilter === filter);
+        });
+
+        cards.forEach((card) => {
+            const visible = filter === 'all' || card.dataset.activityType === filter;
+            card.style.display = visible ? '' : 'none';
+        });
+    }
+
+    if (toggle) {
+        toggle.addEventListener('click', function () {
+            const open = drawer ? drawer.hidden : false;
+            setDrawerOpen(open);
+        });
+    }
+
+    closeButtons.forEach((button) => {
+        button.addEventListener('click', function () {
+            setDrawerOpen(false);
+        });
+    });
+
+    cards.forEach((card) => {
+        card.addEventListener('click', function () {
+            const activityId = card.dataset.activityId;
+            const targetSection = card.dataset.activityTarget;
+
+            card.dataset.read = 'true';
+            card.classList.remove('is-unread');
+            card.classList.add('is-read');
+            const pill = card.querySelector('.activity-pill');
+            if (pill) pill.textContent = 'Read';
+
+            setCount(getUnreadCount());
+            markRead([activityId]);
+            scrollToSection(targetSection);
+        });
+    });
+
+    filters.forEach((button) => {
+        button.addEventListener('click', function () {
+            applyFilter(button.dataset.activityFilter || 'all');
+        });
+    });
+
+    window.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && drawer && !drawer.hidden) {
+            setDrawerOpen(false);
+        }
+    });
+})();
+</script>

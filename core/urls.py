@@ -59,6 +59,7 @@ urlpatterns = [
 
     # --- General project routes ---
     path('project/<str:project_id>/', views.project_detail, name='project_detail'),
+    path('project/<str:project_id>/activities/read/', views.project_activity_mark_read, name='project_activity_mark_read'),
     path('dashboard/analyst/project/<str:project_id>/', views.analyst_project_detail, name='analyst_project_detail'),
     path('dashboard/analyst/project/<str:project_id>/upload/', views.analyst_upload_deliverable, name='analyst_upload_deliverable'),
     path('dashboard/analyst/project/<str:project_id>/submit/', views.analyst_submit_work, name='analyst_submit_work'),
