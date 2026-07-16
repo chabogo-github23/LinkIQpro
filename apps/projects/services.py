@@ -6,6 +6,7 @@ from typing import Optional, Tuple, List
 from dataclasses import dataclass
 from decimal import Decimal
 from django.utils import timezone
+from django.db.utils import ProgrammingError, OperationalError
 
 from .models import Project, Milestone, Deliverable, ProjectActivity
 from .repositories import ProjectRepository, MilestoneRepository, DeliverableRepository
@@ -354,37 +355,60 @@ class ProjectActivityService:
 
     @staticmethod
     def get_project_activities(project: Project, recipient, limit: int = 50):
-        return list(
-            ProjectActivity.objects.filter(project=project, recipient=recipient)
-            .select_related('sender', 'recipient')
-            .order_by('-created_at')[:limit]
-        )
+        try:
+            return list(
+                ProjectActivity.objects.filter(project=project, recipient=recipient)
+                .select_related('sender', 'recipient')
+                .order_by('-created_at')[:limit]
+            )
+        except (ProgrammingError, OperationalError):
+            return []
 
     @staticmethod
     def get_unread_count(project: Project, recipient) -> int:
-        return ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False).count()
+        try:
+            return ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False).count()
+        except (ProgrammingError, OperationalError):
+            return 0
 
     @staticmethod
     def get_category_counts(project: Project, recipient) -> dict:
-        queryset = ProjectActivity.objects.filter(project=project, recipient=recipient)
-        counts = {
-            'all': queryset.count(),
-            'message': queryset.filter(activity_type='message').count(),
-            'progress': queryset.filter(activity_type='progress').count(),
-            'file': queryset.filter(activity_type='file').count(),
-            'payment': queryset.filter(activity_type='payment').count(),
-            'milestone': queryset.filter(activity_type='milestone').count(),
-            'review': queryset.filter(activity_type='review').count(),
-            'deadline': queryset.filter(activity_type='deadline').count(),
-            'completion': queryset.filter(activity_type='completion').count(),
-            'system': queryset.filter(activity_type='system').count(),
-        }
-        return counts
+        try:
+            queryset = ProjectActivity.objects.filter(project=project, recipient=recipient)
+            counts = {
+                'all': queryset.count(),
+                'message': queryset.filter(activity_type='message').count(),
+                'progress': queryset.filter(activity_type='progress').count(),
+                'file': queryset.filter(activity_type='file').count(),
+                'payment': queryset.filter(activity_type='payment').count(),
+                'milestone': queryset.filter(activity_type='milestone').count(),
+                'review': queryset.filter(activity_type='review').count(),
+                'deadline': queryset.filter(activity_type='deadline').count(),
+                'completion': queryset.filter(activity_type='completion').count(),
+                'system': queryset.filter(activity_type='system').count(),
+            }
+            return counts
+        except (ProgrammingError, OperationalError):
+            return {
+                'all': 0,
+                'message': 0,
+                'progress': 0,
+                'file': 0,
+                'payment': 0,
+                'milestone': 0,
+                'review': 0,
+                'deadline': 0,
+                'completion': 0,
+                'system': 0,
+            }
 
     @staticmethod
     def mark_read(project: Project, recipient, activity_ids: List[str] = None) -> int:
-        queryset = ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False)
-        if activity_ids:
-            queryset = queryset.filter(id__in=activity_ids)
-        updated = queryset.update(is_read=True, read_at=timezone.now())
-        return updated
+        try:
+            queryset = ProjectActivity.objects.filter(project=project, recipient=recipient, is_read=False)
+            if activity_ids:
+                queryset = queryset.filter(id__in=activity_ids)
+            updated = queryset.update(is_read=True, read_at=timezone.now())
+            return updated
+        except (ProgrammingError, OperationalError):
+            return 0

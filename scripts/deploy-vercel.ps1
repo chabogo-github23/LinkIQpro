@@ -17,22 +17,19 @@ function Test-Command($name) {
 # Check prerequisites
 if (-not $SkipChecks) {
     Write-Host "`n[1/5] Checking prerequisites..." -ForegroundColor Cyan
-    
-    # Check Python
+
     if (-not (Test-Command "python")) {
         Write-Host "ERROR: Python is not installed or not in PATH" -ForegroundColor Red
         exit 1
     }
     Write-Host "✓ Python found: $(python --version)" -ForegroundColor Green
-    
-    # Check Vercel CLI
+
     if (-not (Test-Command "vercel")) {
         Write-Host "ERROR: Vercel CLI is not installed. Install with: npm install -g vercel" -ForegroundColor Red
         exit 1
     }
     Write-Host "✓ Vercel CLI found: $(vercel --version)" -ForegroundColor Green
-    
-    # Check if logged in to Vercel
+
     Write-Host "`n[2/5] Checking Vercel authentication..." -ForegroundColor Cyan
     $vercelUser = vercel whoami 2>$null
     if (-not $vercelUser) {
@@ -60,8 +57,18 @@ if (-not (Test-Path ".vercel")) {
     Write-Host "✓ Project is linked to Vercel" -ForegroundColor Green
 }
 
+# Run database migrations
+Write-Host "`n[4/5] Running database migrations..." -ForegroundColor Cyan
+python manage.py migrate --noinput
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "ERROR: Failed to run migrations" -ForegroundColor Red
+    exit 1
+} else {
+    Write-Host "✓ Database migrations applied" -ForegroundColor Green
+}
+
 # Collect static files
-Write-Host "`n[4/5] Collecting static files..." -ForegroundColor Cyan
+Write-Host "`n[5/5] Collecting static files..." -ForegroundColor Cyan
 python manage.py collectstatic --noinput
 if ($LASTEXITCODE -ne 0) {
     Write-Host "WARNING: Failed to collect static files" -ForegroundColor Yellow
@@ -70,7 +77,7 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Deploy to Vercel
-Write-Host "`n[5/5] Deploying to Vercel..." -ForegroundColor Cyan
+Write-Host "`n[6/5] Deploying to Vercel..." -ForegroundColor Cyan
 
 if ($Environment -eq "production") {
     vercel --prod
@@ -83,7 +90,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Your application is now live on Vercel." -ForegroundColor Cyan
     Write-Host "`nNext steps:" -ForegroundColor Yellow
     Write-Host "1. Set environment variables in Vercel dashboard" -ForegroundColor White
-    Write-Host "2. Run migrations: vercel env pull && python manage.py migrate" -ForegroundColor White
+    Write-Host "2. Verify the database migrations completed successfully" -ForegroundColor White
     Write-Host "3. Test your deployment" -ForegroundColor White
 } else {
     Write-Host "`n✗ Deployment failed. Check the error messages above." -ForegroundColor Red
