@@ -3,7 +3,7 @@ Core Views Module - Backward Compatibility Layer
 Re-exports views from domain apps for existing URL patterns
 """
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, FileResponse
+from django.http import HttpResponse, FileResponse, Http404
 from django.views.generic import TemplateView
 
 # Re-export User views
@@ -111,11 +111,13 @@ def login_placeholder(request):
     return render(request, 'core/login.html')
 
 
-def view_progress_pdf(request, progress_id):
+def view_progress_pdf(request, progress_id, project_id=None):
     """View a project progress PDF file"""
     from apps.projects.models import ProjectProgress
     
     progress = get_object_or_404(ProjectProgress, id=progress_id)
+    if project_id and progress.project.project_id != project_id:
+        raise Http404("Progress file does not belong to this project.")
     return render(request, 'core/view_progress_pdf.html', {'progress': progress})
 
 

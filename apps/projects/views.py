@@ -4,7 +4,7 @@ Thin controllers that delegate to services
 """
 from decimal import Decimal
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.db import transaction
@@ -483,10 +483,12 @@ def admin_upload_progress(request, project_id):
     return redirect("core:project_triage", project_id=project_id)
 
 @require_auth
-def view_progress_pdf(request, progress_id):
+def view_progress_pdf(request, progress_id, project_id=None):
     """View progress PDF - accessible by both admin and client"""
     progress = get_object_or_404(ProjectProgress, id=progress_id)
     project = progress.project
+    if project_id and project.project_id != project_id:
+        raise Http404("Progress file does not belong to this project.")
     
     # Check permissions (same as above)
     if request.user.is_staff:

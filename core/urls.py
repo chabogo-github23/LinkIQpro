@@ -45,9 +45,15 @@ urlpatterns = [
     path('project/<str:project_id>/admin/review-deliverable/', views.admin_review_deliverable, name='admin_review_deliverable'),
     path('project/<str:project_id>/admin/deliver-to-client/', views.admin_deliver_to_client, name='admin_deliver_to_client'),
     path('dashboard/admin/project/<str:project_id>/progress/upload/', views.admin_upload_progress, name='admin_upload_progress'),
-    #path('progress/<int:progress_id>/view/', views.view_progress_pdf, name='view_progress_pdf'),
-    path('progress/<int:progress_id>/view/', 
-     views.view_progress_pdf, 
+    # Backward-compatible progress PDF routes.
+    # Older templates passed both project_id and progress_id, while newer ones
+    # only pass progress_id. Keep both patterns alive so deployed instances
+    # don't break during a gradual rollout.
+    path('progress/<int:progress_id>/view/',
+     views.view_progress_pdf,
+     name='view_progress_pdf'),
+    path('project/<str:project_id>/progress/<int:progress_id>/view/',
+     views.view_progress_pdf,
      name='view_progress_pdf'),
     
     # User management
